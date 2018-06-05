@@ -1,3 +1,4 @@
+export const set_data_ready = "set_data_ready";
 export const set_main = "set_main";
 export const set_tag_name = "set_tag_name";
 export const set_classify_name = "set_classify_name";

@@ -5,6 +5,7 @@ Vue.use(Router);
 
 const Home = () => import("components/route/home.vue");
 const Tag = () => import("components/route/tag.vue");
+const Archive = () => import("components/route/archive.vue");
 
 export default new Router({
 
@@ -19,6 +20,11 @@ export default new Router({
     {
       path: "/tag",
       component: Tag
+    },
+
+    {
+      path: "/archive",
+      component: Archive
     }
   ]
 

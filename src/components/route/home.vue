@@ -1,7 +1,7 @@
 <template>
   <div class="home">
 
-    <div class="update_diary">
+    <!-- <div class="update_diary">
       <a class="update home_a">
         <div class="head">
           <div class="title">
@@ -23,145 +23,33 @@
           <span>(22)</span>
         </div>
       </a>
-    </div>
+    </div> -->
 
     <ul class="home_ul">
-      <li>
+      <li v-for = "item in main">
         <a class="home_a">
           <div class="head">
             <div class="title">
-              vue.js学习中的一个有趣Demo
+              {{item.title}}
             </div>
             <div class="date">
               <i class="icon-data"></i>
-              2018/03/29/21:47:15
+              {{item.date}}
             </div>
           </div>
           <div class="body">
             <div class="tag_classify">
               <div class="tag">
                 <i class="icon-tag"></i>
-                js
+                {{item.tag}}
               </div>
               <div class="classify">
                 <i class="icon-classify"></i>
-                编程
+                {{item.classify}}
               </div>
             </div>
             <div class="description">
-              <p>在vue.js官网教程<strong>过渡 & 动画</strong>--<strong>状态过渡</strong>--<strong>动态状态过渡</strong>下的一个Demo,当时看到时,觉得十分惊艳,遂仿写了一个,以下阐述一下基本思路.<br></p>
-            </div>
-          </div>
-        </a>
-      </li>
-      <li>
-        <a class="home_a">
-          <div class="head">
-            <div class="title">
-              vue.js学习中的一个有趣Demo
-            </div>
-            <div class="date">
-              <i class="icon-data"></i>
-              2018/03/29/21:47:15
-            </div>
-          </div>
-          <div class="body">
-            <div class="tag_classify">
-              <div class="tag">
-                <i class="icon-tag"></i>
-                js
-              </div>
-              <div class="classify">
-                <i class="icon-classify"></i>
-                编程
-              </div>
-            </div>
-            <div class="description">
-              <p>在vue.js官网教程<strong>过渡 & 动画</strong>--<strong>状态过渡</strong>--<strong>动态状态过渡</strong>下的一个Demo,当时看到时,觉得十分惊艳,遂仿写了一个,以下阐述一下基本思路.<br></p>
-            </div>
-          </div>
-        </a>
-      </li>
-      <li>
-        <a class="home_a">
-          <div class="head">
-            <div class="title">
-              vue.js学习中的一个有趣Demo
-            </div>
-            <div class="date">
-              <i class="icon-data"></i>
-              2018/03/29/21:47:15
-            </div>
-          </div>
-          <div class="body">
-            <div class="tag_classify">
-              <div class="tag">
-                <i class="icon-tag"></i>
-                js
-              </div>
-              <div class="classify">
-                <i class="icon-classify"></i>
-                编程
-              </div>
-            </div>
-            <div class="description">
-              <p>在vue.js官网教程<strong>过渡 & 动画</strong>--<strong>状态过渡</strong>--<strong>动态状态过渡</strong>下的一个Demo,当时看到时,觉得十分惊艳,遂仿写了一个,以下阐述一下基本思路.<br></p>
-            </div>
-          </div>
-        </a>
-      </li>
-      <li>
-        <a class="home_a">
-          <div class="head">
-            <div class="title">
-              vue.js学习中的一个有趣Demo
-            </div>
-            <div class="date">
-              <i class="icon-data"></i>
-              2018/03/29/21:47:15
-            </div>
-          </div>
-          <div class="body">
-            <div class="tag_classify">
-              <div class="tag">
-                <i class="icon-tag"></i>
-                js
-              </div>
-              <div class="classify">
-                <i class="icon-classify"></i>
-                编程
-              </div>
-            </div>
-            <div class="description">
-              <p>在vue.js官网教程<strong>过渡 & 动画</strong>--<strong>状态过渡</strong>--<strong>动态状态过渡</strong>下的一个Demo,当时看到时,觉得十分惊艳,遂仿写了一个,以下阐述一下基本思路.<br></p>
-            </div>
-          </div>
-        </a>
-      </li>
-      <li>
-        <a class="home_a">
-          <div class="head">
-            <div class="title">
-              vue.js学习中的一个有趣Demo
-            </div>
-            <div class="date">
-              <i class="icon-data"></i>
-              2018/03/29/21:47:15
-            </div>
-          </div>
-          <div class="body">
-            <div class="tag_classify">
-              <div class="tag">
-                <i class="icon-tag"></i>
-                js
-              </div>
-              <div class="classify">
-                <i class="icon-classify"></i>
-                编程
-              </div>
-            </div>
-            <div class="description">
-              <p>在vue.js官网教程<strong>过渡 & 动画</strong>--<strong>状态过渡</strong>--<strong>动态状态过渡</strong>下的一个Demo,当时看到时,觉得十分惊艳,遂仿写了一个,以下阐述一下基本思路.<br></p>
+              <p v-html = "item.description"></p>
             </div>
           </div>
         </a>
@@ -172,8 +60,19 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import {mapGetters} from "vuex";
+  import {common_data} from "common/js/mixin.js";
   export default {
+
     name: "Home",
+
+    mixins: [common_data],
+
+    computed: {
+      ...mapGetters([
+        "main"
+      ]),
+    },
 
   }
 </script>
@@ -250,6 +149,7 @@
               align-items: center
               font-size: 1.2rem
               margin-left: 1rem
+              flex-shrink: 0
               i
                 margin-right: 0.5rem
                 padding-bottom: 0.2rem
@@ -272,13 +172,24 @@
                 padding-left: 1rem
                 box-shadow: $box-shadow-left
             .description
+              display: flex
+              height: 7.8rem
+              align-items: center
+              box-sizing: border-box
+              padding-bottom: 0.8rem
               p
+                max-height: 6rem
                 font-size: 1.4rem
-                line-height: 2
+                line-height: 3rem
                 margin: 0
-                padding: 1em 0
                 letter-spacing: 0.1rem
                 color: $color-grey
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
+                overflow: hidden;
+                text-overflow: ellipsis
+
 
   @media (max-width: $max-width-2)
     .home

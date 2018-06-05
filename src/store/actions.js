@@ -56,6 +56,8 @@ export function data_handle({commit},data){
     archive[archive_value].push(obj);
   });
 
+  let data_ready = true;
+
   commit(types.set_main,main);
   commit(types.set_tag_name,tag_name);
   commit(types.set_classify_name,classify_name);
@@ -63,5 +65,6 @@ export function data_handle({commit},data){
   commit(types.set_tag,tag);
   commit(types.set_classify,classify);
   commit(types.set_archive,archive);
+  commit(types.set_data_ready,data_ready);
 
 }

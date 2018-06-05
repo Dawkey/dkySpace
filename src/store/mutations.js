@@ -1,6 +1,9 @@
 import * as types from "./mutation-types";
 
 const mutations = {
+  [types.set_data_ready](state,data_ready){
+    state.data_ready = data_ready;
+  },
   [types.set_main](state,main){
     state.main = main;
   },
