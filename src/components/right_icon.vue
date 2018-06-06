@@ -1,11 +1,20 @@
 <template>
   <div class="right_icon">
-    <div class="button_icon top">
-      <i class="icon-top"></i>
-    </div>
-    <div class="button_icon login">
-      <i class="icon-login"></i>
-    </div>
+    <ul class="right_top">
+      <router-link tag="li" to="/update" class="button_icon update">
+        <i class="icon-update"></i>
+      </router-link>
+      <router-link tag="li" to="/diary" class="button_icon diary">
+        <i class="icon-diary"></i>
+      </router-link>
+      <div class="button_icon login">
+        <i class="icon-login"></i>
+      </div>
+    </ul>
+    <div class="right_bottom">
+      <div class="button_icon top">
+        <i class="icon-top"></i>
+      </div>
     </div>
   </div>
 </template>
@@ -20,17 +29,23 @@
   @import "~common/stylus/variable.styl"
 
   .right_icon
-    position: fixed
-    bottom: 7.5rem
-    right: calc(((100% - 88rem)/2 - 15rem)/2)
-    width: 15rem
-    display:flex
-    flex-direction: column-reverse
-    align-items: center
-    >div
-      font-size: 2.2rem
-      &:hover
-        font-size: 2.3rem
-    .login
-      display: none
+    .right_top,.right_bottom
+      position: fixed
+      right: calc(((100% - 88rem)/2 - 15rem)/2)
+      width: 15rem
+    .right_top
+      top: 24.5rem
+      display: flex
+      flex-direction: column
+      align-items: center
+      background: $color-2
+      .button_icon
+        font-size: 2.2rem
+        &:hover
+          font-size: 2.3rem
+    .right_bottom
+      bottom: 7.5rem
+      display: flex
+      justify-content: center
+      background: $color-2
 </style>

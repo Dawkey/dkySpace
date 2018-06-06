@@ -1,30 +1,6 @@
 <template>
   <div class="home">
 
-    <!-- <div class="update_diary">
-      <a class="update home_a">
-        <div class="head">
-          <div class="title">
-            Update Log
-          </div>
-          <i class="icon-update"></i>
-        </div>
-        <div class="body">
-          Blog
-          <span>V1.5</span>
-        </div>
-      </a>
-      <a class="diary home_a">
-        <div class="head">
-          <i class="icon-diary"></i>
-        </div>
-        <div class="body">
-          Diary
-          <span>(22)</span>
-        </div>
-      </a>
-    </div> -->
-
     <ul class="home_ul">
       <li v-for = "item in main">
         <a class="home_a">
@@ -33,7 +9,7 @@
               {{item.title}}
             </div>
             <div class="date">
-              <i class="icon-data"></i>
+              <i class="icon-date"></i>
               {{item.date}}
             </div>
           </div>
@@ -80,69 +56,34 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable.styl"
 
-  .home
-
-    .home_a
-      background: $color-1
-      border-radius: 0.3rem
-      box-shadow: $box-shadow
-      width: 100%
-      cursor: pointer
-      &:hover
-        background: $color-3-o
-      .head
-        display: flex
-        align-items: center
-        justify-content: space-between
-        height: 4.5rem
-        padding: 0 2.5rem
-        box-shadow: $box-shadow-bottom
-        .title
-          font-size: 1.9rem
-          color: $color-black
-          width: 100%
-          white-space: nowrap
-          text-overflow: ellipsis
-          overflow: hidden
-    .update_diary
-      display: flex
-      justify-content: space-between
-      i
-        font-size: 2.2rem
-      .update,.diary
-        height: 33rem
-      .update
-        width: 55%
-      .diary
-        width: 42%
-        .head
-          flex-direction: row-reverse
-          i
-            font-size: 1.9rem
-        .body
-          font-size: 7rem
-          span
-            margin-left: -1.4rem
-      .body
-        display: flex
-        align-items: center
-        justify-content: center
-        height: 22rem
-        font-size: 8rem
-        font-family: Georgia
-        color: #888
-        span
-          display: inline-block
-          font-size: 2.4rem
-          padding-top: 6.6rem
-          padding-left: 1rem
+  .home    
     .home_ul
       i
         color: $color-grey
       >li
         margin-top: 4rem
         .home_a
+          background: $color-1
+          border-radius: 0.3rem
+          box-shadow: $box-shadow
+          width: 100%
+          cursor: pointer
+          &:hover
+            background: $color-3-o
           .head
+            display: flex
+            align-items: center
+            justify-content: space-between
+            height: 4.5rem
+            padding: 0 2.5rem
+            box-shadow: $box-shadow-bottom
+            .title
+              font-size: 1.9rem
+              color: $color-black
+              width: 100%
+              white-space: nowrap
+              text-overflow: ellipsis
+              overflow: hidden
             .date
               color: $color-grey
               display: flex

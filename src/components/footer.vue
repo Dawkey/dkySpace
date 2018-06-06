@@ -6,7 +6,7 @@
     <div class="powered">
       <div>
         Powered by&nbsp
-        <a href="#" target="_blank">
+        <a href="https://github.com/wwk321/dkySpace" target="_blank">
           Dawkey
         </a>
       </div>

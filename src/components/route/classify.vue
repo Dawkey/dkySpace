@@ -1,5 +1,5 @@
 <template>
-  <tag-classify :component_name = "'tag'">
+  <tag-classify :component_name = "'classify'">
   </tag-classify>
 </template>
 
@@ -7,7 +7,7 @@
   import TagClassify from "./tag_classify/tag_classify.vue"
   export default {
 
-    name: "Tag",
+    name: "Classify",
 
     components: {TagClassify},
 

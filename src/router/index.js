@@ -5,7 +5,11 @@ Vue.use(Router);
 
 const Home = () => import("components/route/home.vue");
 const Tag = () => import("components/route/tag.vue");
+const Classify = () => import("components/route/classify.vue");
 const Archive = () => import("components/route/archive.vue");
+const AboutMe = () => import("components/route/about_me.vue");
+
+const Update = () => import("components/route/update.vue");
 
 export default new Router({
 
@@ -23,8 +27,23 @@ export default new Router({
     },
 
     {
+      path: "/classify",
+      component: Classify
+    },
+
+    {
       path: "/archive",
       component: Archive
+    },
+
+    {
+      path: "/about_me",
+      component: AboutMe
+    },
+
+    {
+      path: "/update",
+      component: Update
     }
   ]
 
