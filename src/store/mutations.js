@@ -24,7 +24,13 @@ const mutations = {
   },
   [types.set_archive](state,archive){
     state.archive = archive;
-  }
+  },
+  [types.set_update](state,update){
+    state.update = update;
+  },
+  [types.set_diary](state,diary){
+    state.diary = diary;
+  },
 }
 
 export default mutations;

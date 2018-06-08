@@ -6,7 +6,9 @@ const state = {
   archive_name: [],   //归档年份数组
   tag: {},            //每个标签名对应一个数组组成的对象
   classify: {},       //类似于tag的一个对象(分类)
-  archive: {}         //类上(归档)
+  archive: {},        //类上(归档)
+  update: [],         //博客更新日志数据
+  diary: [],          //日记数据
 }
 
 export default state;

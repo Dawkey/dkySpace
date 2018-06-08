@@ -40,6 +40,7 @@
       align-items: center
       background: $color-2
       .button_icon
+        margin-top: 1.5rem
         font-size: 2.2rem
         &:hover
           font-size: 2.3rem

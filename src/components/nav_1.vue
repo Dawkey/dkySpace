@@ -11,21 +11,11 @@
       </div>
     </div>
     <ul class="nav">
-      <router-link tag="li" to="/home" class="button_icon home">
-        <i class="icon-home"></i>
-      </router-link>
-      <router-link tag="li" to="/tag" class="button_icon tag">
-        <i class="icon-tag"></i>
-      </router-link>
-      <router-link tag="li" to="/classify" class="button_icon classify">
-        <i class="icon-classify"></i>
-      </router-link>
-      <router-link tag="li" to="/archive" class="button_icon archive">
-        <i class="icon-archive"></i>
-      </router-link>
-      <router-link tag="li" to="/about_me" class="button_icon about_me">
-        <i class="icon-about_me"></i>
-      </router-link>
+      <li v-for = "item in nav">
+        <router-link :to="`/${item}`" tag="div" class="button_icon">
+          <i :class="`icon-${item}`"></i>
+        </router-link>
+      </li>
     </ul>
   </div>
 </template>
@@ -34,11 +24,26 @@
   import type from "common/js/type.js";
   export default {
     name: "Nav1",
+
+    data(){
+      return{
+        nav: ["home","tag","classify","archive","about_me"],
+      }
+    },
+
+    computed: {
+      active_nav(){
+        return this.$route.path;
+      },
+    },
+
     methods: {
+
       test(){
         let el = this.$refs.talk_span;
         type(el,"嘟嘟噜~我是一段会说话的文字哦ヽ(￣▽￣)ﾉ");
       },
+
     }
   }
 </script>
@@ -100,6 +105,14 @@
       width: 100%
       margin-top: 2rem
       background: $color-2
+      .button_icon
+        margin-top: 1.5rem
+      .router-link-active
+        background: $color-3-o
+        color: $color-black
+        font-size: 2.1rem 
+
+
 
   @keyframes cursor_move
     50%

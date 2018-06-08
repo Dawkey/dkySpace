@@ -6,3 +6,5 @@ export const archive_name = (state) => state.archive_name;
 export const tag = (state) => state.tag;
 export const classify = (state) => state.classify;
 export const archive = (state) => state.archive;
+export const update = (state) => state.update;
+export const diary = (state) => state.diary;

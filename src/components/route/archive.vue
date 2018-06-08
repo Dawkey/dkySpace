@@ -1,34 +1,36 @@
 <template>
-  <div class="archive">
-    <div class="icon">
-      <i class="button_icon icon-archive"></i>
-    </div>
-    <div class="archive_div">
-      <ul class="archive_ul" v-for = "ul_item in archive_name">
-        <li class="year">
-          <div class="year_circle">
 
-          </div>
-          {{ul_item}}
-        </li>
-        <li class="archive_li" v-for = "li_item in archive[ul_item]">
-          <div class="archive_li_hover">
-            <div class="date">
-              <div class="date_circle">
-
+  <transition :duration="{leave: 500}" @before-leave="beforeLeave">
+    <div class="archive">
+      <div class="icon">
+        <i class="button_icon icon-archive"></i>
+      </div>
+      <div class="archive_div">
+        <ul class="archive_ul" v-for = "ul_item in archive_name">
+          <li class="year">
+            <div class="year_circle">
+            </div>
+            {{ul_item}}
+          </li>
+          <li class="archive_li" v-for = "li_item in archive[ul_item]">
+            <div class="archive_li_hover">
+              <div class="date">
+                <div class="date_circle">
+                </div>
+                {{li_item.date}}
               </div>
-              {{li_item.date}}
+              <div class="line">
+              </div>
+              <div class="title">
+                {{li_item.title}}
+              </div>
             </div>
-            <div class="line">
-            </div>
-            <div class="title">
-              {{li_item.title}}
-            </div>
-          </div>
-        </li>
-      </ul>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
+  </transition>
+
 </template>
 
 <script type="text/ecmascript-6">
@@ -46,6 +48,13 @@
       ]),
     },
 
+    methods: {
+      beforeLeave(el){
+        let height = el.clientHeight;
+        
+      },
+    }
+
   }
 </script>
 
@@ -57,6 +66,7 @@
     padding: 1.5rem 3rem 3rem 3rem
     box-shadow: $box-shadow-left
     transform: translateY(4.2rem)
+    transition: height 500ms
     .icon
       position: absolute
       top: -4.2rem

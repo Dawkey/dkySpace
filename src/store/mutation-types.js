@@ -6,3 +6,5 @@ export const set_archive_name = "set_archive_name";
 export const set_tag = "set_tag";
 export const set_classify = "set_classify";
 export const set_archive = "set_archive";
+export const set_update = "set_update";
+export const set_diary = "set_diary";

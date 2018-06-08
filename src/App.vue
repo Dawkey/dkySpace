@@ -3,7 +3,9 @@
     <nav1></nav1>
     <nav2></nav2>
     <div class="body">
-      <router-view></router-view>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
     </div>
     <right-icon></right-icon>
     <Footer></Footer>
@@ -26,7 +28,7 @@
   @import "~common/stylus/variable.styl"
 
   #app
-    padding-top: 0.05rem
+    padding-bottom: 0.1rem
     .body
       max-width: 88rem
       margin: auto

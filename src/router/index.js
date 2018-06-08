@@ -10,8 +10,19 @@ const Archive = () => import("components/route/archive.vue");
 const AboutMe = () => import("components/route/about_me.vue");
 
 const Update = () => import("components/route/update.vue");
+const Diary = () => import("components/route/diary.vue");
 
-export default new Router({
+const router = new Router({
+
+  mode: "history",
+
+  scrollBehavior(to,from,savedPosition){
+    if(savedPosition){
+      return savedPosition;
+    }else{
+      return {x: 0, y: 0};
+    }
+  },
 
   routes: [
     {path: "/",redirect: "/home"},
@@ -44,7 +55,15 @@ export default new Router({
     {
       path: "/update",
       component: Update
-    }
+    },
+
+    {
+      path: "/diary",
+      component: Diary
+    },
   ]
 
 });
+
+
+export default router;
