@@ -1,4 +1,6 @@
 const state = {
+  router_show: false,
+
   data_ready: false,  //数据是否获取及处理完毕的flag
   main: [],           //主页(home)数组
   tag_name: [],       //标签名数组

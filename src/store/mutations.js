@@ -1,6 +1,10 @@
 import * as types from "./mutation-types";
 
 const mutations = {
+  [types.set_router_show](state,router_show){
+    state.router_show = router_show;
+  },
+
   [types.set_data_ready](state,data_ready){
     state.data_ready = data_ready;
   },

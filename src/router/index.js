@@ -34,7 +34,7 @@ const router = new Router({
 
     {
       path: "/tag",
-      component: Tag
+      component: Tag,
     },
 
     {
@@ -64,6 +64,34 @@ const router = new Router({
   ]
 
 });
+
+let timer = null;
+
+
+//设置(commit) vuex 上的router_show值
+function commit_router_show(name){
+  //通过router.app上的$store属性可以直接访问挂载的 vuex ~
+  let store = router.app.$store;
+  if(store){
+    store.commit("set_router_show",name);
+  }
+}
+
+
+router.beforeEach((to,from,next)=>{
+  clearTimeout(timer);
+
+  commit_router_show(false);
+
+  let name = (to.path).slice(1);
+
+  timer = setTimeout(()=>{
+    commit_router_show(name);
+  },800);
+
+  next();
+});
+
 
 
 export default router;

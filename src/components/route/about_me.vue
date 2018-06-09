@@ -1,36 +1,41 @@
 <template>
   <div class="about_me">
-    <div class="icon">
-      <i class="button_icon icon-about_me"></i>
-    </div>
-    <div class="about_me_div">
-      <div class="github">
-        <i class="icon-github"></i>
-        <a class= "follow" href="https://github.com/wwk321" target="_blank">
-          Follow
-        </a>
-      </div>
-      <div class="word">
-        <div>
-          <div class="like">
-            喜欢
-          </div>
-           写代码&nbsp|&nbsp打游戏&nbsp|&nbsp<span class="hightlight">纸片人</span>
+    <transition name="router">
+      <div class="about_me_div" v-show="router_show === 'about_me'">
+        <div class="github">
+          <i class="icon-github"></i>
+          <a class= "follow" href="https://github.com/wwk321" target="_blank">
+            Follow
+          </a>
         </div>
-        <div>
-          <div class="dislike">
-            讨厌
+        <div class="word">
+          <div>
+            <div class="like">
+              喜欢
+            </div>
+             写代码&nbsp|&nbsp打游戏&nbsp|&nbsp<span class="hightlight">纸片人</span>
           </div>
-           <span class="hightlight">丑陋</span>的布局&nbsp|&nbsp期末考
+          <div>
+            <div class="dislike">
+              讨厌
+            </div>
+             <span class="hightlight">丑陋</span>的布局&nbsp|&nbsp期末考
+          </div>
         </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import {mapGetters} from "vuex";
   export default {
     name: "AboutMe",
+    computed: {
+      ...mapGetters([
+        "router_show",
+      ]),
+    }
   }
 </script>
 
@@ -38,18 +43,9 @@
   @import "~common/stylus/variable.styl"
 
   .about_me
-    position: relative
-    padding: 1.5rem 3rem 3rem 3rem
-    box-shadow: $box-shadow-left
-    transform: translateY(4.2rem)
-    .icon
-      position: absolute
-      top: -4.2rem
-      left: 0
-      transform: translateX(-50%)
-      i
-        margin: 0
     .about_me_div
+      padding-top: 3rem
+      padding-bottom: 1.5rem
       .github
         display: flex
         align-items: center
@@ -91,4 +87,16 @@
             box-shadow: $box-shadow-bottom
             color: $color-3
 
+  // .about_me-enter-active
+  //   transition: all 500ms
+  // .about_me-enter
+  //   position: absolute
+  //   top: 0.1rem
+  //   left: -1rem
+  //   opacity: 0
+  // .about_me-enter-to
+  //   position: absolute
+  //   top: 0.1rem
+  //   left: 1.05rem
+  //   opacity: 1
 </style>

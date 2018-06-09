@@ -12,9 +12,13 @@
     </div>
     <ul class="nav">
       <li v-for = "item in nav">
-        <router-link :to="`/${item}`" tag="div" class="button_icon">
-          <i :class="`icon-${item}`"></i>
-        </router-link>
+        <transition name="icon">
+          <div class="nav_div" v-show = "item != ($route.path).slice(1)">
+            <router-link :to="`/${item}`" tag="div" class="button_icon">
+              <i :class="`icon-${item}`"></i>
+            </router-link>
+          </div>
+        </transition>
       </li>
     </ul>
   </div>
@@ -103,14 +107,34 @@
       flex-direction: column
       align-items: center
       width: 100%
-      margin-top: 2rem
+      margin-top: 3.5rem
       background: $color-2
-      .button_icon
-        margin-top: 1.5rem
-      .router-link-active
-        background: $color-3-o
-        color: $color-black
-        font-size: 2.1rem 
+      .nav_div
+        height: 6rem
+      .icon-enter-active
+        transition: all 500ms
+        .button_icon
+          transition: all 500ms
+      .icon-enter
+        height: 0
+        opacity: 0
+        .button_icon
+          transform:  translateX(100%)
+      .icon-enter-to
+        height: 6rem
+        opacity: 1
+        .button_icon
+          transform:  translateX(0)
+
+      .icon-leave-active
+        transition: all 500ms
+        .button_icon
+          transition: all 500ms
+      .icon-leave-to
+        height: 0
+        opacity: 0
+        .button_icon
+          transform: scale(0) translateX(100%)
 
 
 

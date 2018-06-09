@@ -1,11 +1,8 @@
 <template>
 
-  <transition :duration="{leave: 500}" @before-leave="beforeLeave">
-    <div class="archive">
-      <div class="icon">
-        <i class="button_icon icon-archive"></i>
-      </div>
-      <div class="archive_div">
+  <div class="archive">
+    <transition name="router">
+      <div class="archive_div" v-show="router_show === 'archive'">
         <ul class="archive_ul" v-for = "ul_item in archive_name">
           <li class="year">
             <div class="year_circle">
@@ -28,8 +25,8 @@
           </li>
         </ul>
       </div>
-    </div>
-  </transition>
+    </transition>
+  </div>
 
 </template>
 
@@ -44,16 +41,12 @@
     computed: {
       ...mapGetters([
         "archive_name",
-        "archive"
+        "archive",
       ]),
     },
 
     methods: {
-      beforeLeave(el){
-        let height = el.clientHeight;
-        
-      },
-    }
+    },
 
   }
 </script>
@@ -61,23 +54,14 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable.styl"
 
+
   .archive
-    position: relative
-    padding: 1.5rem 3rem 3rem 3rem
-    box-shadow: $box-shadow-left
-    transform: translateY(4.2rem)
-    transition: height 500ms
-    .icon
-      position: absolute
-      top: -4.2rem
-      left: 0
-      transform: translateX(-50%)
-      i
-        margin: 0
     .archive_div
+      padding-top: 3rem
+      padding-bottom: 1.5rem
       .archive_ul
         position: relative
-        margin-bottom: 3.5rem
+        margin-top: 3.5rem
         &:before
           content: ""
           position: absolute
@@ -146,5 +130,7 @@
               max-width: 26.5rem
               font-size: 1.5rem
               line-height: 1.8rem
+      .archive_ul:nth-of-type(1)
+        margin-top: 0
 
 </style>

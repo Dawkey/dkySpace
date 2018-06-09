@@ -35,3 +35,21 @@ i{
     background: $color-3-o
     color: $color-black
     font-size: 2.1rem
+
+.router-class
+  position: relative
+  z-index: 10
+  >div
+    background: $color-2
+    margin-top: 4.5rem
+    padding: 1.5rem 3rem 3rem 3rem
+    box-shadow: $box-shadow-left
+
+.router-enter-active
+  transition: all 300ms
+.router-enter
+  transform: translateY(2rem)
+  opacity: 0
+.router-enter-to
+  transform: translateX(0rem)
+  opacity: 1

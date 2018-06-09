@@ -1,3 +1,4 @@
+export const router_show = (state) => state.router_show;
 export const data_ready = (state) => state.data_ready;
 export const main = (state) => state.main;
 export const tag_name = (state) => state.tag_name;

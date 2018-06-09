@@ -5,7 +5,8 @@ export const common_data = {
 
   computed: {
     ...mapGetters([
-      "data_ready"
+      "data_ready",
+      "router_show"
     ]),
   },
 

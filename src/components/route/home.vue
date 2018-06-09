@@ -1,37 +1,37 @@
 <template>
   <div class="home">
-
-    <ul class="home_ul">
-      <li v-for = "item in main">
-        <a class="home_a">
-          <div class="head">
-            <div class="title">
-              {{item.title}}
-            </div>
-            <div class="date">
-              <i class="icon-date"></i>
-              {{item.date}}
-            </div>
-          </div>
-          <div class="body">
-            <div class="tag_classify">
-              <div class="tag">
-                <i class="icon-tag"></i>
-                {{item.tag}}
+    <transition name="router">
+      <ul class="home_ul" v-show="router_show === 'home'">
+        <li v-for = "item in main">
+          <a class="home_a">
+            <div class="head">
+              <div class="title">
+                {{item.title}}
               </div>
-              <div class="classify">
-                <i class="icon-classify"></i>
-                {{item.classify}}
+              <div class="date">
+                <i class="icon-date"></i>
+                {{item.date}}
               </div>
             </div>
-            <div class="description">
-              <p v-html = "item.description"></p>
+            <div class="body">
+              <div class="tag_classify">
+                <div class="tag">
+                  <i class="icon-tag"></i>
+                  {{item.tag}}
+                </div>
+                <div class="classify">
+                  <i class="icon-classify"></i>
+                  {{item.classify}}
+                </div>
+              </div>
+              <div class="description">
+                <p v-html = "item.description"></p>
+              </div>
             </div>
-          </div>
-        </a>
-      </li>
-    </ul>
-
+          </a>
+        </li>
+      </ul>
+    </transition>
   </div>
 </template>
 
@@ -56,7 +56,7 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable.styl"
 
-  .home    
+  .home
     .home_ul
       i
         color: $color-grey
@@ -130,6 +130,8 @@
                 -webkit-line-clamp: 2;
                 overflow: hidden;
                 text-overflow: ellipsis
+      >li:nth-of-type(1)
+        margin-top: 0
 
 
   @media (max-width: $max-width-2)
