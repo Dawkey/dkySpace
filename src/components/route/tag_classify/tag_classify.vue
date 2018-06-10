@@ -2,7 +2,7 @@
   <div class="prop">
     <transition name="router">
       <div class="prop_div" v-show="router_show === component_name">
-        <ul class="prop_names">
+        <ul class="prop_names" :class="{small_size: component_name === 'classify'}">
           <li
             v-for = "item in prop_name"
             @click = "prop_name_click(item)"
@@ -59,7 +59,6 @@
     mixins: [common_data],
 
     created(){
-      console.log("wwk");
       let name = this.component_name;
       this.name = name === "tag" ? "html" : "编程";
     },
@@ -109,6 +108,8 @@
         flex-wrap: wrap
         font-size: 3rem
         color: $color-grey
+        &.small_size
+          font-size: 2.8rem
         >li
           display: flex
           position: relative

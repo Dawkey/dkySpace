@@ -4,9 +4,6 @@
       <router-link tag="li" to="/update" class="button_icon update">
         <i class="icon-update"></i>
       </router-link>
-      <router-link tag="li" to="/diary" class="button_icon diary">
-        <i class="icon-diary"></i>
-      </router-link>
       <div class="button_icon login">
         <i class="icon-login"></i>
       </div>
@@ -40,8 +37,12 @@
       align-items: center
       background: $color-2
       .button_icon
-        margin-top: 1.5rem
+        margin-top: 2rem
         font-size: 2.2rem
+        &.router-link-active
+          background: $color-3-o
+          color: $color-black
+          font-size: 2.3rem
         &:hover
           font-size: 2.3rem
     .right_bottom

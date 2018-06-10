@@ -1,4 +1,8 @@
 export const set_router_show = "set_router_show";
+
+export const set_talk_word = "set_talk_word";
+export const set_talk_flag = "set_talk_flag";
+
 export const set_data_ready = "set_data_ready";
 export const set_main = "set_main";
 export const set_tag_name = "set_tag_name";

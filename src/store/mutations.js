@@ -5,6 +5,13 @@ const mutations = {
     state.router_show = router_show;
   },
 
+  [types.set_talk_word](state,talk_word){
+    state.talk_word = talk_word;
+  },
+  [types.set_talk_flag](state,talk_flag){
+    state.talk_flag = talk_flag;
+  },
+
   [types.set_data_ready](state,data_ready){
     state.data_ready = data_ready;
   },

@@ -1,0 +1,202 @@
+<template>
+  <div class="mayuri">
+    <div class="mayuri-img" @click="talk">
+      <div class="expression" :class="{start_talk: !talk_done}">
+      </div>
+    </div>
+    <transition name="talk">
+      <div class="talk" v-show="talk_show">
+        <div class="talk-box">
+          <span class="talk-word">
+            <span ref="talk_span">
+            </span>
+            <i :class="{star: talk_done}">|</i>
+          </span>
+        </div>
+      </div>
+    </transition>
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+  import type from "common/js/type.js";
+  import {mapGetters,mapMutations} from "vuex";
+  export default {
+    name: "Mayuri",
+
+    data(){
+      return{
+        talk_done: false,//文字是否输出完成的flag
+        talk_show: false,
+        talk_show_timer: null
+      }
+    },
+
+    computed: {
+      ...mapGetters([
+        "talk_word",
+        "talk_flag"
+      ]),
+    },
+
+    methods: {
+
+      ...mapMutations([
+        "set_talk_word",
+        "set_talk_flag"
+      ]),
+
+      talk(){
+
+      },
+
+      //开始打字talk的函数
+      start_type(){
+
+        clearTimeout(this.talk_show_timer);
+        this.talk_show = true;
+        this.talk_done = false;
+
+        let el = this.$refs.talk_span;
+        el.innerHTML = "";
+        let word = this.talk_word;
+        //把vuex上的$store对象传给type函数,type函数会根据$store的状态有相应变化.
+        let $store = this.$store;
+        let promise = type(el,word,$store);
+
+        //type返回的是`then`串起来的一长串promise链.
+        //如果最后一个promise resolve完成,则把talk_done设为true,以告知组件
+        //  文字全部输出完成;
+        //如果promise链在执行过程中,因我们前面传给它的 `$store` 发生变化(这
+        //  个变化是,vuex 中的talk_flag状态值由true变为false)而出现 reject,
+        //  则我们跳出整个promise链,并把talk_flag重新设为true,以让我们后面
+        //  创建的新promise链能顺利执行.
+        promise
+          .then(()=>{
+            this.talk_done = true;
+            this.talk_show_timer = setTimeout(()=>{
+              this.talk_show = false;
+            },5000);
+          })
+          .catch((err)=>{
+            if(err === "talk_is_break"){
+              this.set_talk_flag(true);
+            }else{
+              console.log("Type程序出现错误,原因如下:\n");
+              console.log(err);
+            }
+          });
+      }
+
+    },
+
+    watch: {
+      talk_word(){
+        if(this.talk_flag === false){
+          return;
+        }
+
+        if(this.talk_flag === "first"){
+          this.set_talk_flag(true);
+          return;
+        }
+
+        if(this.talk_done === true){
+          this.start_type();
+          return;
+        }
+        this.set_talk_flag(false);
+      },
+
+      talk_flag(){
+        let flag = this.talk_flag;
+        if(flag === true){
+          this.start_type();
+        }
+      }
+    }
+  }
+</script>
+
+<style scoped lang="stylus" rel="stylesheet/stylus">
+  @import "~common/stylus/variable.styl"
+  .mayuri
+    .mayuri-img
+      width: 15rem
+      height: 15rem
+      border-radius: 50%
+      background-image: url(/static/icon-img/a.jpg);
+      background-size: cover
+      background-repeat: no-repeat
+      box-shadow: 0 0 1rem 0 #000
+      cursor: pointer
+      .expression
+        width: 15rem
+        height: 15rem
+        background-image: url(/static/icon-img/a-p-1.png);
+        background-size: cover
+        background-repeat: no-repeat
+        &.start_talk
+          animation: talk 1.2s steps(1) infinite;
+    .talk
+      position: fixed
+      display: flex
+      flex-direction: column
+      padding: 0.1rem 0.5rem
+      top: 8rem
+      left: 26rem
+      color: $color-2
+      background: $color-3
+      border-radius: 0.3rem
+      &:before
+        content: ""
+        position: absolute
+        width: 5rem
+        height: 4.5rem
+        top: 2.3rem
+        left: -2.7rem
+        border-radius: 0 0 1000% 0 / 0 0 1000% 0
+        box-shadow: 0.1rem 0.1rem 0.1rem -0.1rem $color-3
+      .talk-box
+        display: flex
+        max-width: 30rem
+        .talk-word
+          overflow: hidden
+          >span
+            font-family: monospace
+            letter-spacing: 0.1rem
+            font-size: 1.4rem
+            line-height: 2.2rem
+            word-wrap: break-word
+            word-break: break-all
+          >i
+            display: inline-block
+            font-size: 1.4rem
+            line-height: 2.2rem
+            &.star
+              animation: cursor_star 1.2s steps(1) infinite
+    .talk-enter-active
+      transition: opacity 500ms
+    .talk-enter
+      opacity: 0
+    .talk-enter-to
+      opacity: 1
+  @keyframes cursor_star
+    50%
+      color: $color-3
+  @keyframes talk
+    0%
+      background-image: url(/static/icon-img/a-p-2.png)
+    20%
+      background-image: url(/static/icon-img/a-p-3.png)
+    40%
+      background-image: url(/static/icon-img/a-p-2.png)
+    50%
+      background-image: url(/static/icon-img/a-p-1.png)
+    60%
+      background-image: url(/static/icon-img/a-p-2.png)
+    80%
+      background-image: url(/static/icon-img/a-p-3.png)
+    100%
+      background-image: url(/static/icon-img/a-p-2.png)
+</style>

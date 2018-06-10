@@ -1,6 +1,10 @@
 const state = {
   router_show: false,
 
+  talk_word: "",   //需要输出的文字
+  talk_flag: "first", //是否继续输出文字的flag,用于处理在输出过程中
+                      //talk_word发生变化时的情况
+
   data_ready: false,  //数据是否获取及处理完毕的flag
   main: [],           //主页(home)数组
   tag_name: [],       //标签名数组

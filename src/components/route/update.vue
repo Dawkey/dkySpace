@@ -1,24 +1,26 @@
 <template>
   <div class="update">
-    <div class="update_div">
-      <ul class="update_ul">
-        <li class="update_li" v-for = "item in update">
-          <div class="head">
-            <div class="version">
-              <div class="version_circle">
+    <transition name="router">
+      <div class="update_div" v-show="router_show === 'update'">
+        <ul class="update_ul">
+          <li class="update_li" v-for = "item in update">
+            <div class="head">
+              <div class="version">
+                <div class="version_circle">
+                </div>
+                {{item.version}}
               </div>
-              {{item.version}}
+              <div class="date">
+                <i class="icon-date"></i>
+                {{item.date}}
+              </div>
             </div>
-            <div class="date">
-              <i class="icon-date"></i>
-              {{item.date}}
-            </div>
-          </div>
-          <ul class="content" v-html = "item.content">
-          </ul>
-        </li>
-      </ul>
-    </div>
+            <ul class="content" v-html = "item.content">
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -32,7 +34,8 @@
     computed: {
 
       ...mapGetters([
-        "update"
+        "update",
+        "router_show"
       ]),
 
     },

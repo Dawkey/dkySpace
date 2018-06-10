@@ -2,6 +2,7 @@
   <transition name="icon">
     <div class="middle_icon button_icon"
       v-show = "router_show != false && router_show != 'home'"
+      :class="{update: router_show === 'update'}"
     >
       <i :class="icon_class"></i>
     </div>
@@ -40,6 +41,8 @@
       background: $color-3-o
       color: $color-black
       font-size: 2.1rem
+      &.update
+        font-size: 2.3rem
   .icon-enter-active
     transition: all 300ms
   .icon-enter

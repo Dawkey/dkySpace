@@ -10,7 +10,6 @@ const Archive = () => import("components/route/archive.vue");
 const AboutMe = () => import("components/route/about_me.vue");
 
 const Update = () => import("components/route/update.vue");
-const Diary = () => import("components/route/diary.vue");
 
 const router = new Router({
 
@@ -57,10 +56,6 @@ const router = new Router({
       component: Update
     },
 
-    {
-      path: "/diary",
-      component: Diary
-    },
   ]
 
 });
