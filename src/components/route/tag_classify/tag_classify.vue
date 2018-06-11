@@ -1,7 +1,7 @@
 <template>
   <div class="prop">
     <transition name="router">
-      <div class="prop_div" v-show="router_show === component_name">
+      <div class="prop_div" v-show="router_show === component_name && data_ready">
         <ul class="prop_names" :class="{small_size: component_name === 'classify'}">
           <li
             v-for = "item in prop_name"

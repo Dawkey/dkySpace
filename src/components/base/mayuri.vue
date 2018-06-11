@@ -1,7 +1,13 @@
 <template>
   <div class="mayuri">
-    <div class="mayuri-img" @click="talk">
-      <div class="expression" :class="{start_talk: !talk_done}">
+    <div class="mayuri-img" @click="mayuri_click">
+      <div class="expression"
+        :class="[
+          {start_talk: !talk_done},
+          {end_talk: talk_done},
+          {mouse_open: mouse_open_flag},
+        ]"
+      >
       </div>
     </div>
     <transition name="talk">
@@ -20,15 +26,18 @@
 
 <script type="text/ecmascript-6">
   import type from "common/js/type.js";
+  import {get_user} from "common/js/localStorage.js";
   import {mapGetters,mapMutations} from "vuex";
   export default {
     name: "Mayuri",
 
     data(){
       return{
-        talk_done: false,//文字是否输出完成的flag
+        talk_done: true,//文字是否输出完成的flag
         talk_show: false,
-        talk_show_timer: null
+        talk_show_timer: null,
+
+        mouse_open_flag: false,
       }
     },
 
@@ -39,6 +48,10 @@
       ]),
     },
 
+    created(){
+      // console.log(get_user());
+    },
+
     methods: {
 
       ...mapMutations([
@@ -46,19 +59,36 @@
         "set_talk_flag"
       ]),
 
-      talk(){
-
+      mayuri_click(){
+        if(this.talk_done === false){
+          return;
+        }
+        if(this.mouse_open_flag === true){
+          return;
+        }
+        this.mouse_open_flag = true;
+        setTimeout(()=>{
+          this.mouse_open_flag = false;
+        },700);
       },
 
       //开始打字talk的函数
       start_type(){
 
         clearTimeout(this.talk_show_timer);
+
+        //在文本全部输出完成后,元素还包含着文本,新的一轮type时,先将其清空,
+        //  避免造成闪烁
+        //但是在文本没有输出完成,这时文本是动态运动的,如果我们这时进入新的
+        //  一轮type,也进行清空操作,反而会造成闪烁,故加一个判断.
+        if(this.talk_done === true){
+          this.$refs.talk_span.innerHTML = "";
+        }
+
         this.talk_show = true;
         this.talk_done = false;
 
         let el = this.$refs.talk_span;
-        el.innerHTML = "";
         let word = this.talk_word;
         //把vuex上的$store对象传给type函数,type函数会根据$store的状态有相应变化.
         let $store = this.$store;
@@ -68,7 +98,7 @@
         //如果最后一个promise resolve完成,则把talk_done设为true,以告知组件
         //  文字全部输出完成;
         //如果promise链在执行过程中,因我们前面传给它的 `$store` 发生变化(这
-        //  个变化是,vuex 中的talk_flag状态值由true变为false)而出现 reject,
+        //  个变化是 vuex 中的talk_flag状态值由true变为false)而出现 reject,
         //  则我们跳出整个promise链,并把talk_flag重新设为true,以让我们后面
         //  创建的新promise链能顺利执行.
         promise
@@ -92,6 +122,7 @@
 
     watch: {
       talk_word(){
+
         if(this.talk_flag === false){
           return;
         }
@@ -113,8 +144,19 @@
         if(flag === true){
           this.start_type();
         }
+      },
+
+      talk_done(){
+        if(this.talk_done === true){
+          if(this.talk_flag === false){
+            this.set_talk_flag(true);
+          }
+        }
       }
+
     }
+
+
   }
 </script>
 
@@ -136,8 +178,12 @@
         background-image: url(/static/icon-img/a-p-1.png);
         background-size: cover
         background-repeat: no-repeat
+        &.mouse_open
+          background-image: url(/static/icon-img/a-p-3.png);
+        &.end_talk
+          animation: talk 150ms steps(1) 1;
         &.start_talk
-          animation: talk 1.2s steps(1) infinite;
+          animation: talk 1.5s steps(1) infinite;
     .talk
       position: fixed
       display: flex
@@ -199,4 +245,5 @@
       background-image: url(/static/icon-img/a-p-3.png)
     100%
       background-image: url(/static/icon-img/a-p-2.png)
+
 </style>

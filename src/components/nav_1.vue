@@ -36,7 +36,7 @@
       ]),
 
       nav_talk(item){
-        this.set_talk_word(`${item}正在跳转至...`);
+        this.set_talk_word(`${item}~`);
       }
 
     }

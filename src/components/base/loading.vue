@@ -1,5 +1,5 @@
 <template>
-  <div class="loading" v-show = "router_show === false">
+  <div class="loading" v-show = "!show_flag">
     <div class="loading-1">
     </div>
     <div class="loading-2">
@@ -12,14 +12,13 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters} from "vuex";
+  import {common_show_flag} from "common/js/mixin.js";
   export default {
+
     name: "Loading",
-    computed: {
-      ...mapGetters([
-        "router_show"
-      ]),
-    }
+
+    mixins: [common_show_flag],
+
   }
 </script>
 

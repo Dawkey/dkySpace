@@ -2,7 +2,7 @@
 
   <div class="archive">
     <transition name="router">
-      <div class="archive_div" v-show="router_show === 'archive'">
+      <div class="archive_div" v-show="router_show === 'archive' && data_ready">
         <ul class="archive_ul" v-for = "ul_item in archive_name">
           <li class="year">
             <div class="year_circle">

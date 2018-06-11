@@ -1,7 +1,7 @@
 <template>
   <transition name="icon">
     <div class="middle_icon button_icon"
-      v-show = "router_show != false && router_show != 'home'"
+      v-show = "router_show != 'home' && show_flag"
       :class="{update: router_show === 'update'}"
     >
       <i :class="icon_class"></i>
@@ -10,13 +10,13 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters} from "vuex";
+  import {common_show_flag} from "common/js/mixin.js";
   export default {
     name: "MiddleIcon",
+
+    mixins: [common_show_flag],
+
     computed: {
-      ...mapGetters([
-        "router_show",
-      ]),
 
       icon_class(){
         let name = this.router_show;
@@ -24,7 +24,8 @@
           return "false";
         }
         return `icon-${name}`;
-      }
+      },
+
     }
   }
 </script>
@@ -41,6 +42,7 @@
       background: $color-3-o
       color: $color-black
       font-size: 2.1rem
+      cursor: default
       &.update
         font-size: 2.3rem
   .icon-enter-active

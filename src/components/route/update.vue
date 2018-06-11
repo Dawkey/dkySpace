@@ -1,7 +1,7 @@
 <template>
   <div class="update">
     <transition name="router">
-      <div class="update_div" v-show="router_show === 'update'">
+      <div class="update_div" v-show="router_show === 'update' && update.length != 0">
         <ul class="update_ul">
           <li class="update_li" v-for = "item in update">
             <div class="head">

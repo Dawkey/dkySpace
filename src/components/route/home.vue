@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <transition name="router">
-      <ul class="home_ul" v-show="router_show === 'home'">
+      <ul class="home_ul" v-show="router_show === 'home' && data_ready">
         <li v-for = "item in main">
           <a class="home_a">
             <div class="head">
