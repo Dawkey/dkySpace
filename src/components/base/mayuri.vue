@@ -163,6 +163,10 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable.styl"
   .mayuri
+    position: fixed
+    top: 7.5rem
+    left: calc(((100% - 88rem)/2 - 15rem)/2)
+    z-index: 12
     .mayuri-img
       width: 15rem
       height: 15rem

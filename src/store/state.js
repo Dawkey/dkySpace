@@ -1,7 +1,7 @@
 const state = {
   router_show: false,
 
-  talk_word: "",   //需要输出的文字
+  talk_word: "",      //需要输出的文字
   talk_flag: "first", //是否继续输出文字的flag,用于处理在输出过程中
                       //talk_word发生变化时的情况
 
@@ -15,6 +15,7 @@ const state = {
   archive: {},        //类上(归档)
   update: [],         //博客更新日志数据
   diary: [],          //日记数据
+  _id: 0              //记录跳转到的文章_id
 }
 
 export default state;

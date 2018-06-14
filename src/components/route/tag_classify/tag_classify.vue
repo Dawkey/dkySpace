@@ -22,7 +22,7 @@
           <li class="nothing_li" v-if = "data_ready && prop[name].length === 0">
             Nothing~
           </li>
-          <li v-for = "item in prop[name]">
+          <li v-for = "item in prop[name]" @click="to_article(item._id)">
             <div class="title">
               {{item.title}}
             </div>
@@ -159,12 +159,14 @@
           &:hover
             color: $color-black
             .line
+              margin: 0 0.5rem
               box-shadow: 0 0.5rem 0.5rem -0.5rem $color-black
           .title
             flex-shrink: 0
           .line
             width: 100%
-            margin: 0 0.7rem
+            margin: 0 1.5rem
+            transition: margin 300ms
             transform: translateY(-51%)
             box-shadow: $box-shadow-bottom
           .date

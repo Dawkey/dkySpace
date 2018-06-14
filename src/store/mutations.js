@@ -42,6 +42,9 @@ const mutations = {
   [types.set_diary](state,diary){
     state.diary = diary;
   },
+  [types.set__id](state,_id){
+    state._id = _id;
+  },
 }
 
 export default mutations;

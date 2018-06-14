@@ -25,7 +25,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {get_update} from "api/api.js";
+  import {get_update} from "api/get.js";
   import {mapGetters,mapMutations} from "vuex";
   export default {
 
@@ -55,7 +55,11 @@
           return;
         }
         get_update().then((res)=>{
-          let data = res.data.view;
+          if(res.data.code != 0){
+            console.log("服务器端获取数据出现错误,Dawkey!");
+            return;
+          }
+          let data = res.data.data.view;
           this.set_update(data);
         });
       },

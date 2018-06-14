@@ -11,16 +11,25 @@ const AboutMe = () => import("components/route/about_me.vue");
 
 const Update = () => import("components/route/update.vue");
 
+const Article = () => import("components/route/article.vue");
+
+const Login = () => import("components/route/login.vue");
+
+const Charge = () => import("components/charge/charge.vue");
+
+let scroll_timer = null;
+
 const router = new Router({
 
   mode: "history",
 
-  scrollBehavior(to,from,savedPosition){
-    if(savedPosition){
-      return savedPosition;
-    }else{
-      return {x: 0, y: 0};
-    }
+  scrollBehavior (to, from, savedPosition) {
+    return new Promise((resolve)=>{
+      clearTimeout(scroll_timer);
+      scroll_timer = setTimeout(()=>{
+        resolve({ x: 0, y: 0 });
+      },100);
+    })
   },
 
   routes: [
@@ -28,32 +37,56 @@ const router = new Router({
 
     {
       path: "/home",
+      name: "home",
       component: Home
     },
 
     {
       path: "/tag",
+      name: "tag",
       component: Tag,
     },
 
     {
       path: "/classify",
+      name: "classify",
       component: Classify
     },
 
     {
       path: "/archive",
+      name: "archive",
       component: Archive
     },
 
     {
       path: "/about_me",
+      name: "about_me",
       component: AboutMe
     },
 
     {
       path: "/update",
+      name: "update",
       component: Update
+    },
+
+    {
+      path: "/article/:id",
+      name: "article",
+      component: Article
+    },
+
+    {
+      path: "/login",
+      name: "login",
+      component: Login
+    },
+
+    {
+      path: "/charge",
+      name: "charge",
+      component: Charge
     },
 
   ]
@@ -80,9 +113,10 @@ router.beforeEach((to,from,next)=>{
 
   let name = (to.path).slice(1);
 
+
   timer = setTimeout(()=>{
     commit_router_show(name);
-  },800);
+  },500);
 
   next();
 });

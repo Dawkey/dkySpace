@@ -9,7 +9,7 @@
             </div>
             {{ul_item}}
           </li>
-          <li class="archive_li" v-for = "li_item in archive[ul_item]">
+          <li class="archive_li" v-for = "li_item in archive[ul_item]" @click="to_article(li_item._id)">
             <div class="archive_li_hover">
               <div class="date">
                 <div class="date_circle">
@@ -45,8 +45,6 @@
       ]),
     },
 
-    methods: {
-    },
 
   }
 </script>
@@ -105,6 +103,8 @@
             &:hover
               color: $color-black
               .line
+                margin: 0 0.5rem
+                width: 36rem
                 box-shadow: 0 0.5rem 0.5rem -0.5rem $color-black
               .date
                 .date_circle
@@ -122,9 +122,10 @@
                 background: $color-1
                 box-shadow: $box-shadow
             .line
-              margin: 0 0.7rem
-              width: 36rem
+              margin: 0 1.5rem
+              width: 34rem
               transform: translateY(-51%)
+              transition: width 300ms , margin 300ms
               box-shadow: $box-shadow-bottom
             .title
               max-width: 26.5rem

@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <loading></loading>
-    <nav1></nav1>
+    <mayuri></mayuri>
+    <left-icon></left-icon>
     <nav2></nav2>
     <div class="body">
       <middle-icon></middle-icon>
@@ -16,15 +17,16 @@
 
 <script type="text/ecmascript-6">
   import Loading from "components/base/loading.vue";
-  import Nav1 from "components/nav_1.vue";
+  import Mayuri from "./components/base/mayuri.vue";
   import Nav2 from "components/nav_2.vue";
+  import LeftIcon from "components/left_icon.vue";
   import MiddleIcon from "components/middle_icon.vue";
   import RightIcon from "components/right_icon.vue";
   import Footer from "components/footer.vue";
 
   export default {
     name: "App",
-    components: {Nav1,Nav2,MiddleIcon,RightIcon,Footer,Loading},
+    components: {Loading,Mayuri,Nav2,LeftIcon,MiddleIcon,RightIcon,Footer,},
   }
 </script>
 

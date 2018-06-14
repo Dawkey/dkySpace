@@ -4,9 +4,9 @@
       <router-link tag="li" to="/update" class="button_icon update">
         <i class="icon-update"></i>
       </router-link>
-      <div class="button_icon login">
+      <router-link tag="li" to="/login" class="button_icon login">
         <i class="icon-login"></i>
-      </div>
+      </router-link>
     </ul>
     <div class="right_bottom">
       <div class="button_icon top">

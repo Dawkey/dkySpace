@@ -1,4 +1,4 @@
-import {get_main} from "api/api.js";
+import {get_main} from "api/get.js";
 import {mapActions,mapGetters} from "vuex";
 
 //home,tag,classify,archive共享的数据
@@ -19,44 +19,22 @@ export const common_data = {
       if(this.data_ready){
         return;
       }
-      this.data_handle(res.data);
+      if(res.data.code != 0){
+        console.log("服务器端获取数据出现错误,Dawkey!");
+        return;
+      }
+      this.data_handle(res.data.data);
     });
   },
 
   methods: {
+
     ...mapActions([
       "data_handle"
     ]),
-  }
 
-}
-
-//middle_icon loading组件共享的是否显示数据
-export const common_show_flag = {
-
-  computed: {
-
-    ...mapGetters([
-      "router_show",
-      "data_ready",
-      "update"
-    ]),
-
-    show_flag(){
-      let router = this.router_show;
-      let array = ["home","tag","classify","archive"];
-      if(router === false){
-        return false;
-      }
-      if(array.includes(router) && this.data_ready){
-        return true;
-      }
-      if(router === "update" && this.update.length != 0){
-        return true;
-      }
-      if(router === "about_me"){
-        return true;
-      }
+    to_article(_id){
+      this.$router.push(`/article/${_id}`);
     }
 
   }

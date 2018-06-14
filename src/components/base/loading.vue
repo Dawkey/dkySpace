@@ -12,12 +12,18 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {common_show_flag} from "common/js/mixin.js";
+  import {mapGetters} from "vuex";
   export default {
 
     name: "Loading",
 
-    mixins: [common_show_flag],
+    computed: {
+      ...mapGetters([
+        "show_flag"
+      ]),
+    }
+
+    // mixins: [common_show_flag],
 
   }
 </script>
