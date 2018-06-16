@@ -1,55 +1,57 @@
 <template>
   <div class="charge">
-    <div class="charge_div">
-      <div class="article_charge">
-        <ul>
-          <div class="button_icon">
-            <i class="icon-archive"></i>
-          </div>
-          <div class="button_icon write">
-            <i class="icon-write"></i>
-          </div>
-          <li class="ul_head">
-            <div class="title">标题</div>
-            <div class="classify">分类<i class="icon-add"></i></div>
-            <div class="tag">标签<i class="icon-add"></i></div>
-            <div class="date">日期</div>
-          </li>
-          <li v-for = "item in main">
-            <div class="title">{{item.title}}</div>
-            <div class="classify">{{item.classify}}</div>
-            <div class="tag">{{item.tag}}</div>
-            <div class="date">{{item.date}}</div>
-            <div class="icon_div">
-              <i class="icon-write"></i>
-              <i class="icon-delete"></i>
+    <transition name="router">
+      <div class="charge_div" v-show="show_flag">
+        <div class="article_charge">
+          <ul>
+            <div class="button_icon">
+              <i class="icon-archive"></i>
             </div>
-          </li>
-        </ul>
-      </div>
-      <div class="update_charge">
-        <ul>
-          <div class="button_icon">
-            <i class="icon-update"></i>
-          </div>
-          <div class="button_icon write">
-            <i class="icon-write"></i>
-          </div>
-          <li class="ul_head">
-            <div class="version">版本号</div>
-            <div class="date">日期</div>
-          </li>
-          <li v-for = "item in update">
-            <div class="version">{{item.version}}</div>
-            <div class="date">{{item.date}}</div>
-            <div class="icon_div">
-              <i class="icon-write"></i>
-              <i class="icon-delete"></i>
+            <div class="write_icon">
+              <i class="icon-write" @click="to_write"></i>
             </div>
-          </li>
-        </ul>
+            <li class="ul_head">
+              <div class="title">标题</div>
+              <div class="classify">分类<i class="icon-add"></i></div>
+              <div class="tag">标签<i class="icon-add"></i></div>
+              <div class="date">日期</div>
+            </li>
+            <li v-for = "item in main">
+              <div class="title">{{item.title}}</div>
+              <div class="classify">{{item.classify}}</div>
+              <div class="tag">{{item.tag}}</div>
+              <div class="date">{{item.date}}</div>
+              <div class="icon_div">
+                <i class="icon-write"></i>
+                <i class="icon-delete"></i>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="update_charge">
+          <ul>
+            <div class="button_icon">
+              <i class="icon-update"></i>
+            </div>
+            <div class="write_icon">
+              <i class="icon-write"></i>
+            </div>
+            <li class="ul_head">
+              <div class="version">版本号</div>
+              <div class="date">日期</div>
+            </li>
+            <li v-for = "item in update">
+              <div class="version">{{item.version}}</div>
+              <div class="date">{{item.date}}</div>
+              <div class="icon_div">
+                <i class="icon-write"></i>
+                <i class="icon-delete"></i>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -66,17 +68,32 @@
     computed: {
       ...mapGetters([
         "main",
-        "update"
+        "update",
+        "router_show"
       ]),
+      show_flag(){
+        if(this.router_show === 'charge'
+          && this.main.length != 0
+          && this.update.length != 0
+        ){
+          this.set_loading_show(false);
+          return true;
+        }else{
+          return false;
+        }
+      },
     },
 
     created(){
+      this.set_login_flag(true);
       this.get_data();
     },
 
     methods: {
       ...mapMutations([
-        "set_update"
+        "set_update",
+        "set_login_flag",
+        "set_loading_show"
       ]),
 
       get_data(){
@@ -92,6 +109,10 @@
           this.set_update(data);
         });
       },
+
+      to_write(){
+        this.$router.push("/write");
+      }
     }
 
   }
@@ -115,7 +136,7 @@
         &:nth-of-type(2n)
           background: rgba(96,126,121,0.37)
         &:hover
-          background: rgba(96,126,121,0.6)
+          background: rgba(96,126,121,0.55)
         &.ul_head
           background: transparent
           color: $color-3
@@ -167,22 +188,19 @@
           width: 6.5rem
           height: 3rem
           top: 1.8rem
-          left: -1
-          background: $color-2
-        &.write
-          left: auto
-          right: 0
-          i
-            display: flex
-            align-items: center
-            justify-content: center
-            width: 3.5rem
-            height: 3.5rem
-            border-radius: 50%
-            cursor: pointer
-            &:hover
-              background: $color-3
-              color: $color-2
+          background: $color-1
+      .write_icon
+        position: absolute
+        top: -3.8rem
+        right: 0
+        &:before
+          content: ""
+          position: absolute
+          z-index: 10
+          width: 6.5rem
+          height: 3rem
+          top: 1.8rem
+          background: $color-1
     .article_charge
       padding: 2rem 2rem
       border-radius: 0.3rem

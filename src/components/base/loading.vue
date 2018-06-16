@@ -1,5 +1,5 @@
 <template>
-  <div class="loading" v-show = "!show_flag">
+  <div class="loading" v-show = "loading_show">
     <div class="loading-1">
     </div>
     <div class="loading-2">
@@ -19,7 +19,7 @@
 
     computed: {
       ...mapGetters([
-        "show_flag"
+        "loading_show"
       ]),
     }
 

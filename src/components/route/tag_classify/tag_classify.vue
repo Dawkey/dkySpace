@@ -1,7 +1,12 @@
 <template>
   <div class="prop">
+    <transition name="router_icon">
+      <div class="button_icon router_icon" v-show="show_flag">
+        <i :class="icon_name"></i>
+      </div>
+    </transition>
     <transition name="router">
-      <div class="prop_div" v-show="router_show === component_name && data_ready">
+      <div class="prop_div router_div" v-show="show_flag">
         <ul class="prop_names" :class="{small_size: component_name === 'classify'}">
           <li
             v-for = "item in prop_name"
@@ -86,6 +91,15 @@
         let height = (length * 35 - 15)*0.1;
         return `${height}rem`;
       },
+
+      show_flag(){
+        if(this.router_show === this.component_name && this.data_ready){
+          this.set_loading_show(false);
+          return true;
+        }else{
+          return false;
+        }
+      }
 
     },
 

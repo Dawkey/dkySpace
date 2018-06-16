@@ -1,7 +1,12 @@
 <template>
   <div class="update">
+    <transition name="router_icon">
+      <div class="button_icon router_icon" v-show="show_flag">
+        <i class="icon-update"></i>
+      </div>
+    </transition>
     <transition name="router">
-      <div class="update_div" v-show="router_show === 'update' && update.length != 0">
+      <div class="update_div router_div" v-show="show_flag">
         <ul class="update_ul">
           <li class="update_li" v-for = "item in update">
             <div class="head">
@@ -38,6 +43,15 @@
         "router_show"
       ]),
 
+      show_flag(){
+        if(this.router_show === 'update' && this.update.length != 0){
+          this.set_loading_show(false);
+          return true;
+        }else{
+          return false;
+        }
+      },
+
     },
 
     created(){
@@ -47,7 +61,8 @@
     methods: {
 
       ...mapMutations([
-        "set_update"
+        "set_update",
+        "set_loading_show"
       ]),
 
       get_data(){

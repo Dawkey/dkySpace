@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <transition name="router">
-      <ul class="home_ul" v-show="router_show === 'home' && data_ready">
+      <ul class="home_ul" v-show="show_flag">
         <li class="home_li"
           v-for = "item in main"
           @click="to_article(item._id)"
@@ -49,6 +49,14 @@
       ...mapGetters([
         "main"
       ]),
+      show_flag(){
+        if(this.router_show === "home" && this.data_ready){
+          this.set_loading_show(false);
+          return true;
+        }else{
+          return false;
+        }
+      }
     },
 
   }

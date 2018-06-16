@@ -1,5 +1,6 @@
 const state = {
   router_show: false,
+  loading_show: true,
 
   talk_word: "",      //需要输出的文字
   talk_flag: "first", //是否继续输出文字的flag,用于处理在输出过程中
@@ -15,7 +16,9 @@ const state = {
   archive: {},        //类上(归档)
   update: [],         //博客更新日志数据
   diary: [],          //日记数据
-  _id: 0              //记录跳转到的文章_id
+  _id: 0,              //记录跳转到的文章_id
+
+  login_flag: false
 }
 
 export default state;

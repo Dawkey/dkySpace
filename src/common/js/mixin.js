@@ -1,5 +1,5 @@
 import {get_main} from "api/get.js";
-import {mapActions,mapGetters} from "vuex";
+import {mapActions,mapMutations,mapGetters} from "vuex";
 
 //home,tag,classify,archive共享的数据
 export const common_data = {
@@ -28,7 +28,9 @@ export const common_data = {
   },
 
   methods: {
-
+    ...mapMutations([
+      "set_loading_show"
+    ]),
     ...mapActions([
       "data_handle"
     ]),

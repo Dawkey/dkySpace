@@ -1,12 +1,14 @@
 <template>
   <div class="right_icon">
     <ul class="right_top">
-      <router-link tag="li" to="/update" class="button_icon update">
-        <i class="icon-update"></i>
-      </router-link>
-      <router-link tag="li" to="/login" class="button_icon login">
+      <router-link tag="li" :to="login_to" class="button_icon login" :class="{out_login: login_flag}">
         <i class="icon-login"></i>
       </router-link>
+      <transition name="icon">
+        <router-link tag="li" to="/update" class="button_icon update" v-show="!login_flag">
+          <i class="icon-update"></i>
+        </router-link>
+      </transition>
     </ul>
     <div class="right_bottom">
       <div class="button_icon top">
@@ -17,8 +19,19 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import {mapGetters} from "vuex";
   export default {
     name: "RightIcon",
+    computed: {
+      ...mapGetters(["login_flag"]),
+      login_to(){
+        if(this.login_flag === false){
+          return "/login";
+        }else{
+          return "/home";
+        }
+      },
+    },
   }
 </script>
 
@@ -28,6 +41,7 @@
   .right_icon
     .right_top,.right_bottom
       position: fixed
+      z-index: 13
       right: calc(((100% - 88rem)/2 - 15rem)/2)
       width: 15rem
     .right_top
@@ -35,7 +49,7 @@
       display: flex
       flex-direction: column
       align-items: center
-      background: $color-2
+      background: transparent
       .button_icon
         margin-top: 2rem
         font-size: 2.2rem
@@ -45,9 +59,23 @@
           font-size: 2.3rem
         &:hover
           font-size: 2.3rem
+      .login
+        transition: transform 500ms
+        &.out_login
+          transform: rotateZ(-180deg)
+      .icon-leave-active
+        transition: transform 500ms
+      .icon-leave-to
+        transform: scale(0)
+      .icon-enter-active
+        transition: transform 500ms
+      .icon-enter
+        transform: scale(0)
+      .icon-enter-to
+        transform: scale(1)
     .right_bottom
       bottom: 7.5rem
       display: flex
       justify-content: center
-      background: $color-2
+      background: transparent
 </style>

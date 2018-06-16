@@ -4,6 +4,9 @@ const mutations = {
   [types.set_router_show](state,router_show){
     state.router_show = router_show;
   },
+  [types.set_loading_show](state,loading_show){
+    state.loading_show = loading_show;
+  },
 
   [types.set_talk_word](state,talk_word){
     state.talk_word = talk_word;
@@ -44,6 +47,10 @@ const mutations = {
   },
   [types.set__id](state,_id){
     state._id = _id;
+  },
+
+  [types.set_login_flag](state,login_flag){
+    state.login_flag = login_flag;
   },
 }
 

@@ -16,6 +16,7 @@ const Article = () => import("components/route/article.vue");
 const Login = () => import("components/route/login.vue");
 
 const Charge = () => import("components/charge/charge.vue");
+const Write = () => import("components/charge/write.vue");
 
 let scroll_timer = null;
 
@@ -89,6 +90,12 @@ const router = new Router({
       component: Charge
     },
 
+    {
+      path: "/write",
+      name: "write",
+      component: Write
+    },
+
   ]
 
 });
@@ -105,14 +112,40 @@ function commit_router_show(name){
   }
 }
 
+function commit_login_flag(boolean){
+  let store = router.app.$store;
+  if(store){
+    if(store.state.login_flag === boolean){
+      return;
+    }
+    store.commit("set_login_flag",boolean);
+  }
+}
+
+function commit_loading_show(boolean){
+  let store = router.app.$store;
+  if(store){
+    if(store.state.loading_show === boolean){
+      return;
+    }
+    store.commit("set_loading_show",boolean);
+  }
+}
+
 
 router.beforeEach((to,from,next)=>{
   clearTimeout(timer);
 
   commit_router_show(false);
+  commit_loading_show(true);
 
   let name = (to.path).slice(1);
 
+  if(name === "charge" || name === "write"){
+    commit_login_flag(true);
+  }else{
+    commit_login_flag(false);
+  }
 
   timer = setTimeout(()=>{
     commit_router_show(name);

@@ -1,7 +1,12 @@
 <template>
   <div class="login">
+    <transition name="router_icon">
+      <div class="button_icon router_icon" v-show="show_flag">
+        <i class="icon-login"></i>
+      </div>
+    </transition>
     <transition name="router">
-      <div class="login_div" v-show="router_show === 'login'">
+      <div class="login_div router_div" v-show="show_flag">
         <form>
           <div class="account">
             <label for="account">账号:</label>
@@ -26,19 +31,30 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters} from "vuex";
+  import {mapGetters,mapMutations} from "vuex";
   export default {
     name: "Login",
     computed: {
       ...mapGetters([
         "router_show",
       ]),
+      show_flag(){
+        if(this.router_show === 'login'){
+          this.set_loading_show(false);
+          return true;
+        }else{
+          return false;
+        }
+      },
     },
     methods: {
+      ...mapMutations([
+        "set_loading_show",
+      ]),
       to_charge(){
         this.$router.push("/charge");
       },
-    }
+    },
   }
 </script>
 

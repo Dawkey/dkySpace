@@ -1,20 +1,23 @@
 <template>
   <ul class="left_icon">
     <li v-for = "item in nav">
-      <router-link tag="div" class="button_icon"
-        :to = "`/${item}`"
-        :title = "item"
-        @click.native = "nav_talk(item)"
-      >
-        <i :class="`icon-${item}`"></i>
-      </router-link>
+      <transition name="icon">
+        <router-link tag="div" class="button_icon"
+          :to = "`/${item}`"
+          :title = "item"
+          v-show = "!login_flag"
+          @click.native = "nav_talk(item)"
+        >
+          <i :class="`icon-${item}`"></i>
+        </router-link>
+      </transition>
     </li>
   </ul>
 </template>
 
 <script type="text/ecmascript-6">
   import Mayuri from "components/base/mayuri.vue";
-  import {mapMutations} from "vuex";
+  import {mapGetters,mapMutations} from "vuex";
   export default {
     name: "LeftIcon",
 
@@ -24,6 +27,12 @@
       return{
         nav: ["home","tag","classify","archive","about_me"],
       }
+    },
+
+    computed: {
+      ...mapGetters([
+        "login_flag"
+      ]),
     },
 
     methods: {
@@ -61,7 +70,17 @@
           background: $color-3-o
           color: $color-black
           font-size: 2.1rem
+      .icon-leave-active
+        transition: transform 500ms
+      .icon-leave-to
+        transform: scale(0)
 
+      .icon-enter-active
+        transition: transform 500ms
+      .icon-enter
+        transform: scale(0)
+      .icon-enter-to
+        transform: scale(1)
 
   @media (max-width: $max-width-1)
     .left_icon

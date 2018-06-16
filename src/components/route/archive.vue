@@ -1,8 +1,13 @@
 <template>
 
   <div class="archive">
+    <transition name="router_icon">
+      <div class="button_icon  router_icon" v-show="show_flag">
+        <i class="icon-archive"></i>
+      </div>
+    </transition>
     <transition name="router">
-      <div class="archive_div" v-show="router_show === 'archive' && data_ready">
+      <div class="archive_div router_div" v-show="show_flag">
         <ul class="archive_ul" v-for = "ul_item in archive_name">
           <li class="year">
             <div class="year_circle">
@@ -43,6 +48,14 @@
         "archive_name",
         "archive",
       ]),
+      show_flag(){
+        if(this.router_show === 'archive' && this.data_ready){
+          this.set_loading_show(false);
+          return true;
+        }else{
+          return false;
+        }
+      }
     },
 
 
@@ -55,6 +68,7 @@
 
   .archive
     .archive_div
+      position: relative
       padding-top: 3rem
       padding-bottom: 1.5rem
       .archive_ul

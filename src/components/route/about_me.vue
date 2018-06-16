@@ -1,7 +1,12 @@
 <template>
   <div class="about_me">
+    <transition name="router_icon">
+      <div class="button_icon router_icon" v-show="show_flag">
+        <i class="icon-about_me"></i>
+      </div>
+    </transition>
     <transition name="router">
-      <div class="about_me_div" v-show="router_show === 'about_me'">
+      <div class="about_me_div router_div" v-show="show_flag">
         <div class="github">
           <i class="icon-github"></i>
           <a class= "follow" href="https://github.com/wwk321" target="_blank">
@@ -28,14 +33,27 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters} from "vuex";
+  import {mapGetters,mapMutations} from "vuex";
   export default {
     name: "AboutMe",
     computed: {
       ...mapGetters([
         "router_show",
       ]),
-    }
+      show_flag(){
+        if(this.router_show === "about_me"){
+          this.set_loading_show(false);
+          return true;
+        }else{
+          return false;
+        }
+      }
+    },
+    methods: {
+      ...mapMutations([
+        "set_loading_show"
+      ]),
+    },
   }
 </script>
 

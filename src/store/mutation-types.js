@@ -1,4 +1,5 @@
 export const set_router_show = "set_router_show";
+export const set_loading_show = "set_loading_show";
 
 export const set_talk_word = "set_talk_word";
 export const set_talk_flag = "set_talk_flag";
@@ -14,3 +15,5 @@ export const set_archive = "set_archive";
 export const set_update = "set_update";
 export const set_diary = "set_diary";
 export const set__id = "set__id";
+
+export const set_login_flag = "set_login_flag";

@@ -1,9 +1,9 @@
 <template>
   <div class="article">
     <transition name="router">
-      <div class="article_div"
+      <div class="article_div router_div"
         v-if="article != null"
-        v-show="router_show != false && router_show.slice(0,7) === 'article' && router_show.slice(8) === _id"
+        v-show="show_flag"
       >
         <div class="title">
           {{article.title}}
@@ -63,6 +63,17 @@
         "_id",
         "router_show",
       ]),
+      show_flag(){
+        if(this.router_show != false
+          && this.router_show.slice(0,7) === 'article'
+          && this.router_show.slice(8) === this._id
+        ){
+          this.set_loading_show(false);
+          return true;
+        }else{
+          return false;
+        }
+      }
     },
 
     created(){
@@ -73,7 +84,8 @@
     methods: {
 
       ...mapMutations([
-        "set__id"
+        "set__id",
+        "set_loading_show"
       ]),
 
       get_data(_id){
@@ -129,6 +141,7 @@
     .title
       font-size: 2.4rem
       font-weight: 800
+      height: 3.5rem
       line-height: 3.5rem
       text-align: center
       padding-bottom: 0.8rem
@@ -139,6 +152,7 @@
       margin-bottom: 2rem
       color: $color-grey
       .date
+        height: 2.5rem
         line-height: 2.5rem
         text-align: center
         font-size: 1.4rem
