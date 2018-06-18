@@ -48,8 +48,8 @@
       padding: 0.1rem 1rem
       min-height: calc(100vh - 14rem - 10.5rem)
       &.write
-        max-width: calc(100vw - 6rem)
-        margin: 15rem 3rem 0 3rem
+        max-width: 100vw
+        margin: 15rem 0 0 0
         padding: 0.1rem 0
         z-index: 12
 

@@ -125,6 +125,7 @@
     padding: 0
     box-shadow: none
     font-size: 1.4rem
+    // font-family: monospace
     ul
       position: relative
       li
