@@ -2,13 +2,42 @@
   <div class="charge">
     <transition name="router">
       <div class="charge_div" v-show="show_flag">
+        <div class="draft_charge">
+          <ul>
+            <div class="button_icon">
+              <i class="icon-draft"></i>
+            </div>
+            <div class="write_icon">
+              <i class="icon-write" @click="to_draft"></i>
+            </div>
+            <li class="ul_head">
+              <div class="title">标题</div>
+              <div class="classify">分类<i class="icon-add"></i></div>
+              <div class="tag">标签<i class="icon-add"></i></div>
+              <div class="date">日期</div>
+            </li>
+            <li class="empty_li" v-show = "draft_main.length === 0">
+              草稿箱里面还空空如也~
+            </li>
+            <li v-for = "item in draft_main">
+              <div class="title">{{item.title}}</div>
+              <div class="classify">{{item.classify}}</div>
+              <div class="tag">{{item.tag}}</div>
+              <div class="date">{{item.date}}</div>
+              <div class="icon_div">
+                <i class="icon-write" @click="edit_draft(item._id)"></i>
+                <i class="icon-delete" @click="delete_draft(item._id)"></i>
+              </div>
+            </li>
+          </ul>
+        </div>
         <div class="article_charge">
           <ul>
             <div class="button_icon">
               <i class="icon-archive"></i>
             </div>
             <div class="write_icon">
-              <i class="icon-write" @click="to_write"></i>
+              <i class="icon-write" @click="to_draft"></i>
             </div>
             <li class="ul_head">
               <div class="title">标题</div>
@@ -57,24 +86,33 @@
 
 <script type="text/ecmascript-6">
   import {get_update} from "api/get.js";
-  import {mapGetters,mapMutations} from "vuex";
-  import {common_data} from "common/js/mixin.js";
+  import {remove_draft} from "api/post.js";
+  import {mapGetters,mapMutations,mapActions} from "vuex";
+  import {common_data,common_draft} from "common/js/mixin.js";
   export default {
-
     name: "Charge",
 
-    mixins: [common_data],
+
+    mixins: [common_data,common_draft],
+
+
+    created(){
+      this.set_login_flag(true);
+      this.get_update_data();
+    },
+
 
     computed: {
+
       ...mapGetters([
-        "main",
         "update",
-        "router_show"
       ]),
+
       show_flag(){
         if(this.router_show === 'charge'
           && this.main.length != 0
           && this.update.length != 0
+          && this.draft_flag === true
         ){
           this.set_loading_show(false);
           return true;
@@ -82,21 +120,22 @@
           return false;
         }
       },
+
     },
 
-    created(){
-      this.set_login_flag(true);
-      this.get_data();
-    },
 
     methods: {
       ...mapMutations([
         "set_update",
         "set_login_flag",
-        "set_loading_show"
+        "set_loading_show",
       ]),
 
-      get_data(){
+      ...mapActions([
+        "add_talk_word"
+      ]),
+
+      get_update_data(){
         if(this.update.length != 0){
           return;
         }
@@ -110,11 +149,49 @@
         });
       },
 
-      to_write(){
-        this.$router.push("/write");
-      }
-    }
+      to_draft(){
+        this.$router.push(`/draft/${this.draft_id}`);
+      },
 
+      edit_draft(_id){
+        this.$router.push(`/draft/${_id}`);
+      },
+
+      delete_draft(_id){
+        let draft_id = null;
+        let _id_max = this.draft_main[0]._id;
+        if(_id === _id_max){
+          let length = this.draft_main.length;
+          draft_id = length === 1 ? 0 : this.draft_main[1]._id;
+        }
+
+        let timer_promise = new Promise((resolve)=>{
+          setTimeout(()=>{resolve(0);},1000);
+        });
+
+        this.add_talk_word("删除中...");
+
+        Promise.all([remove_draft({_id,draft_id}),timer_promise])
+          .then((res)=>{
+            let code = res[0].data.code;
+            let data = res[0].data.data;
+            if(code === 0){
+              this.set_use(data.use);
+              this.set_draft_main(data.draft_main);
+
+              this.add_talk_word(`删除成功,_id号为${_id}的草稿数据已被移除`);
+            }
+            else if(code === 1){
+              this.add_talk_word("服务器端出现错误,删除失败!");
+            }
+          })
+          .catch((err)=>{
+            this.add_talk_word("axios请求出现错误,删除失败!");
+            console.log(err);
+          });
+      },
+
+    }
   }
 </script>
 
@@ -202,7 +279,7 @@
           height: 3rem
           top: 1.8rem
           background: $color-1
-    .article_charge
+    .article_charge,.draft_charge
       padding: 2rem 2rem
       border-radius: 0.3rem
       box-shadow: $box-shadow
@@ -215,6 +292,19 @@
         width: 15%
       .date
         width: 21%
+    .draft_charge
+      ul
+        .button_icon
+          font-size: 1.6rem
+          &:hover
+            font-size: 1.7rem
+        .empty_li
+          justify-content: center
+          background: transparent
+          color: $color-3
+          margin: 1rem 0 0 0
+    .article_charge
+      margin-top: 6rem
     .update_charge
       margin-top: 6rem
       padding: 2rem 2rem

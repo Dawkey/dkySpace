@@ -4,7 +4,7 @@
     <mayuri></mayuri>
     <left-icon></left-icon>
     <nav2></nav2>
-    <div class="body" :class="{write: router_show === 'write'}">
+    <div class="body" :class="{write: router_show && router_show.slice(0,5) === 'draft'}">
       <keep-alive>
         <router-view class="router-class"></router-view>
       </keep-alive>

@@ -6,7 +6,7 @@
         <router-link tag="li" class="button_icon login"
           :to="login_to"
           :class="{out_login: login_flag}"
-          v-show = "$route.name != 'write'"
+          v-show = "$route.name != 'draft'"
         >
           <i class="icon-login"></i>
         </router-link>
@@ -14,7 +14,7 @@
 
       <transition name="charge">
         <router-link tag="li" to="/charge" class="button_icon charge"
-          v-show = "$route.name === 'write'"
+          v-show = "$route.name === 'draft'"
         >
           <i class="icon-charge"></i>
         </router-link>

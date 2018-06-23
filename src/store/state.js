@@ -3,10 +3,12 @@ const state = {
   loading_show: true,
 
   talk_word: "",      //需要输出的文字
+  talk_times: 0,      //输出文字的次数
   talk_flag: "first", //是否继续输出文字的flag,用于处理在输出过程中
                       //talk_word发生变化时的情况
 
   data_ready: false,  //数据是否获取及处理完毕的flag
+  use: null,            //对应于服务器上的use数据库,存储较为重要的信息
   main: [],           //主页(home)数组
   tag_name: [],       //标签名数组
   classify_name: [],  //分类名数组
@@ -18,7 +20,9 @@ const state = {
   diary: [],          //日记数据
   _id: 0,              //记录跳转到的文章_id
 
-  login_flag: false
+  login_flag: false,
+  draft_main: [],
+  draft_flag: false,
 }
 
 export default state;

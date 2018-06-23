@@ -12,7 +12,7 @@ function archive_name_get(last,first){
 //对得到的数据处理
 export function data_handle({commit},data){
   let view = data.view;
-  let use = data.use[0];
+  let use = data.use;
 
   let main = view;
   let tag_name = use.tag;
@@ -59,6 +59,7 @@ export function data_handle({commit},data){
   let data_ready = true;
 
   commit(types.set_main,main);
+  commit(types.set_use,use);
   commit(types.set_tag_name,tag_name);
   commit(types.set_classify_name,classify_name);
   commit(types.set_archive_name,archive_name);
@@ -67,4 +68,10 @@ export function data_handle({commit},data){
   commit(types.set_archive,archive);
   commit(types.set_data_ready,data_ready);
 
+}
+
+export function add_talk_word({commit,state},data){
+  let times = state.talk_times + 1;
+  commit(types.set_talk_word,data);
+  commit(types.set_talk_times,times);
 }

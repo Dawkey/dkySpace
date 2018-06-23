@@ -11,6 +11,9 @@ const mutations = {
   [types.set_talk_word](state,talk_word){
     state.talk_word = talk_word;
   },
+  [types.set_talk_times](state,talk_times){
+    state.talk_times = talk_times;
+  },
   [types.set_talk_flag](state,talk_flag){
     state.talk_flag = talk_flag;
   },
@@ -20,6 +23,9 @@ const mutations = {
   },
   [types.set_main](state,main){
     state.main = main;
+  },
+  [types.set_use](state,use){
+    state.use = use;
   },
   [types.set_tag_name](state,tag_name){
     state.tag_name = tag_name;
@@ -51,6 +57,12 @@ const mutations = {
 
   [types.set_login_flag](state,login_flag){
     state.login_flag = login_flag;
+  },
+  [types.set_draft_main](state,draft_main){
+    state.draft_main = draft_main;
+  },
+  [types.set_draft_flag](state,draft_flag){
+    state.draft_flag = draft_flag;
   },
 }
 

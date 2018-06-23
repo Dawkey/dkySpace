@@ -17,7 +17,7 @@
 
 <script type="text/ecmascript-6">
   import Mayuri from "components/base/mayuri.vue";
-  import {mapGetters,mapMutations} from "vuex";
+  import {mapGetters,mapActions} from "vuex";
   export default {
     name: "LeftIcon",
 
@@ -37,12 +37,12 @@
 
     methods: {
 
-      ...mapMutations([
-        "set_talk_word"
+      ...mapActions([
+        "add_talk_word",
       ]),
 
       nav_talk(item){
-        this.set_talk_word(`${item}~`);
+        this.add_talk_word(`${item}~`);
       }
 
     }

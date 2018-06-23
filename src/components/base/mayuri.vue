@@ -44,6 +44,7 @@
     computed: {
       ...mapGetters([
         "talk_word",
+        "talk_times",
         "talk_flag"
       ]),
     },
@@ -55,7 +56,6 @@
     methods: {
 
       ...mapMutations([
-        "set_talk_word",
         "set_talk_flag"
       ]),
 
@@ -121,7 +121,8 @@
     },
 
     watch: {
-      talk_word(){
+
+      talk_times(){
 
         if(this.talk_flag === false){
           return;
@@ -176,6 +177,7 @@
       background-repeat: no-repeat
       box-shadow: 0 0 1rem 0 #000
       cursor: pointer
+      // transform: scaleX(-1)
       .expression
         width: 15rem
         height: 15rem

@@ -15,8 +15,11 @@ const Article = () => import("components/route/article.vue");
 
 const Login = () => import("components/route/login.vue");
 
+const NotFound = () => import("components/route/404.vue");
+
 const Charge = () => import("components/charge/charge.vue");
 const Write = () => import("components/charge/write.vue");
+
 
 let scroll_timer = null;
 
@@ -73,7 +76,7 @@ const router = new Router({
     },
 
     {
-      path: "/article/:id",
+      path: "/article/:id(\\d+)",
       name: "article",
       component: Article
     },
@@ -91,9 +94,21 @@ const router = new Router({
     },
 
     {
-      path: "/write",
-      name: "write",
+      path: "/draft/:id(\\d+)",
+      name: "draft",
       component: Write
+    },
+
+    {
+      path: "/edit/:id(\\d+)",
+      name: "edit",
+      component: Write
+    },
+
+    {
+      path: "*",
+      name: "404",
+      component: NotFound
     },
 
   ]
@@ -141,10 +156,14 @@ router.beforeEach((to,from,next)=>{
 
   let name = (to.path).slice(1);
 
-  if(name === "charge" || name === "write"){
+  if(to.name === "charge" || to.name === "draft"){
     commit_login_flag(true);
   }else{
     commit_login_flag(false);
+  }
+
+  if(to.name === "404"){
+    name = "404";
   }
 
   timer = setTimeout(()=>{

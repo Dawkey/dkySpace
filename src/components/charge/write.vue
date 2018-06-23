@@ -12,6 +12,16 @@
         <div class="commit write_icon">
           <i class="icon-commit"></i>
         </div>
+        <div class="yes_no">
+          <div class="yes_div">
+            <i class="icon-yes"></i>
+          </div>
+          <div class="line">
+          </div>
+          <div class="no_div">
+            <i class="icon-no"></i>
+          </div>
+        </div>
       </div>
     </transition>
     <transition name="router">
@@ -24,6 +34,9 @@
           :class="[{combine: combine_flag},
                    {opacity: markdown_opacity}]"
         >
+          <div class="_id">
+            _id:{{router_id}}
+          </div>
           <div class="write_icon">
             <i class="icon-exchange" @click="markdown_change"></i>
           </div>
@@ -64,7 +77,7 @@
               </div>
             </div>
           </div>
-          <div class="content article_style" v-html="html">
+          <div class="content article_style" v-html="html" ref="html">
           </div>
         </div>
       </div>
@@ -73,13 +86,20 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {post_draft} from "api/post.js";
-  import {mapGetters,mapMutations} from "vuex";
   import marked from "marked";
   import highlight from "highlight.js";
+
+  import {common_data,common_draft} from "common/js/mixin.js";
   import {get_date} from "common/js/get_date.js";
+
+  import {get_draft} from "api/get.js";
+  import {create_draft,update_draft} from "api/post.js";
+  import {mapGetters,mapMutations,mapActions} from "vuex";
   export default {
     name: "write",
+
+
+    mixins: [common_data,common_draft],
 
 
     data(){
@@ -88,10 +108,17 @@
         tag: "",
         classify: "",
         content: "",
+
         combine_flag: true,//控制输入框是合并还是分开
         markdown_flag: true,//控制markdown框的显示和隐藏
         html_flag: false,//控制html框的显示和隐藏
         icon_show: "combine",//控制markdown框旁边icon的显示和隐藏
+
+        active_button: null,
+
+        update_flag: false,
+        create_flag: false,
+        router_id_flag: true,
       }
     },
 
@@ -103,17 +130,78 @@
           return highlight.highlightAuto(code).value;
         }
       });
+
     },
 
 
     computed: {
 
       ...mapGetters([
-        "router_show",
+        "main",
+        "draft_main",
+        "use",
+        "tag_name",
+        "classify_name",
       ]),
 
+      draft_id(){
+        if(this.use === null){
+          return null;
+        }
+        return this.use.draft_id + 1;
+      },
+
+      router_id(){
+        if(this.$route.name != "draft"){
+          return;
+        }
+        if(this.router_id_flag === false){
+          let _id = parseInt(this.$route.params.id);
+          return _id;
+        }
+
+        this.update_flag = false;
+        this.create_flag = false;
+
+        let data = {title: "",tag: "",classify: "",markdown: ""};
+        this.set_input(data);
+
+        if(this.draft_id === null){
+          return;
+        }
+        let _id = parseInt(this.$route.params.id);
+        if(_id > this.draft_id || _id <= 0){
+          this.$router.replace("/404");
+          return;
+        }
+        if(_id === this.draft_id){
+          this.create_flag = true;
+          this.router_id_flag = false;
+          return _id;
+        }
+        get_draft(_id).then((res)=>{
+          if(res.data.code != 0){
+            this.add_talk_word("服务器端出现错误,获取draft数据失败!");
+            return;
+          }
+          let data = res.data.data;
+
+          this.set_input(data);
+
+          this.update_flag = true;
+          this.router_id_flag = false;
+        });
+        return _id;
+      },
+
       show_flag(){
-        if(this.router_show === "write"){
+        if(this.router_show != false
+            && this.router_show.slice(0,5) === "draft"
+            && this.data_ready != false//判断main数据是否获取.
+        ){
+          if(this.create_flag === false && this.update_flag === false){
+            return false;
+          }
           this.set_loading_show(false);
           return true;
         }else{
@@ -131,6 +219,10 @@
         let classify = this.classify;
         let content = this.content;
         return get_date();
+      },
+
+      date(){
+        return this.edit_date;
       },
 
       markdown_opacity(){
@@ -159,8 +251,13 @@
     methods: {
 
       ...mapMutations([
+        "set_loading_show",
         "set_login_flag",
-        "set_loading_show"
+        "set_talk_word",
+      ]),
+
+      ...mapActions([
+        "add_talk_word"
       ]),
 
       markdown_change(){
@@ -175,25 +272,140 @@
         this.html_flag = true;
       },
 
+      input_test(){
+        let title = this.title.trim();
+        let tag = this.tag.trim();
+        let classify = this.classify.trim();
+        let markdown = this.content.trim();
+
+        if(title === ""){
+          this.add_talk_word("标题输入框不能为空!");
+          return;
+        }
+        if(tag === ""){
+          this.add_talk_word("标签输入框不能为空!");
+          return;
+        }
+        if(classify === ""){
+          this.add_talk_word("分类输入框不能为空!");
+          return;
+        }
+        if(markdown === ""){
+          this.add_talk_word("内容输入框不能为空!");
+          return;
+        }
+
+        let title_flag = this.main.some((value)=>{
+          return value.title === title;
+        });
+        if(title_flag){
+          this.add_talk_word(`标题 '${title}' 已经存在了! 请换一个新的标题`);
+          return;
+        }
+        if(! this.tag_name.includes(tag)){
+          this.add_talk_word(`标签 '${tag}' 不存在! 是否回到charge页面添加新标签?`);
+          return;
+        }
+        if(! this.classify_name.includes(classify)){
+          this.add_talk_word(`分类 '${classify}' 不存在! 是否回到charge页面添加新分类?`);
+          return;
+        }
+
+        let blockquote_el = this.$refs["html"].children[0];
+        if(!blockquote_el || blockquote_el.nodeName != "BLOCKQUOTE"){
+          this.add_talk_word("内容输入框的第一段必须为 'blockquote' 元素,以作为这篇博客的介绍");
+          return;
+        };
+
+        let description_el = blockquote_el.children[0];
+        if(!description_el){
+          this.add_talk_word("第一段 'blockquote' 元素不能为空!");
+          return;
+        }
+
+        let description = description_el.innerHTML;
+        let date = this.date;
+        let edit_date = this.edit_date;
+        let article = this.html;
+
+        let json = {title,date,edit_date,tag,classify,description,article,markdown};
+        return json;
+      },
+
+      set_input(data){
+        this.title = data.title;
+        this.tag = data.tag;
+        this.classify = data.classify;
+        this.content = data.markdown;
+      },
+
       save_draft(){
-        // let title = this.title;
-        // let date = this.date;
-        // let edit_date = this.edit_date;
-        // let tag = this.tag;
-        // let classify = this.classify;
-        // let description = this.description;
-        //
-        // let article = this.html;
-        // let markdown = this.content;
-        //
-        // let draft_json = {title,date,edit_date,tag,classify,description,article,markdown};
-        // post_draft(draft_json);
-      }
+        let draft_json = this.input_test();
+
+        if(!draft_json){
+          return;
+        }
+
+        this.add_talk_word("保存中...");
+
+        this.active_button = "save";
+
+        let _id = this.router_id;
+        draft_json._id = _id;
+
+        let timer_promise = new Promise((resolve)=>{
+          setTimeout(()=>{resolve(0);},1000);
+        });
+
+        if(this.create_flag === true){
+          Promise.all([create_draft(draft_json),timer_promise])
+            .then((res)=>{
+              let code = res[0].data.code;
+              let data = res[0].data.data;
+              if(code === 0){
+                this.set_use(data.use);
+                this.set_draft_main(data.draft_main);
+
+                this.create_flag = false;
+                this.update_flag = true;
+
+                this.add_talk_word(`保存成功!已新增一篇博客到草稿箱,_id号为${this.router_id}`);
+              }
+              else if(code === 1){
+                this.add_talk_word("服务器端出现错误,保存失败!");
+              }
+            })
+            .catch((err)=>{
+              this.add_talk_word("axios请求出现错误,保存失败!");
+              console.log(err);
+            });
+        }
+        else if(this.create_flag === false){
+          Promise.all([update_draft(draft_json),timer_promise])
+            .then((res)=>{
+              let code = res[0].data.code;
+              let data = res[0].data.data;
+              if(code === 0){
+                this.set_draft_main(data);
+                this.add_talk_word("保存成功!");
+              }
+              else if(code === 1){
+                this.add_talk_word("服务器端出现错误,保存失败!");
+              }
+            })
+            .catch((err)=>{
+              this.add_talk_word("axios请求出现错误,保存失败!");
+              console.log(err);
+            });
+        }
+
+      },
 
     },
 
 
     watch: {
+
       combine_flag(){
         this.icon_show = false;
         setTimeout(()=>{
@@ -206,7 +418,19 @@
           }
         },100);
       },
+
+      $route(){
+        if(this.$route.name != "draft"){
+          return;
+        }
+        console.log("$route " + this.router_id_flag);
+        this.router_id_flag = true;
+      }
+
     },
+
+    // beforeRouteLeave(to,from,next){
+    // }
 
   }
 </script>
@@ -237,12 +461,12 @@
       top: 24.5rem
       left: -10rem
       &.discombine
-        left: calc((100% - 4rem)/2 - 4.5rem)
+        left: calc((100% - 4rem)/2 - 4.5rem + 1.8rem)
       &.combine
-        left: calc((100% - 88rem)/2 + 88rem - 4.5rem)
+        left: calc((100% - 88rem)/2 + 88rem - 4.5rem + 1.8rem)
       .write_icon
         position: relative
-        margin-left: 1.8rem
+        z-index: 10
         margin-top: 2rem
         &:before
           content: ""
@@ -256,6 +480,49 @@
           font-size: 2.4rem
         &.commit
           font-size: 1.8rem
+          color: #bbb
+      .yes_no
+        position: absolute
+        z-index: 11
+        top: 6.5rem
+        left: calc(50% - 6.5rem)
+        display: flex
+        display: none
+        align-items: center
+        width: 13rem
+        height: 2rem
+        .yes_div,.no_div
+          flex-shrink: 0
+          display: flex
+          align-items: center
+          justify-content: center
+          width: 3rem
+          height: 3rem
+          border-radius: 50%
+          box-shadow: $box-shadow
+          color: $color-3
+          background: $color-1
+          font-size: 1.6rem
+          i
+            display: flex
+            align-items: center
+            justify-content: center
+            width: 2.8rem
+            height: 2.8rem
+            border-radius: 50%
+            cursor: pointer
+            &:hover
+              background: $color-3
+              color: $color-1
+          .icon-no
+            font-size: 1.3rem
+        .line
+          width: 100%
+          height: 2rem
+          box-shadow: $box-shadow-bottom
+          margin: 0 -0.5rem
+          transform: translateY(-51%)
+
     .icon_box-enter-active
       animation: icon_show 400ms
 
@@ -300,10 +567,21 @@
             top: 1.8rem
             background: $color-1
       .markdown
+        position: relative
         display: flex
         margin-right: 4rem
         flex-direction: column
         font-family: monospace
+        ._id
+          position: absolute
+          top: 0.4rem
+          right: 0.4rem
+          font-size: 1.1rem
+          padding: 0.1rem
+          color: $color-3-o
+          font-family: cursive
+          border: 0.1rem solid
+          opacity: 0.5
         .input_head
           flex-shrink: 0
           display: flex
@@ -403,5 +681,7 @@
         .markdown,.html
           &.combine
             width: 100%
-
+      .icon_box
+        &.combine
+          left: calc(100% - 3rem - 4.5rem + 1.8rem)
 </style>

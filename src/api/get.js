@@ -21,3 +21,12 @@ export function get_article(_id){
   let promise = axios.get(`/api/get/article?_id=${_id}`);
   return promise;
 }
+
+export function get_draft_main(_id){
+  let promise = axios.get("/api/get/draft_main");
+  return promise;
+}
+export function get_draft(_id){
+  let promise = axios.get(`/api/get/draft?_id=${_id}`);
+  return promise;
+}
