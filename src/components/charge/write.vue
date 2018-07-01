@@ -1,39 +1,54 @@
 <template>
   <div class="write">
+
     <transition name="icon_box">
+
       <div class="icon_box"
-        v-show="show_flag && icon_show"
-        :class="[{combine: icon_show === 'combine'},
+           v-show="show_flag && icon_show"
+           :class="[{combine: icon_show === 'combine'},
                  {discombine: icon_show === 'discombine'}]"
       >
         <div class="save write_icon">
-          <i class="icon-save" @click="save_draft"></i>
+          <i class="icon-save"
+             @click="save_draft"
+             :class="{active: active_button === 'save'}"
+          ></i>
         </div>
         <div class="commit write_icon">
-          <i class="icon-commit"></i>
+          <i class="icon-commit"
+             @click="commit_draft_click"
+             :class="{active: active_button === 'commit'}"
+          ></i>
         </div>
-        <div class="yes_no">
-          <div class="yes_div">
-            <i class="icon-yes"></i>
-          </div>
-          <div class="line">
-          </div>
-          <div class="no_div">
-            <i class="icon-no"></i>
-          </div>
-        </div>
+        <yes-no
+          :father = "'write'"
+          :top = "'6.5rem'"
+          :show_flag = "yes_no_show"
+          :loading_flag = "loading_flag"
+          @yes = "commit_draft"
+          @no = "cancel_commit_draft"
+          @mouseenter.native = "yes_no_enter"
+          @mouseleave.native = "yes_no_leave"
+        >
+        </yes-no>
       </div>
+
     </transition>
+
+
     <transition name="router">
+
       <div class="write_div" v-show="show_flag"
-        :class="[{combine: combine_flag},
+           :class="[{combine: combine_flag},
                  {markdown_flex: markdown_flag},
                  {html_flex: html_flag}]"
       >
+
         <div class="markdown"
-          :class="[{combine: combine_flag},
+             :class="[{combine: combine_flag},
                    {opacity: markdown_opacity}]"
         >
+
           <div class="_id">
             _id:{{router_id}}
           </div>
@@ -51,11 +66,15 @@
             v-model="content"
           >
           </textarea>
+
         </div>
+
+
         <div class="html"
           :class="[{combine: combine_flag},
                    {opacity: html_opacity}]"
         >
+
           <div class="write_icon">
             <i class="icon-exchange" @click="html_change"></i>
           </div>
@@ -79,9 +98,13 @@
           </div>
           <div class="content article_style" v-html="html" ref="html">
           </div>
+
         </div>
+
       </div>
+
     </transition>
+
   </div>
 </template>
 
@@ -93,10 +116,14 @@
   import {get_date} from "common/js/get_date.js";
 
   import {get_draft} from "api/get.js";
-  import {create_draft,update_draft} from "api/post.js";
+  import {create_draft,update_draft,create_article} from "api/post.js";
   import {mapGetters,mapMutations,mapActions} from "vuex";
+  import YesNo from "./yes_no/yes_no.vue";
   export default {
     name: "write",
+
+
+    components: {YesNo},
 
 
     mixins: [common_data,common_draft],
@@ -114,11 +141,16 @@
         html_flag: false,//控制html框的显示和隐藏
         icon_show: "combine",//控制markdown框旁边icon的显示和隐藏
 
-        active_button: null,
+        update_flag: false,//判断draft是否是更新状态(在草稿箱中原有博客上修改)
+        create_flag: false,//判断draft是否是创建状态(添加一篇新的博客到草稿)
+        router_id_flag: true,//控制computed下的router_id,以避免其重复触发.
 
-        update_flag: false,
-        create_flag: false,
-        router_id_flag: true,
+        article_json: null,//需要提交到正式博客数据库中的json数据
+        article_timer: null,
+        active_button: false,//此时进行的操作对应的按钮高亮(有false,commit,save三种状态)
+        yes_no_show: false,//yes_no组件中对应的yes_no_div元素的显示和隐藏
+        loading_flag: false,//yes_no组件中对象的loading元素的显示和隐藏(同时,在其为
+                            //true期间,所有操作会无效化)
       }
     },
 
@@ -144,6 +176,7 @@
         "classify_name",
       ]),
 
+      //draft数据库在插入下一条数据时,其应该对应的_id值.
       draft_id(){
         if(this.use === null){
           return null;
@@ -151,6 +184,9 @@
         return this.use.draft_id + 1;
       },
 
+      //核心代码,不只是用来获取路由对应的id值,还会根据路由的变化,控制一系列相关值的变化.
+      //因为router_id在vue的computed中,其后的update_flag,create_flag在变化时,会重复
+      //触发router_id,这里设置一个router_id_flag,用来保证,其中每次路由跳转时,只会触发一次
       router_id(){
         if(this.$route.name != "draft"){
           return;
@@ -213,6 +249,7 @@
         return marked(this.content);
       },
 
+      //最后编辑日期
       edit_date(){
         let title = this.title;
         let tag = this.tag;
@@ -221,6 +258,7 @@
         return get_date();
       },
 
+      //发布博客日期
       date(){
         return this.edit_date;
       },
@@ -254,10 +292,12 @@
         "set_loading_show",
         "set_login_flag",
         "set_talk_word",
+        "set_data_ready"
       ]),
 
       ...mapActions([
-        "add_talk_word"
+        "add_talk_word",
+        "data_handle"
       ]),
 
       markdown_change(){
@@ -272,6 +312,7 @@
         this.html_flag = true;
       },
 
+      //检测输入框的内容是否合法
       input_test(){
         let title = this.title.trim();
         let tag = this.tag.trim();
@@ -328,10 +369,14 @@
         let edit_date = this.edit_date;
         let article = this.html;
 
-        let json = {title,date,edit_date,tag,classify,description,article,markdown};
-        return json;
+        let draft_json = {title,date,edit_date,tag,classify,description,article,markdown};
+        let article_json = {};
+        article_json.main = {title,date,edit_date,tag,classify,description};
+        article_json.article = {article,markdown};
+        return {draft_json,article_json};
       },
 
+      //设置输入框的内容
       set_input(data){
         this.title = data.title;
         this.tag = data.tag;
@@ -339,27 +384,36 @@
         this.content = data.markdown;
       },
 
+      //保存草稿内容(可能是创建一篇新的草稿,或者在原有草稿上修改)
       save_draft(){
-        let draft_json = this.input_test();
+        let json = this.input_test();
 
-        if(!draft_json){
+        if(!json){
           return;
         }
 
-        this.add_talk_word("保存中...");
-
         this.active_button = "save";
+        clearTimeout(this.article_timer);
+        this.yes_no_show = false;
+        this.loading_flag = true;
+
+        let draft_json = json.draft_json;
+
+        this.add_talk_word("保存中...");
 
         let _id = this.router_id;
         draft_json._id = _id;
 
         let timer_promise = new Promise((resolve)=>{
-          setTimeout(()=>{resolve(0);},1000);
+          setTimeout(()=>{resolve(0);},1500);
         });
 
         if(this.create_flag === true){
           Promise.all([create_draft(draft_json),timer_promise])
             .then((res)=>{
+              this.loading_flag = false;
+              this.active_button = false;
+
               let code = res[0].data.code;
               let data = res[0].data.data;
               if(code === 0){
@@ -383,6 +437,9 @@
         else if(this.create_flag === false){
           Promise.all([update_draft(draft_json),timer_promise])
             .then((res)=>{
+              this.loading_flag = false;
+              this.active_button = false;
+
               let code = res[0].data.code;
               let data = res[0].data.data;
               if(code === 0){
@@ -400,6 +457,91 @@
         }
 
       },
+
+      //发表博客内容的点击事件,弹出yes_no组件
+      commit_draft_click(){
+        let json = this.input_test();
+
+        if(!json){
+          return;
+        }
+        this.article_json = json.article_json;
+        this.yes_no_show = true;
+        this.active_button = "commit";
+        this.article_timer = setTimeout(()=>{
+          this.yes_no_show = false;
+          this.active_button = false;
+        },3000);
+      },
+
+      //真正发表博客内容的函数(创建一篇新的博客),由yes_no组件中的yes按钮触发
+      commit_draft(){
+        clearTimeout(this.article_timer);
+        this.yes_no_show = false;
+        this.loading_flag = true;
+
+        this.add_talk_word("提交中...");
+        let article_json = this.article_json;
+        let _id = this.use.article_id + 1;
+        article_json.main._id = _id;
+        article_json.article._id = _id;
+
+        let timer_promise = new Promise((resolve)=>{
+          setTimeout(()=>{resolve(0);},1500);
+        });
+
+
+        Promise.all([create_article(article_json),timer_promise])
+          .then((res)=>{
+            let code = res[0].data.code;
+            let data = res[0].data.data;
+            if(code === 0){
+              this.loading_flag = false;
+              this.active_button = false;
+
+              this.set_data_ready(false);
+              this.data_handle(data);
+
+              this.add_talk_word(`提交成功!已新增一篇博客,_id号为${_id}`);
+            }
+            else if(code === 1){
+              this.loading_flag = false;
+              this.active_button = false;
+
+              this.add_talk_word("服务器端出现错误,保存失败!");
+            }
+          })
+          .catch((err)=>{
+            this.add_talk_word("axios请求出现错误,保存失败!");
+            console.log(err);
+          });
+      },
+
+      cancel_commit_draft(){
+        clearTimeout(this.article_timer);
+        this.yes_no_show = false;
+        this.active_button = false;
+      },
+
+      //控制yes_no组件的移入移出事件
+      yes_no_enter(){
+        if(this.yes_no_show === false){
+          return;
+        }
+
+        clearTimeout(this.article_timer);
+      },
+
+      yes_no_leave(){
+        if(this.yes_no_show === false){
+          return;
+        }
+
+        this.article_timer = setTimeout(()=>{
+          this.yes_no_show = false;
+          this.active_button = false;
+        },3000);
+      }
 
     },
 
@@ -423,7 +565,6 @@
         if(this.$route.name != "draft"){
           return;
         }
-        console.log("$route " + this.router_id_flag);
         this.router_id_flag = true;
       }
 
@@ -478,50 +619,21 @@
           background: $color-1
         &.save
           font-size: 2.4rem
+          >i
+            &.active
+              background: $color-3
+              color: $color-1
         &.commit
           font-size: 1.8rem
-          color: #bbb
+          >i
+            &.active
+              background: $color-3
+              color: $color-1
       .yes_no
         position: absolute
         z-index: 11
-        top: 6.5rem
-        left: calc(50% - 6.5rem)
-        display: flex
-        display: none
-        align-items: center
-        width: 13rem
-        height: 2rem
-        .yes_div,.no_div
-          flex-shrink: 0
-          display: flex
-          align-items: center
-          justify-content: center
-          width: 3rem
-          height: 3rem
-          border-radius: 50%
-          box-shadow: $box-shadow
-          color: $color-3
-          background: $color-1
-          font-size: 1.6rem
-          i
-            display: flex
-            align-items: center
-            justify-content: center
-            width: 2.8rem
-            height: 2.8rem
-            border-radius: 50%
-            cursor: pointer
-            &:hover
-              background: $color-3
-              color: $color-1
-          .icon-no
-            font-size: 1.3rem
-        .line
-          width: 100%
-          height: 2rem
-          box-shadow: $box-shadow-bottom
-          margin: 0 -0.5rem
-          transform: translateY(-51%)
+        left: calc(50% - 6rem)
+        width: 12rem
 
     .icon_box-enter-active
       animation: icon_show 400ms

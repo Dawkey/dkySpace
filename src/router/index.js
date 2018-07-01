@@ -156,7 +156,7 @@ router.beforeEach((to,from,next)=>{
 
   let name = (to.path).slice(1);
 
-  if(to.name === "charge" || to.name === "draft"){
+  if(to.name === "charge" || to.name === "draft" || to.name === "edit"){
     commit_login_flag(true);
   }else{
     commit_login_flag(false);

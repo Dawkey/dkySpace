@@ -2,68 +2,38 @@
   <div class="charge">
     <transition name="router">
       <div class="charge_div" v-show="show_flag">
-        <div class="draft_charge">
-          <ul>
-            <div class="button_icon">
-              <i class="icon-draft"></i>
-            </div>
-            <div class="write_icon">
-              <i class="icon-write" @click="to_draft"></i>
-            </div>
-            <li class="ul_head">
-              <div class="title">标题</div>
-              <div class="classify">分类<i class="icon-add"></i></div>
-              <div class="tag">标签<i class="icon-add"></i></div>
-              <div class="date">日期</div>
-            </li>
-            <li class="empty_li" v-show = "draft_main.length === 0">
-              草稿箱里面还空空如也~
-            </li>
-            <li v-for = "item in draft_main">
-              <div class="title">{{item.title}}</div>
-              <div class="classify">{{item.classify}}</div>
-              <div class="tag">{{item.tag}}</div>
-              <div class="date">{{item.date}}</div>
-              <div class="icon_div">
-                <i class="icon-write" @click="edit_draft(item._id)"></i>
-                <i class="icon-delete" @click="delete_draft(item._id)"></i>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div class="article_charge">
-          <ul>
-            <div class="button_icon">
-              <i class="icon-archive"></i>
-            </div>
-            <div class="write_icon">
-              <i class="icon-write" @click="to_draft"></i>
-            </div>
-            <li class="ul_head">
-              <div class="title">标题</div>
-              <div class="classify">分类<i class="icon-add"></i></div>
-              <div class="tag">标签<i class="icon-add"></i></div>
-              <div class="date">日期</div>
-            </li>
-            <li v-for = "item in main">
-              <div class="title">{{item.title}}</div>
-              <div class="classify">{{item.classify}}</div>
-              <div class="tag">{{item.tag}}</div>
-              <div class="date">{{item.date}}</div>
-              <div class="icon_div">
-                <i class="icon-write"></i>
-                <i class="icon-delete"></i>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div class="update_charge">
+
+        <charge-ul class="draft_charge"
+          :comp = "'draft'"
+          :comp_main = "draft_main"
+          :remove_comp = "remove_draft"
+          :set_comp_main = "set_draft_main"
+          :loading_flag = "loading_flag"
+          :draft_id = "draft_id"
+          @set_loading_flag = "set_loading_flag"
+        >
+        </charge-ul>
+
+        <charge-ul class="article_charge"
+          :comp = "'article'"
+          :comp_main = "main"
+          :remove_comp = "remove_article"
+          :set_comp_main = "set_main"
+          :loading_flag = "loading_flag"
+          :draft_id = "draft_id"
+          @set_loading_flag = "set_loading_flag"
+        >
+        </charge-ul>
+
+        <!-- <div class="update_charge">
           <ul>
             <div class="button_icon">
               <i class="icon-update"></i>
             </div>
             <div class="write_icon">
-              <i class="icon-write"></i>
+              <i class="icon-write"
+                 :class="{disable: loading_flag !== false}"
+              ></i>
             </div>
             <li class="ul_head">
               <div class="version">版本号</div>
@@ -73,12 +43,17 @@
               <div class="version">{{item.version}}</div>
               <div class="date">{{item.date}}</div>
               <div class="icon_div">
-                <i class="icon-write"></i>
-                <i class="icon-delete"></i>
+                <i class="icon-write"
+                   :class="{disable: loading_flag !== false}"
+                ></i>
+                <i class="icon-delete"
+                   :class="{disable: loading_flag !== false}"
+                ></i>
               </div>
             </li>
           </ul>
-        </div>
+        </div> -->
+
       </div>
     </transition>
   </div>
@@ -86,11 +61,15 @@
 
 <script type="text/ecmascript-6">
   import {get_update} from "api/get.js";
-  import {remove_draft} from "api/post.js";
+  import {remove_draft,remove_article} from "api/post.js";
   import {mapGetters,mapMutations,mapActions} from "vuex";
   import {common_data,common_draft} from "common/js/mixin.js";
+  import ChargeUl from "./charge_ul/charge_ul.vue";
   export default {
     name: "Charge",
+
+
+    components: {ChargeUl},
 
 
     mixins: [common_data,common_draft],
@@ -99,6 +78,13 @@
     created(){
       this.set_login_flag(true);
       this.get_update_data();
+    },
+
+
+    data(){
+      return {
+        loading_flag: false,
+      }
     },
 
 
@@ -127,12 +113,9 @@
     methods: {
       ...mapMutations([
         "set_update",
+        "set_main",
         "set_login_flag",
         "set_loading_show",
-      ]),
-
-      ...mapActions([
-        "add_talk_word"
       ]),
 
       get_update_data(){
@@ -149,47 +132,17 @@
         });
       },
 
-      to_draft(){
-        this.$router.push(`/draft/${this.draft_id}`);
+      set_loading_flag(bool){
+        this.loading_flag = bool;
       },
 
-      edit_draft(_id){
-        this.$router.push(`/draft/${_id}`);
+      remove_draft(json){
+        return remove_draft(json);
       },
 
-      delete_draft(_id){
-        let draft_id = null;
-        let _id_max = this.draft_main[0]._id;
-        if(_id === _id_max){
-          let length = this.draft_main.length;
-          draft_id = length === 1 ? 0 : this.draft_main[1]._id;
-        }
-
-        let timer_promise = new Promise((resolve)=>{
-          setTimeout(()=>{resolve(0);},1000);
-        });
-
-        this.add_talk_word("删除中...");
-
-        Promise.all([remove_draft({_id,draft_id}),timer_promise])
-          .then((res)=>{
-            let code = res[0].data.code;
-            let data = res[0].data.data;
-            if(code === 0){
-              this.set_use(data.use);
-              this.set_draft_main(data.draft_main);
-
-              this.add_talk_word(`删除成功,_id号为${_id}的草稿数据已被移除`);
-            }
-            else if(code === 1){
-              this.add_talk_word("服务器端出现错误,删除失败!");
-            }
-          })
-          .catch((err)=>{
-            this.add_talk_word("axios请求出现错误,删除失败!");
-            console.log(err);
-          });
-      },
+      remove_article(json){
+        return remove_article(json);
+      }
 
     }
   }
@@ -203,116 +156,16 @@
     box-shadow: none
     font-size: 1.4rem
     // font-family: monospace
-    ul
-      position: relative
-      li
-        display: flex
-        line-height: 3.2rem
-        padding: 0 0.8rem
-        &:nth-of-type(2n-1)
-          background: rgba(96,126,121,0.28)
-        &:nth-of-type(2n)
-          background: rgba(96,126,121,0.37)
-        &:hover
-          background: rgba(96,126,121,0.55)
-        &.ul_head
-          background: transparent
-          color: $color-3
-          line-height: 2.8rem
-          padding-top: 0.7rem
-          &:hover
-            background: transparent
-          >div
-            display: flex
-            align-items: center
-            i
-              font-size: 1.3rem
-              color: rgba(96,126,121,0.9)
-              margin-left: 0.2rem
-              cursor: pointer
-              &:hover
-                font-size: 1.4rem
-                color: $color-3
-        .icon_div
-          display: flex
-          height: 3.2rem
-          align-items: center
-          i
-            font-size: 1.7rem
-            color: rgba(96,126,121,0.9)
-            margin-left: 3.2rem
-            cursor: pointer
-            &:hover
-              font-size: 1.8rem
-              margin-left: 3.1rem
-              color: $color-black
-
-      .button_icon
-        position: absolute
-        top: -3.8rem
-        left: 0
-        color: $color-3
-        box-shadow: $box-shadow
-        cursor: default
-        i
-          position: relative
-          z-index: 11
-        &:hover
-          background: $color-1
-        &:before
-          content: ""
-          position: absolute
-          z-index: 10
-          width: 6.5rem
-          height: 3rem
-          top: 1.8rem
-          background: $color-1
-      .write_icon
-        position: absolute
-        top: -3.8rem
-        right: 0
-        &:before
-          content: ""
-          position: absolute
-          z-index: 10
-          width: 6.5rem
-          height: 3rem
-          top: 1.8rem
-          background: $color-1
-    .article_charge,.draft_charge
-      padding: 2rem 2rem
-      border-radius: 0.3rem
-      box-shadow: $box-shadow
-      background-color: $color-1
-      .title
-        width: 40%
-      .classify
-        width: 10%
-      .tag
-        width: 15%
-      .date
-        width: 21%
-    .draft_charge
-      ul
-        .button_icon
-          font-size: 1.6rem
-          &:hover
-            font-size: 1.7rem
-        .empty_li
-          justify-content: center
-          background: transparent
-          color: $color-3
-          margin: 1rem 0 0 0
     .article_charge
       margin-top: 6rem
-    .update_charge
-      margin-top: 6rem
-      padding: 2rem 2rem
-      border-radius: 0.3rem
-      box-shadow: $box-shadow
-      background-color: $color-1
-      .version
-        width: 65%
-      .date
-        width: 21%
+    // .update_charge
+    //   margin-top: 6rem
+    //   padding: 2rem 2rem
+    //   border-radius: 0.3rem
+    //   box-shadow: $box-shadow
+    //   background-color: $color-1
+    //   .version
+    //     width: 65%
+    //   .date
+    //     width: 21%
 </style>
