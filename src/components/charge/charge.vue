@@ -25,34 +25,16 @@
         >
         </charge-ul>
 
-        <!-- <div class="update_charge">
-          <ul>
-            <div class="button_icon">
-              <i class="icon-update"></i>
-            </div>
-            <div class="write_icon">
-              <i class="icon-write"
-                 :class="{disable: loading_flag !== false}"
-              ></i>
-            </div>
-            <li class="ul_head">
-              <div class="version">版本号</div>
-              <div class="date">日期</div>
-            </li>
-            <li v-for = "item in update">
-              <div class="version">{{item.version}}</div>
-              <div class="date">{{item.date}}</div>
-              <div class="icon_div">
-                <i class="icon-write"
-                   :class="{disable: loading_flag !== false}"
-                ></i>
-                <i class="icon-delete"
-                   :class="{disable: loading_flag !== false}"
-                ></i>
-              </div>
-            </li>
-          </ul>
-        </div> -->
+        <charge-ul class="update_charge"
+          :comp = "'update'"
+          :comp_main = "update"
+          :remove_comp = "remove_article"
+          :set_comp_main = "set_main"
+          :loading_flag = "loading_flag"
+          :draft_id = "update_id"
+          @set_loading_flag = "set_loading_flag"
+        >
+        </charge-ul>
 
       </div>
     </transition>
@@ -107,6 +89,13 @@
         }
       },
 
+      update_id(){
+        if(this.use === null){
+          return null;
+        }
+        return this.use.update_id + 1;
+      },
+
     },
 
 
@@ -124,7 +113,7 @@
         }
         get_update().then((res)=>{
           if(res.data.code != 0){
-            console.log("服务器端获取数据出现错误,Dawkey!");
+            console.log("服务器端获取update数据出现错误!");
             return;
           }
           let data = res.data.data.view;
@@ -158,14 +147,6 @@
     // font-family: monospace
     .article_charge
       margin-top: 6rem
-    // .update_charge
-    //   margin-top: 6rem
-    //   padding: 2rem 2rem
-    //   border-radius: 0.3rem
-    //   box-shadow: $box-shadow
-    //   background-color: $color-1
-    //   .version
-    //     width: 65%
-    //   .date
-    //     width: 21%
+    .update_charge
+      margin-top: 6rem
 </style>

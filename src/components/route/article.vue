@@ -89,7 +89,7 @@
       ]),
 
       get_data(_id){
-        get_article(_id).then((res)=>{
+        get_article(_id,"show").then((res)=>{
           let res_data = res.data;
           if(res_data.code != 0){
             return;

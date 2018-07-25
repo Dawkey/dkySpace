@@ -21,7 +21,18 @@ export function create_article(json){
   return promise;
 }
 
+export function update_article(json){
+  let promise = axios.post("/api/post/update_article",json);
+  return promise;
+}
+
 export function remove_article(json){
   let promise = axios.post("/api/post/remove_article",json);
+  return promise;
+}
+
+
+export function create_update(json){
+  let promise = axios.post("/api/post/create_update",json);
   return promise;
 }

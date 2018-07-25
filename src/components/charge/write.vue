@@ -8,7 +8,7 @@
            :class="[{combine: icon_show === 'combine'},
                  {discombine: icon_show === 'discombine'}]"
       >
-        <div class="save write_icon">
+        <div class="save write_icon" v-show = "$route.name !== 'edit'">
           <i class="icon-save"
              @click="save_draft"
              :class="{active: active_button === 'save'}"
@@ -50,16 +50,44 @@
         >
 
           <div class="_id">
-            _id:{{router_id}}
+            _id:{{$route.name === "draft" ? router_id : edit_router_id}}
           </div>
           <div class="write_icon">
             <i class="icon-exchange" @click="markdown_change"></i>
           </div>
           <form class="input_head">
-            <input v-model="title" class="title" placeholder="标题" type="text" name="title">
+            <input v-model="title" class="title" placeholder="标题" type="text" name="title" spellcheck="false">
             <div class="tag_classify">
-              <input v-model="tag" class="tag" placeholder="标签" type="text" name="tag">
-              <input v-model="classify" class="classify" placeholder="分类" type="text" name="classify">
+              <div class="tag_box_contain">
+                <transition name="tag_box">
+                  <ul class="tag_box" v-show="tag_box_show">
+                    <li v-for="item in tag_name">
+                      {{item}}
+                    </li>
+                  </ul>
+                </transition>
+              </div>
+              <input
+                v-model="tag"
+                @focus="box_focus('tag_box_show')"
+                @blur="box_blur('tag_box_show')"
+                class="tag" placeholder="标签" type="text" name="tag" spellcheck="false">
+              </input>
+              <input
+                v-model="classify"
+                @focus="box_focus('classify_box_show')"
+                @blur="box_blur('classify_box_show')"
+                class="classify" placeholder="分类" type="text" name="classify" spellcheck="false">
+              </input>
+              <div class="classify_box_contain">
+                <transition name="classify_box">
+                  <ul class="classify_box" v-show="classify_box_show">
+                    <li v-for="item in classify_name">
+                      {{item}}
+                    </li>
+                  </ul>
+                </transition>
+              </div>
             </div>
           </form>
           <textarea class="content" placeholder="内容" name="content" spellcheck="false"
@@ -105,6 +133,24 @@
 
     </transition>
 
+
+    <transition name="shadow">
+
+      <div class="shadow_box" v-show="shadow_flag" @click="shadow_click">
+        <div class="message">
+          是否保存博客后再跳转?
+        </div>
+        <yes-no
+          :father = "'write'"
+          :show_flag = "true"
+          @yes = "shadow_yes"
+          @no = "shadow_no"
+        >
+        </yes-no>
+      </div>
+
+    </transition>
+
   </div>
 </template>
 
@@ -115,8 +161,8 @@
   import {common_data,common_draft} from "common/js/mixin.js";
   import {get_date} from "common/js/get_date.js";
 
-  import {get_draft} from "api/get.js";
-  import {create_draft,update_draft,create_article} from "api/post.js";
+  import {get_draft,get_article} from "api/get.js";
+  import {create_draft,update_draft,create_article,update_article} from "api/post.js";
   import {mapGetters,mapMutations,mapActions} from "vuex";
   import YesNo from "./yes_no/yes_no.vue";
   export default {
@@ -136,6 +182,8 @@
         classify: "",
         content: "",
 
+        old_data: {},
+
         combine_flag: true,//控制输入框是合并还是分开
         markdown_flag: true,//控制markdown框的显示和隐藏
         html_flag: false,//控制html框的显示和隐藏
@@ -144,6 +192,7 @@
         update_flag: false,//判断draft是否是更新状态(在草稿箱中原有博客上修改)
         create_flag: false,//判断draft是否是创建状态(添加一篇新的博客到草稿)
         router_id_flag: true,//控制computed下的router_id,以避免其重复触发.
+        edit_flag: false,
 
         article_json: null,//需要提交到正式博客数据库中的json数据
         article_timer: null,
@@ -151,6 +200,17 @@
         yes_no_show: false,//yes_no组件中对应的yes_no_div元素的显示和隐藏
         loading_flag: false,//yes_no组件中对象的loading元素的显示和隐藏(同时,在其为
                             //true期间,所有操作会无效化)
+
+        autosave_timer: null,
+        autosave_flag: false,
+
+        shadow_flag: false,
+        next_flag: false,
+        saved_flag: false,
+        next_path: "/",
+
+        tag_box_show: false,
+        classify_box_show: false,
       }
     },
 
@@ -162,7 +222,6 @@
           return highlight.highlightAuto(code).value;
         }
       });
-
     },
 
 
@@ -195,12 +254,13 @@
           let _id = parseInt(this.$route.params.id);
           return _id;
         }
-
+        this.autosave();
         this.update_flag = false;
         this.create_flag = false;
 
         let data = {title: "",tag: "",classify: "",markdown: ""};
         this.set_input(data);
+        this.old_data = data;
 
         if(this.draft_id === null){
           return;
@@ -223,6 +283,7 @@
           let data = res.data.data;
 
           this.set_input(data);
+          this.old_data = data;
 
           this.update_flag = true;
           this.router_id_flag = false;
@@ -230,14 +291,47 @@
         return _id;
       },
 
+      //已经发表的博客文章发布
+      edit_router_id(){
+        if(this.$route.name != "edit"){
+          return;
+        }
+        this.edit_flag = false;
+
+        let data = {title: "",tag: "",classify: "",markdown: ""};
+        this.set_input(data);
+
+        let _id = parseInt(this.$route.params.id);
+        get_article(_id,"edit").then((res)=>{
+          if(res.data.code != 0){
+            this.add_talk_word("服务器端出现错误,获取article数据失败!");
+            return;
+          }
+          let data = res.data.data.article;
+          data.markdown = res.data.data.markdown;
+          this.set_input(data);
+
+          this.edit_flag = true;
+        });
+        return _id;
+      },
+
       show_flag(){
         if(this.router_show != false
-            && this.router_show.slice(0,5) === "draft"
             && this.data_ready != false//判断main数据是否获取.
         ){
-          if(this.create_flag === false && this.update_flag === false){
+          let name = this.$route.name;
+          if(name !== "draft" && name !== "edit"){
             return false;
           }
+
+          if(name === "draft" && this.create_flag === false && this.update_flag === false){
+            return false;
+          }
+          if(name === "edit" && this.edit_flag === false){
+            return false;
+          }
+
           this.set_loading_show(false);
           return true;
         }else{
@@ -255,6 +349,9 @@
         let tag = this.tag;
         let classify = this.classify;
         let content = this.content;
+
+        this.saved_flag = false;
+        this.next_flag = false;
         return get_date();
       },
 
@@ -312,6 +409,15 @@
         this.html_flag = true;
       },
 
+      autosave(){
+        this.autosave_timer = setTimeout(()=>{
+          let {title,tag,classify,markdown} = this.old_data;
+          this.autosave_flag = true;
+          this.save_draft();
+          this.autosave_flag = false;
+        },600000);
+      },
+
       //检测输入框的内容是否合法
       input_test(){
         let title = this.title.trim();
@@ -319,49 +425,53 @@
         let classify = this.classify.trim();
         let markdown = this.content.trim();
 
+        let warning = "";
         if(title === ""){
-          this.add_talk_word("标题输入框不能为空!");
-          return;
+          warning = "标题输入框不能为空!";
+          return warning;
         }
         if(tag === ""){
-          this.add_talk_word("标签输入框不能为空!");
-          return;
+          warning = "标签输入框不能为空!";
+          return warning;
         }
         if(classify === ""){
-          this.add_talk_word("分类输入框不能为空!");
-          return;
+          warning = "分类输入框不能为空!";
+          return warning;
         }
         if(markdown === ""){
-          this.add_talk_word("内容输入框不能为空!");
-          return;
+          warning = "内容输入框不能为空!";
+          return warning;
         }
 
         let title_flag = this.main.some((value)=>{
+          if(this.$route.name === "edit"){
+            return (value.title === title && value._id !== this.edit_router_id);
+          }
           return value.title === title;
         });
         if(title_flag){
-          this.add_talk_word(`标题 '${title}' 已经存在了! 请换一个新的标题`);
-          return;
+          warning = `标题 '${title}' 已经存在了! 请换一个新的标题`;
+          return warning;
         }
         if(! this.tag_name.includes(tag)){
-          this.add_talk_word(`标签 '${tag}' 不存在! 是否回到charge页面添加新标签?`);
-          return;
+          warning = `标签 '${tag}' 不存在! 是否回到charge页面添加新标签?`;
+          return warning;
         }
         if(! this.classify_name.includes(classify)){
-          this.add_talk_word(`分类 '${classify}' 不存在! 是否回到charge页面添加新分类?`);
-          return;
+          warning = `分类 '${classify}' 不存在! 是否回到charge页面添加新分类?`;
+          return warning;
         }
 
         let blockquote_el = this.$refs["html"].children[0];
         if(!blockquote_el || blockquote_el.nodeName != "BLOCKQUOTE"){
-          this.add_talk_word("内容输入框的第一段必须为 'blockquote' 元素,以作为这篇博客的介绍");
-          return;
+          warning = "内容输入框的第一段必须为 'blockquote' 元素,以作为这篇博客的介绍";
+          return warning;
         };
 
         let description_el = blockquote_el.children[0];
         if(!description_el){
-          this.add_talk_word("第一段 'blockquote' 元素不能为空!");
-          return;
+          warning = "第一段 'blockquote' 元素不能为空!";
+          return warning;
         }
 
         let description = description_el.innerHTML;
@@ -386,9 +496,21 @@
 
       //保存草稿内容(可能是创建一篇新的草稿,或者在原有草稿上修改)
       save_draft(){
+        if(this.$route.name !== "draft"){
+          return;
+        }
+        clearTimeout(this.autosave_timer);
+        this.autosave();
         let json = this.input_test();
 
-        if(!json){
+        if(typeof json === "string"){
+          let warning = json;
+          if(this.autosave_flag === false){
+            this.add_talk_word(warning);
+          }
+          if(this.next_flag === true){
+            this.next_flag = false;
+          }
           return;
         }
 
@@ -399,7 +521,12 @@
 
         let draft_json = json.draft_json;
 
-        this.add_talk_word("保存中...");
+        if(this.autosave_flag === false){
+          this.add_talk_word("保存中...");
+        }else{
+          this.add_talk_word("自动保存中...");
+        }
+
 
         let _id = this.router_id;
         draft_json._id = _id;
@@ -424,6 +551,11 @@
                 this.update_flag = true;
 
                 this.add_talk_word(`保存成功!已新增一篇博客到草稿箱,_id号为${this.router_id}`);
+
+                this.saved_flag = true;
+                if(this.next_flag === true){
+                  this.$router.push(this.next_path);
+                }
               }
               else if(code === 1){
                 this.add_talk_word("服务器端出现错误,保存失败!");
@@ -445,6 +577,11 @@
               if(code === 0){
                 this.set_draft_main(data);
                 this.add_talk_word("保存成功!");
+
+                this.saved_flag = true;
+                if(this.next_flag === true){
+                  this.$router.push(this.next_path);
+                }
               }
               else if(code === 1){
                 this.add_talk_word("服务器端出现错误,保存失败!");
@@ -462,7 +599,12 @@
       commit_draft_click(){
         let json = this.input_test();
 
-        if(!json){
+        clearTimeout(this.autosave_timer);
+        this.autosave();
+
+        if(typeof json === "string"){
+          let warning = json;
+          this.add_talk_word(warning);
           return;
         }
         this.article_json = json.article_json;
@@ -483,6 +625,10 @@
         this.add_talk_word("提交中...");
         let article_json = this.article_json;
         let _id = this.use.article_id + 1;
+        if(this.$route.name === "edit"){
+          _id = this.edit_router_id;
+        }
+
         article_json.main._id = _id;
         article_json.article._id = _id;
 
@@ -490,31 +636,62 @@
           setTimeout(()=>{resolve(0);},1500);
         });
 
+        if(this.$route.name === "draft"){
+          Promise.all([create_article(article_json),timer_promise])
+            .then((res)=>{
+              let code = res[0].data.code;
+              let data = res[0].data.data;
+              if(code === 0){
+                this.loading_flag = false;
+                this.active_button = false;
 
-        Promise.all([create_article(article_json),timer_promise])
-          .then((res)=>{
-            let code = res[0].data.code;
-            let data = res[0].data.data;
-            if(code === 0){
-              this.loading_flag = false;
-              this.active_button = false;
+                this.set_data_ready(false);
+                this.data_handle(data);
 
-              this.set_data_ready(false);
-              this.data_handle(data);
+                this.add_talk_word(`提交成功!已新增一篇博客,_id号为${_id}`);
+                this.$router.push(`/charge`);
+              }
+              else if(code === 1){
+                this.loading_flag = false;
+                this.active_button = false;
 
-              this.add_talk_word(`提交成功!已新增一篇博客,_id号为${_id}`);
-            }
-            else if(code === 1){
-              this.loading_flag = false;
-              this.active_button = false;
+                this.add_talk_word("服务器端出现错误,保存失败!");
+              }
+            })
+            .catch((err)=>{
+              this.add_talk_word("axios请求出现错误,保存失败!");
+              console.log(err);
+            });
+        }
 
-              this.add_talk_word("服务器端出现错误,保存失败!");
-            }
-          })
-          .catch((err)=>{
-            this.add_talk_word("axios请求出现错误,保存失败!");
-            console.log(err);
-          });
+        else if(this.$route.name === "edit"){
+          Promise.all([update_article(article_json),timer_promise])
+            .then((res)=>{
+              let code = res[0].data.code;
+              let data = res[0].data.data;
+              if(code === 0){
+                this.loading_flag = false;
+                this.active_button = false;
+
+                this.set_data_ready(false);
+                this.data_handle(data);
+
+                this.add_talk_word(`编辑成功!一篇博客已发生变更,_id号为${_id}`);
+                this.$router.push(`/charge`);
+              }
+              else if(code === 1){
+                this.loading_flag = false;
+                this.active_button = false;
+
+                this.add_talk_word("服务器端出现错误,保存失败!");
+              }
+            })
+            .catch((err)=>{
+              this.add_talk_word("axios请求出现错误,保存失败!");
+              console.log(err);
+            });
+        }
+
       },
 
       cancel_commit_draft(){
@@ -541,7 +718,32 @@
           this.yes_no_show = false;
           this.active_button = false;
         },3000);
-      }
+      },
+
+      shadow_yes(){
+        this.shadow_flag = false;
+        this.next_flag = true;
+        this.save_draft();
+      },
+
+      shadow_no(){
+        this.shadow_flag = false;
+        this.next_flag = true;
+        this.$router.push(this.next_path);
+      },
+
+      shadow_click(){
+        this.shadow_flag = false;
+      },
+
+      box_focus(flag){
+        this[flag] = true;
+      },
+
+      box_blur(flag){
+        this[flag] = false;
+      },
+
 
     },
 
@@ -570,8 +772,37 @@
 
     },
 
-    // beforeRouteLeave(to,from,next){
-    // }
+    beforeRouteLeave(to,from,next){
+      if(this.$route.name !== "draft"){
+        next();
+        return;
+      }
+      if(this.saved_flag === true){
+        this.saved_flag = false;
+        clearTimeout(this.autosave_timer);
+        next();
+        return;
+      }
+      if(this.next_flag === false){
+
+        let {title,tag,classify,markdown} = this.old_data;
+        if(title === this.title && tag === this.tag
+           && classify === this.classify && markdown === this.content
+         )
+         {
+          clearTimeout(this.autosave_timer);
+          next();
+          return;
+         }
+
+        this.next_path = to.path;
+        this.shadow_flag = true;
+      }else if(this.next_flag === true){
+        this.next_flag = false;
+        clearTimeout(this.autosave_timer);
+        next();
+      }
+    },
 
   }
 </script>
@@ -715,6 +946,7 @@
             line-height: 3.5rem
             font-size: 2.4rem
           .tag_classify
+            position: relative
             flex-shrink: 0
             width: 10rem
             margin-left: 1rem
@@ -728,6 +960,59 @@
               margin-top: 1rem
             .classify
               margin-top: 0.6rem
+            .tag_box_contain
+              position: absolute
+              display: flex
+              top: 1rem
+              left: 0
+              transform: translateY(-100%)
+            .tag_box,.classify_box
+              position: relative
+              display: flex
+              flex-wrap: wrap
+              font-size: 1.4rem
+              color: $color-3
+              padding-left: 0.5rem
+              background: $color-1
+              box-shadow: $box-shadow
+              border-radius: 0.3rem
+              >li
+                position: relative
+                padding: 0.3rem 0.5rem
+                box-shadow: $box-shadow-left
+                z-index: 10
+            .tag_box
+              &:before
+                content: ""
+                position: absolute
+                background: $color-1
+                width: calc(100% + 3.6rem)
+                height: 4.85rem
+                bottom: -0.6rem
+                left: -0.6rem
+                z-index: 9
+
+            .tag_box-enter,.tag_box-leave-to,.classify_box-enter,.classify_box-leave-to
+              transform: scaleY(0)
+              opacity: 0
+            .tag_box-enter-to,.tag_box-leave,.classify_box-enter-to,.classify_box-leave
+              transform: scaleY(1)
+              opacity: 1
+            .tag_box-enter-active,.tag_box-leave-active,.classify_box-enter-active,.classify_box-leave-active
+              transition: all 300ms
+
+            .classify_box_contain
+              position: absolute
+              bottom: 0
+              left: 0
+              transform: translateY(100%)
+            .classify_box
+              font-size: 1.2rem
+              box-shadow: none
+              margin-top: -0.3rem
+              >li
+                margin-right: 0.5rem
+
         .content
           display: block
           background: transparent
@@ -784,6 +1069,37 @@
               font-size: 1.2rem
               padding-left: 1rem
               box-shadow: $box-shadow-left
+
+    .shadow_box
+      position: fixed
+      z-index: 12
+      top: 0
+      left: 0
+      height: 100%
+      width: 100%
+      background: rgba(0,0,0,0.4)
+      display: flex
+      align-items: center
+      justify-content: center
+      flex-direction: column
+      .message
+        font-family: monospace
+        letter-spacing: 0.1rem
+        font-size: 1.4rem
+        line-height: 2.2rem
+        padding: 0.1rem 0.5rem
+        background: $color-3
+        color: $color-2
+        border-radius: 0.3rem
+      .yes_no
+        margin-top: 1.4rem
+        width: 11rem
+    .shadow-enter
+      opacity: 0
+    .shadow-enter-to
+      opacity: 1
+    .shadow-enter-active
+      transition: opacity 300ms
 
   @media(max-width: 940px)
     .write

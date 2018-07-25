@@ -19,7 +19,7 @@ const NotFound = () => import("components/route/404.vue");
 
 const Charge = () => import("components/charge/charge.vue");
 const Write = () => import("components/charge/write.vue");
-
+const UpdateEdit = () => import("components/charge/update_edit.vue");
 
 let scroll_timer = null;
 
@@ -106,6 +106,12 @@ const router = new Router({
     },
 
     {
+      path: "/update_edit/:id(\\d+)",
+      name: "update_edit",
+      component: UpdateEdit
+    },
+
+    {
       path: "*",
       name: "404",
       component: NotFound
@@ -156,7 +162,7 @@ router.beforeEach((to,from,next)=>{
 
   let name = (to.path).slice(1);
 
-  if(to.name === "charge" || to.name === "draft" || to.name === "edit"){
+  if(to.name === "charge" || to.name === "draft" || to.name === "edit" || to.name === "update_edit"){
     commit_login_flag(true);
   }else{
     commit_login_flag(false);

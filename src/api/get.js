@@ -17,8 +17,8 @@ export function get_diary(){
   return get_view("/api/get/diary");
 }
 
-export function get_article(_id){
-  let promise = axios.get(`/api/get/article?_id=${_id}`);
+export function get_article(_id,type){
+  let promise = axios.get(`/api/get/article?_id=${_id}&type=${type}`);
   return promise;
 }
 

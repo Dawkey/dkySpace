@@ -20,7 +20,7 @@ export const common_data = {
         return;
       }
       if(res.data.code != 0){
-        console.log("服务器端获取数据出现错误,Dawkey!");
+        console.log("服务器端获取数据出现错误,获取main数据失败!");
         return;
       }
       this.data_handle(res.data.data);
@@ -83,7 +83,7 @@ export const common_draft = {
       }
       get_draft_main().then((res)=>{
         if(res.data.code != 0){
-          console.log("服务器端获取数据,获取draft_main数据失败");
+          console.log("服务器端获取数据出现错误,获取draft_main数据失败");
           return;
         }
         let data = res.data.data;

@@ -24,9 +24,10 @@
       </yes-no>
 
       <li class="ul_head">
-        <div class="title">标题</div>
-        <div class="classify">分类<i class="icon-add"></i></div>
-        <div class="tag">标签<i class="icon-add"></i></div>
+        <div class="version" v-if="comp === 'update'">版本号</div>
+        <div class="title" v-if="comp !== 'update'">标题</div>
+        <div class="classify" v-if="comp !== 'update'">分类<i class="icon-add"></i></div>
+        <div class="tag" v-if="comp !== 'update'">标签<i class="icon-add"></i></div>
         <div class="date">日期</div>
       </li>
 
@@ -36,9 +37,10 @@
 
       <li v-for = "(item,index) in comp_main"
         :class="{active: active_comp.index === index}">
-        <div class="title">{{item.title}}</div>
-        <div class="classify">{{item.classify}}</div>
-        <div class="tag">{{item.tag}}</div>
+        <div class="version" v-if="comp === 'update'">{{item.version}}</div>
+        <div class="title" v-if="comp !== 'update'">{{item.title}}</div>
+        <div class="classify" v-if="comp !== 'update'">{{item.classify}}</div>
+        <div class="tag" v-if="comp !== 'update'">{{item.tag}}</div>
         <div class="date">{{item.date}}</div>
         <div class="icon_div">
           <i class="icon-write"
@@ -46,6 +48,7 @@
              :class="{disable: loading_flag !== false}"
           ></i>
           <i class="icon-delete"
+             v-if = "comp !== 'update'"
              @click="delete_comp_click(item._id,index)"
              :class="[{active: active_comp.index === index},
                      {disable: loading_flag !== false}
@@ -163,7 +166,12 @@
         if(this.loading_flag !== false){
           return;
         }
-        this.$router.push(`/${this.comp}/${this.draft_id}`);
+        if(this.comp !== "update"){
+          this.$router.push(`/draft/${this.draft_id}`);
+        }else{
+          this.$router.push(`/update_edit/${this.draft_id}`);
+        }
+
       },
 
       //跳转到编辑页面
@@ -274,6 +282,8 @@
         width: 15%
       .date
         width: 21%
+      .version
+        width: 65%
 
       .button_icon
         position: absolute
