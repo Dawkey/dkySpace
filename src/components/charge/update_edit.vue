@@ -4,15 +4,39 @@
     <transition name="router">
       <div class="update_edit_div" v-show="show_flag">
 
-        <div class="write_icon">
+        <div class="_id">_id:{{router_id}}</div>
+
+        <div class="write_icon update_icon">
           <i class="icon-update"></i>
+        </div>
+
+        <div class="commit">
+          <div class="write_icon commit_icon">
+            <i class="icon-commit"
+              @click="commit_update_click"
+              :class="{active: active_button === 'commit'}"
+            ></i>
+          </div>
+          <yes-no class="yes-no"
+            :father = "'write'"
+            :top = "'6.5rem'"
+            :show_flag = "yes_no_show"
+            :loading_flag = "loading_flag"
+            @yes = "commit_update"
+            @no = "cancel_commit_update"
+          >
+          </yes-no>
         </div>
 
         <div class="edit">
           <div class="version">
-            V1.6
+            {{version}}
           </div>
-          <textarea type="text" name="edit" placeholder="内容" spellcheck="false">
+          <textarea type="text" name="edit" placeholder="内容(以'*+空格'的格式)" spellcheck="false"
+            v-model = "markdown"
+            :class = "{wrong_format: !format_flag}"
+            :style = "{height: textarea_height}"
+          >
           </textarea>
         </div>
 
@@ -21,17 +45,14 @@
             <div class="version">
               <div class="version_circle">
               </div>
-              V1.6
+              {{version}}
             </div>
             <div class="date">
               <i class="icon-date"></i>
-              2018/07/25/20:42:56
+              {{date}}
             </div>
           </div>
-          <ul class="content">
-            <li>aaaa</li>
-            <li>bbbb</li>
-            <li>cccc</li>
+          <ul class="content" v-html="html" ref="html">
           </ul>
         </div>
 
@@ -42,7 +63,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters,mapMutations} from "vuex";
+  import YesNo from "./yes_no/yes_no.vue";
+  import {mapGetters,mapMutations,mapActions} from "vuex";
   import {common_data} from "common/js/mixin.js";
 
   import {get_update} from "api/get.js"
@@ -50,10 +72,23 @@
   export default {
     name: "update_edit",
 
+    components: {YesNo},
+
     mixins: [common_data],
 
     data(){
       return {
+        version: "",
+        date: "",
+
+        markdown: "",
+        format_flag: true,
+        textarea_height: "auto",
+
+        active_button: false,
+        yes_no_show: false,
+        loading_flag: false,
+
         create_flag: false,
         edit_flag: false,
       }
@@ -71,6 +106,10 @@
         "use",
         "update"
       ]),
+
+      html(){
+        return this.md_html(this.markdown);
+      },
 
       //创造下一个update时,所应使用的_id
       update_id(){
@@ -97,6 +136,12 @@
         }
 
         this.edit_flag = true;
+        if(this.update.length != 0){
+          let length = this.update.length;
+          let update_obj = this.update[length - _id];
+          this.version = update_obj.version;
+          this.date = update_obj.date;
+        }
         return _id;
       },
 
@@ -124,6 +169,11 @@
         "set_loading_show"
       ]),
 
+      ...mapActions([
+        "add_talk_word"
+      ]),
+
+
       get_update_data(){
         if(this.update.length != 0){
           return;
@@ -137,7 +187,65 @@
           this.set_update(data);
         });
       },
+
+      //markdown格式转html(列表)
+      md_html(md){
+        let md_array = md.split("\n");
+        let ul = /^\*\s.*/;
+        let flag = true;
+
+        let html_array = [];
+        md_array.forEach((value,index)=>{
+          if(ul.test(value)){
+            let html_str = `<li>${value.substr(2)}</li>`;
+            html_array.push(html_str);
+          }else{
+            if(index < md_array.length - 1){
+              flag = false;
+            }else{
+              if(value != "" && value != "*"){ flag = false; }
+            }
+          }
+        });
+
+        this.format_flag = flag;
+
+        let html = html_array.join("");
+        return html;
+      },
+
+      commit_update_click(){
+        this.active_button = "commit";
+        this.yes_no_show = true;
+      },
+
+      commit_update(){
+        console.log("commit");
+      },
+
+      cancel_commit_update(){
+        this.active_button = false;
+        this.yes_no_show = false;
+      }
     },
+
+
+    watch: {
+      html(){
+        if(this.$refs.html){
+          this.$nextTick().then(()=>{
+            let height = this.$refs.html.offsetHeight;
+            this.textarea_height = height + "px";
+          });
+        }
+      },
+
+      format_flag(){
+        if(this.format_flag === false){
+          this.add_talk_word("输入格式有误,请以 '*+空格' 的markdown格式输入!");
+        }
+      },
+    }
 
   }
 </script>
@@ -151,7 +259,20 @@
       box-sizing: border-box
       padding: 30px 30px 35px
       background: $color-1
+
+      ._id
+        position: absolute
+        top: 0.4rem
+        right: 0.4rem
+        font-size: 1.1rem
+        padding: 0.1rem
+        color: $color-3-o
+        font-family: cursive
+        border: 0.1rem solid
+        opacity: 0.5
+
       .edit
+        position: relative
         padding-top: 1.5rem
         padding-left: 2rem
         box-shadow: $box-shadow-left
@@ -174,9 +295,15 @@
           width: 100%
           min-height: 15rem
           font-size: 1.4rem
-          line-height: 2rem
+          line-height: 2.5rem
           font-family: inherit
           letter-spacing: 0.1rem
+          word-wrap: break-word
+          word-break: break-all
+          transition: height 300ms
+          &.wrong_format
+            color: red
+
       .view
         position: relative
         margin-top: 4rem
@@ -218,24 +345,30 @@
           margin-top: -0.2rem
           padding: 0.5rem 0
           color: $color-text
+          box-sizing: border-box
+          min-height: 15rem
           >>>li
             position: relative
             display: flex
-            align-items: center
             font-size: 1.3rem
             margin-top: 1rem
             margin-left: 2rem
-            height: 2rem
+            word-wrap: break-word
+            word-break: break-all
+            letter-spacing: 0.05rem
+            line-height: 2.4rem
             &:before
               content: ""
+              flex-shrink: 0
               width: 1.3rem
               height: 1.3rem
               border-radius: 50%
               background: $color-1
               box-shadow: $box-shadow
               margin-right: 0.7rem
+              margin-top: 0.4rem
 
-      .write_icon
+      .update_icon
         position: absolute
         top: -1.8rem
         left: calc(50% - 2.2rem)
@@ -255,6 +388,33 @@
             font-size: 2.3rem
             background: $color-1
             color: $color-3
+
+      .commit
+        position: absolute
+        top: 9rem
+        right: -1.8rem
+        .yes-no
+          position: absolute
+          left: calc(50% - 6rem)
+          width: 12rem
+        .commit_icon
+          position: relative
+          z-index: 10
+          margin-top: 2rem
+          font-size: 1.8rem
+          >i
+            &.active
+              background: $color-3
+              color: $color-1
+          &:before
+            content: ""
+            position: absolute
+            z-index: 10
+            width: 3rem
+            height: 6.5rem
+            right: 1.8rem
+            background: $color-1
+
 
 
 </style>

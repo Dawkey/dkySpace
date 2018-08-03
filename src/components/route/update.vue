@@ -131,19 +131,23 @@
             >>>li
               position: relative
               display: flex
-              align-items: center
               font-size: 1.3rem
               margin-top: 1rem
               margin-left: 2rem
-              height: 2rem
+              word-wrap: break-word
+              word-break: break-all
+              letter-spacing: 0.05rem
+              line-height: 2.4rem
               &:before
                 content: ""
+                flex-shrink: 0
                 width: 1.3rem
                 height: 1.3rem
                 border-radius: 50%
                 background: $color-1
                 box-shadow: $box-shadow
                 margin-right: 0.7rem
+                margin-top: 0.4rem
         .update_li:nth-of-type(1)
           margin-top: 0
 

@@ -830,7 +830,7 @@
       position: fixed
       z-index: 11
       top: 0
-      top: 24.5rem
+      top: 24.1rem
       left: -10rem
       &.discombine
         left: calc((100% - 4rem)/2 - 4.5rem + 1.8rem)
