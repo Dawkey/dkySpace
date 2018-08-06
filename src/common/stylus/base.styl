@@ -20,6 +20,26 @@ i{
 }
 
 
+::-webkit-scrollbar
+  width: 8px
+  height: 8px
+  background-color: transparent
+
+::-webkit-scrollbar-track
+  border-radius: 8px
+  background-color: transparent
+  box-shadow: 0 0 1px $color-3 inset
+
+::-webkit-scrollbar-thumb
+  border-radius: 8px
+  background-color: rgba(96,126,121,0.65)
+
+::selection {
+  background: $color-3;
+  color: $color-1;
+}
+
+
 .button_icon
   display: flex
   align-items: center

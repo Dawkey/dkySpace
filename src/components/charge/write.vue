@@ -111,7 +111,7 @@
           </div>
           <div class="middle_div">
             <div class="date">
-              {{edit_date}}
+              {{date}}
             </div>
             <div class="tag_classify">
               <div class="tag">
@@ -125,6 +125,9 @@
             </div>
           </div>
           <div class="content article_style" v-html="html" ref="html">
+          </div>
+          <div class="edit_date" v-show="combine_flag === true && html_flag === true">
+            最后编辑于<span>{{edit_date}}</span>
           </div>
 
         </div>
@@ -155,8 +158,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import marked from "marked";
-  import highlight from "highlight.js";
+  import marked,{Renderer} from "marked";
+  import hljs from "highlight.js";
 
   import {common_data,common_draft} from "common/js/mixin.js";
   import {get_date} from "common/js/get_date.js";
@@ -181,6 +184,7 @@
         tag: "",
         classify: "",
         content: "",
+        date: "",
 
         old_data: {},
 
@@ -217,11 +221,19 @@
 
     created(){
       this.set_login_flag(true);
-      marked.setOptions({
-        highlight(code){
-          return highlight.highlightAuto(code).value;
+
+      const renderer = new Renderer();
+
+      renderer.code = (code,language) => {
+        if(!language){
+          language = "code";
         }
-      });
+        let lang_is_valid = (language !== "code" && hljs.getLanguage(language));
+        let highlighted = lang_is_valid ? hljs.highlight(language, code).value : code;
+
+        return `<pre><div class="language">${language}</div><code class="hljs ${language}">${highlighted}</code></pre>`;
+      };
+      marked.setOptions({renderer});
     },
 
 
@@ -311,6 +323,8 @@
           data.markdown = res.data.data.markdown;
           this.set_input(data);
 
+          this.date = data.date;
+
           this.edit_flag = true;
         });
         return _id;
@@ -345,20 +359,24 @@
 
       //最后编辑日期
       edit_date(){
+        if(this.$route.name !== "draft" && this.$route.name !== "edit"){
+          return;
+        }
         let title = this.title;
         let tag = this.tag;
         let classify = this.classify;
         let content = this.content;
 
+        let now_date = get_date();
+
+        if(this.$route.name === "draft"){
+          this.date = now_date;
+        }
         this.saved_flag = false;
         this.next_flag = false;
-        return get_date();
+        return now_date;
       },
 
-      //发布博客日期
-      date(){
-        return this.edit_date;
-      },
 
       markdown_opacity(){
         if(this.combine_flag === false){
@@ -1069,6 +1087,15 @@
               font-size: 1.2rem
               padding-left: 1rem
               box-shadow: $box-shadow-left
+      .edit_date
+        display: flex
+        justify-content: flex-end
+        font-size: 1.4rem
+        color: #9a9a9a
+        >span
+          color: rgba(96,126,121,0.8)
+          margin-top: 0.1rem
+          margin-left: 0.5rem
 
     .shadow_box
       position: fixed

@@ -9,7 +9,7 @@
           :remove_comp = "remove_draft"
           :set_comp_main = "set_draft_main"
           :loading_flag = "loading_flag"
-          :draft_id = "draft_id"
+          :next_id = "draft_id"
           @set_loading_flag = "set_loading_flag"
         >
         </charge-ul>
@@ -20,7 +20,7 @@
           :remove_comp = "remove_article"
           :set_comp_main = "set_main"
           :loading_flag = "loading_flag"
-          :draft_id = "draft_id"
+          :next_id = "draft_id"
           @set_loading_flag = "set_loading_flag"
         >
         </charge-ul>
@@ -28,10 +28,8 @@
         <charge-ul class="update_charge"
           :comp = "'update'"
           :comp_main = "update"
-          :remove_comp = "remove_article"
-          :set_comp_main = "set_main"
           :loading_flag = "loading_flag"
-          :draft_id = "update_id"
+          :next_id = "update_id"
           @set_loading_flag = "set_loading_flag"
         >
         </charge-ul>

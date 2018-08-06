@@ -98,13 +98,15 @@
 
       //在需要移除li元素时,对应的POST函数(与后端交互)
       remove_comp: {
-        type: Function
+        type: Function,
+        default: function(){}
       },
 
       //在移除相应元素后,后端会返回发生改变的main数据,set_comp_main表示需要修改的
       //vuex中mutations中的修改相关main数据的函数.
       set_comp_main: {
-        type: Function
+        type: Function,
+        default: function(){}
       },
 
       //在从后端获取数据时,一切交互会被无效化,由loading_flag控制,loading_flag也是,draft,
@@ -114,8 +116,8 @@
         default: false
       },
 
-      //draft和article所共有的数据,表示在创建新的博客时,位于草稿箱中该博客应对应的id号.
-      draft_id: {
+      //draft,article,update所共有的数据,表示在创建新的博客或更新日志时,其受应赋予的_id号.
+      next_id: {
         type: Number,
         default: 0
       },
@@ -167,9 +169,9 @@
           return;
         }
         if(this.comp !== "update"){
-          this.$router.push(`/draft/${this.draft_id}`);
+          this.$router.push(`/draft/${this.next_id}`);
         }else{
-          this.$router.push(`/update_edit/${this.draft_id}`);
+          this.$router.push(`/update_edit/${this.next_id}`);
         }
 
       },
@@ -243,7 +245,12 @@
               this.active_comp.index = false;
               this.emit_loading_flag(false);
 
-              this.add_talk_word(`删除成功,_id号为${_id}的草稿数据已被移除`);
+              if(this.comp === "draft"){
+                this.add_talk_word(`删除成功,_id号为${_id}的草稿数据已被移除`);
+              }else if(this.comp === "article"){
+                this.add_talk_word(`删除成功,_id号为${_id}的博客数据已被移除`);
+              }
+
             }
             else if(code === 1){
               this.add_talk_word("服务器端出现错误,删除失败!");

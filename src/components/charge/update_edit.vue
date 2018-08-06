@@ -66,9 +66,10 @@
   import YesNo from "./yes_no/yes_no.vue";
   import {mapGetters,mapMutations,mapActions} from "vuex";
   import {common_data} from "common/js/mixin.js";
+  import {get_date} from "common/js/get_date.js";
 
   import {get_update} from "api/get.js"
-  import {create_update} from "api/post.js"
+  import {create_update,update_update} from "api/post.js"
   export default {
     name: "update_edit",
 
@@ -108,6 +109,9 @@
       ]),
 
       html(){
+        if(this.create_flag === true){
+          this.date = get_date();
+        }
         return this.md_html(this.markdown);
       },
 
@@ -124,14 +128,20 @@
         if(this.$route.name != "update_edit"){return;}
         if(this.update_id === null){return;}
 
+        this.create_flag = false;
+        this.edit_flag = false;
+
         let _id = parseInt(this.$route.params.id);
-        if(_id > this.draft_id || _id <= 0){
+        if(_id > this.update_id || _id <= 0){
           this.$router.replace("/404");
           return;
         }
 
         else if(_id === this.update_id){
           this.create_flag = true;
+          this.version = this.id_version(_id);
+          this.date = get_date();
+          this.markdown = "";
           return _id;
         }
 
@@ -141,6 +151,7 @@
           let update_obj = this.update[length - _id];
           this.version = update_obj.version;
           this.date = update_obj.date;
+          this.markdown = update_obj.markdown;
         }
         return _id;
       },
@@ -166,7 +177,8 @@
       ...mapMutations([
         "set_login_flag",
         "set_update",
-        "set_loading_show"
+        "set_loading_show",
+        "set_use"
       ]),
 
       ...mapActions([
@@ -214,13 +226,101 @@
         return html;
       },
 
+      id_version(_id){
+        let version_num = ((_id - 1) + 10)/10;
+        let version = "V" + version_num
+        if(version_num % 1 === 0){
+          version = version + ".0";
+        }
+        return version;
+      },
+
       commit_update_click(){
+        if(this.format_flag === false){
+          this.add_talk_word("输入格式有误,请以 '*+空格' 的markdown格式输入!");
+          return;
+        }
         this.active_button = "commit";
         this.yes_no_show = true;
       },
 
       commit_update(){
-        console.log("commit");
+        this.yes_no_show = false;
+        this.loading_flag = true;
+
+        this.add_talk_word("提交中...");
+
+        let update_json = {
+          _id: this.router_id,
+          version: this.version,
+          date: this.date,
+          markdown: this.markdown,
+          content: this.html,
+        };
+
+        let timer_promise = new Promise((resolve)=>{
+          setTimeout(()=>{resolve(0);},1500);
+        });
+
+        if(this.edit_flag === true){
+          Promise.all([update_update(update_json),timer_promise])
+            .then((res)=>{
+              let code = res[0].data.code;
+              let data = res[0].data.data;
+              if(code === 0){
+                this.loading_flag = false;
+                this.active_button = false;
+
+                this.set_update(data);
+
+                this.add_talk_word(`编辑成功!版本号为${this.version}的更新日志已发生变更`);
+                this.$router.push(`/update`);
+              }
+              else if(code === 1){
+                this.loading_flag = false;
+                this.active_button = false;
+
+                this.add_talk_word("服务器端出现错误,保存失败!");
+              }
+            })
+            .catch((err)=>{
+              this.loading_flag = false;
+              this.active_button = false;
+
+              this.add_talk_word("axios请求出现错误,保存失败!");
+              console.log(err);
+            });
+        }
+        else if(this.create_flag === true){
+          Promise.all([create_update(update_json),timer_promise])
+            .then((res)=>{
+              let code = res[0].data.code;
+              let data = res[0].data.data;
+              if(code === 0){
+                this.loading_flag = false;
+                this.active_button = false;
+
+                this.set_update(data.update);
+                this.set_use(data.use)
+
+                this.add_talk_word(`提交成功!新增版本号为${this.version}的更新日志,版本升级到${this.version}`);
+                this.$router.push(`/charge`);
+              }
+              else if(code === 1){
+                this.loading_flag = false;
+                this.active_button = false;
+
+                this.add_talk_word("服务器端出现错误,保存失败!");
+              }
+            })
+            .catch((err)=>{
+              this.loading_flag = false;
+              this.active_button = false;
+
+              this.add_talk_word("axios请求出现错误,保存失败!");
+              console.log(err);
+            });
+        }
       },
 
       cancel_commit_update(){
@@ -272,7 +372,6 @@
         opacity: 0.5
 
       .edit
-        position: relative
         padding-top: 1.5rem
         padding-left: 2rem
         box-shadow: $box-shadow-left

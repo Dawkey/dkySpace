@@ -25,12 +25,19 @@
         </div>
         <div class="content article_style" v-html = "article.content">
         </div>
+        <div class="edit_date">
+          最后编辑于<span>{{article.edit_date}}</span>
+        </div>
         <div class="before_after_article">
           <div class="before_article"
             v-if="before_article.title"
             @click="to_article(before_article._id)"
           >
             {{before_article.title}}
+          </div>
+          <div class="before_article_blank"
+            v-if="!before_article.title"
+          >
           </div>
           <div class="after_article"
             v-if="after_article.title"
@@ -175,16 +182,25 @@
           font-size: 1.2rem
           padding-left: 1rem
           box-shadow: $box-shadow-left
+    .edit_date
+      display: flex
+      justify-content: flex-end
+      font-size: 1.4rem
+      color: #9a9a9a
+      >span
+        color: rgba(96,126,121,0.8)
+        margin-top: 0.1rem
+        margin-left: 0.5rem
     .before_after_article
       display: flex
       justify-content: space-between
-      margin-top: 3rem
+      margin-top: 3.5rem
       margin-bottom: 1rem
       .before_article,.after_article
         font-size: 1.4rem
         line-height: 2rem
         color: rgba(96,126,121,0.8)
-        box-shadow: 0 0.5rem 0.5rem -0.5rem;
+        box-shadow: 0 0.5rem 0.5rem -0.5rem
         cursor: pointer
         padding: 0 0.5rem
         margin-left: -0.5rem
