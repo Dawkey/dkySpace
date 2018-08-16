@@ -20,6 +20,8 @@
         :loading_flag = "loading_flag"
         @yes = "delete_comp"
         @no = "cancel_delete_comp"
+        @mouseenter.native = "yes_no_enter"
+        @mouseleave.native = "yes_no_leave"
       >
       </yes-no>
 
@@ -48,7 +50,7 @@
              :class="{disable: loading_flag !== false}"
           ></i>
           <i class="icon-delete"
-             v-if = "comp !== 'update'"
+             v-if = "!(comp === 'update' && index !== 0)"
              @click="delete_comp_click(item._id,index)"
              :class="[{active: active_comp.index === index},
                      {disable: loading_flag !== false}
@@ -110,17 +112,26 @@
       },
 
       //在从后端获取数据时,一切交互会被无效化,由loading_flag控制,loading_flag也是,draft,
-      //article,update三个部分所共有的唯一数据.
+      //article,update三个部分所共有的数据.
       loading_flag: {
         type: Boolean,
         default: false
       },
 
-      //draft,article,update所共有的数据,表示在创建新的博客或更新日志时,其受应赋予的_id号.
+      //在点击三个组件中的一个交互时,我们希望其他两个组件的交互提示消失,这个变量就用来指示
+      //当前所点击的组件名称,它和 loading_flag 一样是三个组件共有的数据.
+      current_comp: {
+        type: String,
+        default: "draft"
+      },
+
+      //draft,article,update都会使用的数据,不过并无关联,表示在创建新的博客或更新日志时,
+      //其受应赋予的_id号.
       next_id: {
         type: Number,
         default: 0
       },
+
     },
 
 
@@ -163,6 +174,11 @@
         this.$emit("set_loading_flag",bool);
       },
 
+      //触发charge.vue父组件来修改current_comp的值
+      emit_current_comp(str){
+        this.$emit("set_current_comp",str);
+      },
+
       //跳转到新建页面
       to_comp(){
         if(this.loading_flag !== false){
@@ -190,13 +206,14 @@
           return;
         }
         clearTimeout(this.comp_timer);
+        this.emit_current_comp(this.comp);
         this.active_comp.index = index;
         this.active_comp.id = _id;
         this.comp_top = (4.1 + index * 3.2) + "rem";
         this.comp_timer = setTimeout(()=>{
           this.active_comp.index = false;
           this.active_comp.id = false;
-        },3000);
+        },4000);
       },
 
       //真正的删除事件
@@ -226,8 +243,17 @@
         this.add_talk_word("删除中...");
 
         let use_id = `${this.comp}_id`;
-        Promise.all([this.remove_comp({_id:_id,[use_id]:comp_id}),timer_promise])
+        let post_json = {_id:_id,[use_id]:comp_id};
+
+        let update_version = null;
+        if(this.comp === "update"){
+          update_version = this.comp_main[1].version;
+          post_json.update_version = update_version;
+        }
+
+        Promise.all([this.remove_comp(post_json),timer_promise])
           .then((res)=>{
+            console.log(res);
             let code = res[0].data.code;
             let data = res[0].data.data;
             if(code === 0){
@@ -249,6 +275,8 @@
                 this.add_talk_word(`删除成功,_id号为${_id}的草稿数据已被移除`);
               }else if(this.comp === "article"){
                 this.add_talk_word(`删除成功,_id号为${_id}的博客数据已被移除`);
+              }else if(this.comp === "update"){
+                this.add_talk_word(`删除成功,_id号为${_id}的更新日志已被移除,当前版本回退至${update_version}`);
               }
 
             }
@@ -266,7 +294,37 @@
         clearTimeout(this.comp_timer);
         this.active_comp.index = false;
         this.active_comp.id = false;
-      }
+      },
+
+      yes_no_enter(){
+        if(!this.active_comp.id){
+          return;
+        }
+        clearTimeout(this.comp_timer);
+      },
+
+      yes_no_leave(){
+        if(!this.active_comp.id){
+          return;
+        }
+        clearTimeout(this.comp_timer);
+        this.comp_timer = setTimeout(()=>{
+          this.active_comp.index = false;
+          this.active_comp.id = false;
+        },4000);
+      },
+
+    },
+
+
+    watch: {
+      current_comp(){
+        if(this.current_comp !== this.comp){
+          clearTimeout(this.comp_timer);
+          this.active_comp.index = false;
+          this.active_comp.id = false;
+        }
+      },
     }
 
   }
@@ -373,7 +431,6 @@
           justify-content: center
           background: transparent
           color: $color-3
-          margin: 1rem 0 0 0
         .icon_div
           display: flex
           height: 3.2rem

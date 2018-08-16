@@ -11,7 +11,7 @@
     padding: 0
 
   h1,h2,h3,h4,h5,h6
-    margin-top: 1.6em
+    margin-top: 1.8em
     margin-bottom: 1.4rem
 
   a
@@ -22,13 +22,22 @@
     &:hover
       color: $color-3
 
+  h1
+    font-size: 2.5rem
+
+  h2
+    font-size: 2.2rem
+
   h3
-    font-size: 1.8rem
+    font-size: 1.9rem
+
+  h4
+    font-size: 1.6rem
 
   p
     line-height: 2
     margin: 1em 0
-    color: #2f2f2f
+    color: $color-black
     strong
       color: #4f4f4f
       padding: 0 0.15rem
@@ -71,22 +80,25 @@
     border-radius: 0.2rem
 
   pre
-    background: #282c34
-    color: #abb2b2
-    padding: 1rem 1.5rem 1.5rem
+    background: #f1f1f1
     margin: 1.2em 0
     border-radius: 0.5rem
-    overflow: auto
+    box-shadow: 0 0 5px 0 #ddd
     code
       background: transparent
       padding: 0
-      color: inherit
       font-size: 1.36rem
+      padding: 0 1.5rem 1.5rem
+      overflow: auto
+      letter-spacing: normal
     .language
       display: flex
       justify-content: flex-end
       font-size: 1.3rem
       color: $color-3
-      margin-right: -0.6rem
-      margin-top: -0.4rem
+      padding: 0.8rem 0.8rem 0 0
       font-family: Georgia
+    ::-webkit-scrollbar-track
+      border-radius: 8px
+      background-color: transparent
+      box-shadow: 0 0 1px transparent inset

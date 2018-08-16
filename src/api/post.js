@@ -43,3 +43,8 @@ export function update_update(json){
   let promise = axios.post("/api/post/update_update",json);
   return promise;
 }
+
+export function remove_update(json){
+  let promise = axios.post("/api/post/remove_update",json);
+  return promise;
+}

@@ -1,6 +1,28 @@
 <template>
   <div class="update_edit">
 
+    <transition name="commit">
+      <div class="commit" v-show="show_flag">
+        <div class="write_icon commit_icon">
+          <i class="icon-commit"
+            @click="commit_update_click"
+            :class="{active: active_button === 'commit'}"
+          ></i>
+        </div>
+        <yes-no class="yes-no"
+          :father = "'write'"
+          :top = "'6.5rem'"
+          :show_flag = "yes_no_show"
+          :loading_flag = "loading_flag"
+          @yes = "commit_update"
+          @no = "cancel_commit_update"
+          @mouseenter.native = "yes_no_enter"
+          @mouseleave.native = "yes_no_leave"
+        >
+        </yes-no>
+      </div>
+    </transition>
+
     <transition name="router">
       <div class="update_edit_div" v-show="show_flag">
 
@@ -8,24 +30,6 @@
 
         <div class="write_icon update_icon">
           <i class="icon-update"></i>
-        </div>
-
-        <div class="commit">
-          <div class="write_icon commit_icon">
-            <i class="icon-commit"
-              @click="commit_update_click"
-              :class="{active: active_button === 'commit'}"
-            ></i>
-          </div>
-          <yes-no class="yes-no"
-            :father = "'write'"
-            :top = "'6.5rem'"
-            :show_flag = "yes_no_show"
-            :loading_flag = "loading_flag"
-            @yes = "commit_update"
-            @no = "cancel_commit_update"
-          >
-          </yes-no>
         </div>
 
         <div class="edit">
@@ -92,6 +96,8 @@
 
         create_flag: false,
         edit_flag: false,
+
+        update_timer: null,
       }
     },
 
@@ -242,9 +248,15 @@
         }
         this.active_button = "commit";
         this.yes_no_show = true;
+        clearTimeout(this.update_timer);
+        this.update_timer = setTimeout(()=>{
+          this.yes_no_show = false;
+          this.active_button = false;
+        },4000);
       },
 
       commit_update(){
+        clearTimeout(this.update_timer);
         this.yes_no_show = false;
         this.loading_flag = true;
 
@@ -303,7 +315,7 @@
                 this.set_update(data.update);
                 this.set_use(data.use)
 
-                this.add_talk_word(`提交成功!新增版本号为${this.version}的更新日志,版本升级到${this.version}`);
+                this.add_talk_word(`提交成功!新增一篇更新日志,_id号为${this.router_id},版本升级至${this.version}`);
                 this.$router.push(`/charge`);
               }
               else if(code === 1){
@@ -326,7 +338,26 @@
       cancel_commit_update(){
         this.active_button = false;
         this.yes_no_show = false;
-      }
+      },
+
+      yes_no_enter(){
+        if(this.yes_no_show === false){
+          return;
+        }
+
+        clearTimeout(this.update_timer);
+      },
+
+      yes_no_leave(){
+        if(this.yes_no_show === false){
+          return;
+        }
+
+        this.update_timer = setTimeout(()=>{
+          this.yes_no_show = false;
+          this.active_button = false;
+        },4000);
+      },
     },
 
 
@@ -488,32 +519,41 @@
             background: $color-1
             color: $color-3
 
-      .commit
+    .commit
+      position: fixed
+      z-index: 11
+      top: 24.1rem
+      left: calc((100% - 88rem)/2 + 88rem - 4.5rem + 1.8rem)
+      .yes-no
         position: absolute
-        top: 9rem
-        right: -1.8rem
-        .yes-no
+        left: calc(50% - 6rem)
+        width: 12rem
+      .commit_icon
+        position: relative
+        z-index: 10
+        margin-top: 2rem
+        font-size: 1.8rem
+        >i
+          &.active
+            background: $color-3
+            color: $color-1
+        &:before
+          content: ""
           position: absolute
-          left: calc(50% - 6rem)
-          width: 12rem
-        .commit_icon
-          position: relative
           z-index: 10
-          margin-top: 2rem
-          font-size: 1.8rem
-          >i
-            &.active
-              background: $color-3
-              color: $color-1
-          &:before
-            content: ""
-            position: absolute
-            z-index: 10
-            width: 3rem
-            height: 6.5rem
-            right: 1.8rem
-            background: $color-1
-
+          width: 3rem
+          height: 6.5rem
+          right: 1.8rem
+          background: $color-1
+    .commit-enter-active
+      animation: icon_show 400ms
+    @keyframes icon_show
+      0%
+        transform: scaleY(0)
+      50%
+        transform: scaleY(0)
+      100%
+        transform: scaleY(1)
 
 
 </style>

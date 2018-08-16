@@ -53,7 +53,7 @@
 
 <script type="text/ecmascript-6">
   import {get_article} from "api/get.js"
-  import {mapGetters,mapMutations} from "vuex";
+  import {mapGetters,mapMutations,mapActions} from "vuex";
   export default {
     name: "Article",
 
@@ -95,11 +95,21 @@
         "set_loading_show"
       ]),
 
+      ...mapActions([
+        "add_talk_word",
+      ]),
+
       get_data(_id){
         get_article(_id,"show").then((res)=>{
           let res_data = res.data;
           if(res_data.code != 0){
-            return;
+            if(res_data.code === 1){
+              this.add_talk_word("服务器端出现错误,获取article数据失败!");
+              return;
+            }else if(res_data.code === 2){
+              this.$router.replace("/404");
+              return;
+            }
           }
           let data = res_data.data;
           let {before_article,article,after_article} = data;

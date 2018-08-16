@@ -289,8 +289,13 @@
         }
         get_draft(_id).then((res)=>{
           if(res.data.code != 0){
-            this.add_talk_word("服务器端出现错误,获取draft数据失败!");
-            return;
+            if(res.data.code === 1){
+              this.add_talk_word("服务器端出现错误,获取draft数据失败!");
+              return;
+            }else if(res.data.code === 2){
+              this.$router.replace("/404");
+              return;
+            }
           }
           let data = res.data.data;
 
@@ -316,8 +321,13 @@
         let _id = parseInt(this.$route.params.id);
         get_article(_id,"edit").then((res)=>{
           if(res.data.code != 0){
-            this.add_talk_word("服务器端出现错误,获取article数据失败!");
-            return;
+            if(res.data.code === 1){
+              this.add_talk_word("服务器端出现错误,获取article数据失败!");
+              return;
+            }else if(res.data.code === 2){
+              this.$router.replace("/404");
+              return;
+            }
           }
           let data = res.data.data.article;
           data.markdown = res.data.data.markdown;
@@ -617,8 +627,8 @@
       commit_draft_click(){
         let json = this.input_test();
 
-        clearTimeout(this.autosave_timer);
-        this.autosave();
+        // clearTimeout(this.autosave_timer);
+        // this.autosave();
 
         if(typeof json === "string"){
           let warning = json;
@@ -628,10 +638,11 @@
         this.article_json = json.article_json;
         this.yes_no_show = true;
         this.active_button = "commit";
+        clearTimeout(this.article_timer);
         this.article_timer = setTimeout(()=>{
           this.yes_no_show = false;
           this.active_button = false;
-        },3000);
+        },4000);
       },
 
       //真正发表博客内容的函数(创建一篇新的博客),由yes_no组件中的yes按钮触发
@@ -667,6 +678,7 @@
                 this.data_handle(data);
 
                 this.add_talk_word(`提交成功!已新增一篇博客,_id号为${_id}`);
+                this.saved_flag = true;
                 this.$router.push(`/charge`);
               }
               else if(code === 1){
@@ -735,7 +747,7 @@
         this.article_timer = setTimeout(()=>{
           this.yes_no_show = false;
           this.active_button = false;
-        },3000);
+        },4000);
       },
 
       shadow_yes(){
@@ -815,7 +827,8 @@
 
         this.next_path = to.path;
         this.shadow_flag = true;
-      }else if(this.next_flag === true){
+      }
+      else if(this.next_flag === true){
         this.next_flag = false;
         clearTimeout(this.autosave_timer);
         next();
@@ -847,7 +860,6 @@
     .icon_box
       position: fixed
       z-index: 11
-      top: 0
       top: 24.1rem
       left: -10rem
       &.discombine

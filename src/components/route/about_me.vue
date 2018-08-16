@@ -105,16 +105,4 @@
             box-shadow: $box-shadow-bottom
             color: $color-3
 
-  // .about_me-enter-active
-  //   transition: all 500ms
-  // .about_me-enter
-  //   position: absolute
-  //   top: 0.1rem
-  //   left: -1rem
-  //   opacity: 0
-  // .about_me-enter-to
-  //   position: absolute
-  //   top: 0.1rem
-  //   left: 1.05rem
-  //   opacity: 1
 </style>
