@@ -832,7 +832,12 @@
         this.next_flag = false;
         clearTimeout(this.autosave_timer);
         next();
+        return;
       }
+
+      //next(false) 重要!,用于中断当前导航,如果url发生变化(使用浏览器的后退按钮等),会
+      //把url重置为from时的状态.
+      next(false);
     },
 
   }

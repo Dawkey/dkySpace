@@ -64,6 +64,10 @@ const mutations = {
   [types.set_draft_flag](state,draft_flag){
     state.draft_flag = draft_flag;
   },
+
+  [types.set_kcharge_flag](state,kcharge_flag){
+    state.kcharge_flag = kcharge_flag;
+  }
 }
 
 export default mutations;

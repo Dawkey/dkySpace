@@ -28,8 +28,14 @@
       <li class="ul_head">
         <div class="version" v-if="comp === 'update'">版本号</div>
         <div class="title" v-if="comp !== 'update'">标题</div>
-        <div class="classify" v-if="comp !== 'update'">分类<i class="icon-add"></i></div>
-        <div class="tag" v-if="comp !== 'update'">标签<i class="icon-add"></i></div>
+        <div class="classify" v-if="comp !== 'update'">
+          分类
+          <i class="icon-add" @click="add_click('classify')"></i>
+        </div>
+        <div class="tag" v-if="comp !== 'update'">
+          标签
+          <i class="icon-add" @click="add_click('tag')"></i>
+        </div>
         <div class="date">日期</div>
       </li>
 
@@ -161,7 +167,8 @@
     methods: {
       ...mapMutations([
         "set_use",
-        "set_data_ready"
+        "set_data_ready",
+        "set_kcharge_flag"
       ]),
 
       ...mapActions([
@@ -314,6 +321,9 @@
         },4000);
       },
 
+      add_click(keyword){
+        this.set_kcharge_flag(keyword);
+      }
     },
 
 

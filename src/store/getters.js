@@ -21,3 +21,5 @@ export const _id = (state) => state._id;
 export const login_flag = (state) => state.login_flag;
 export const draft_main = (state) => state.draft_main;
 export const draft_flag = (state) => state.draft_flag;
+
+export const kcharge_flag = (state) => state.kcharge_flag;

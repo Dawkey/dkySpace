@@ -21,3 +21,5 @@ export const set__id = "set__id";
 export const set_login_flag = "set_login_flag";
 export const set_draft_main = "set_draft_main";
 export const set_draft_flag = "set_draft_flag";
+
+export const set_kcharge_flag = "set_kcharge_flag";

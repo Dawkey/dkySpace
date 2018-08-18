@@ -1,49 +1,55 @@
 <template>
-  <div class="kcharge">
+  <transition name="kcharge">
+    <div class="kcharge" v-show="this.kcharge_flag !== false">
 
-    <div class="kcharge_div">
-      <i class="icon-tag icon"></i>
+      <div class="kcharge_div">
+        <i class="icon-tag icon"></i>
 
-      <ul class="keys">
-        <li class="key"
-            v-for="(item,index) in tag_name"
-            :class="{active_key: yes_no_show && active_index === index}">
-          {{item}}
-          <span>({{tag[item].length}})</span>
-          <div class="fork" @click="delete_click(index)">
-            <i class="icon-fork"></i>
-          </div>
-        </li>
-      </ul>
-
-      <div class="key_input">
-        <input v-model="new_key" type="text" name="new_key" spellcheck="false">
-        <div class="commit" @click="commit_click">
-          Commit
+        <div class="close">
+          <i class="icon-fork" @click="close_click"></i>
         </div>
+
+        <ul class="keys">
+          <li class="key"
+              v-for="(item,index) in tag_name"
+              :class="{active_key: yes_no_show && active_index === index}">
+            {{item}}
+            <span>({{tag[item].length}})</span>
+            <div class="fork" @click="delete_click(index)">
+              <i class="icon-fork"></i>
+            </div>
+          </li>
+        </ul>
+
+        <div class="key_input">
+          <input v-model="new_key" type="text" name="new_key" spellcheck="false">
+          <div class="commit" @click="commit_click">
+            Commit
+          </div>
+        </div>
+
+        <yes-no class="yes-no"
+          :father = "'write'"
+          :top = "'auto'"
+          :show_flag = "yes_no_show"
+          :loading_flag = "false"
+        >
+        </yes-no>
+
+        <transition name="yes-no-icon">
+          <div class="yes-no-icon" v-show = "yes_no_show && icon_show">
+            <i class="icon-delete"></i>
+            <span>?</span>
+          </div>
+        </transition>
       </div>
 
-      <yes-no class="yes-no"
-        :father = "'write'"
-        :top = "'auto'"
-        :show_flag = "yes_no_show"
-        :loading_flag = "false"
-      >
-      </yes-no>
-
-      <transition name="yes-no-icon">
-        <div class="yes-no-icon" v-show = "yes_no_show && icon_show">
-          <i class="icon-delete"></i>
-          <span>?</span>
-        </div>
-      </transition>
     </div>
-
-  </div>
+  </transition>
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters} from "vuex";
+  import {mapGetters,mapMutations,mapActions} from "vuex";
   import YesNo from "../yes_no/yes_no.vue";
   export default {
     name: "KeywordCharge",
@@ -67,12 +73,40 @@
 
 
     computed: {
-      ...mapGetters(["tag_name","tag"]),
+      ...mapGetters([
+        "tag_name",
+        "tag",
+        "kcharge_flag"
+      ]),
     },
 
 
     methods: {
+      ...mapMutations([
+        "set_kcharge_flag"
+      ]),
+
+      ...mapActions([
+        "add_talk_word",
+      ]),
+
       commit_click(){
+        let new_key = this.new_key.trim();
+        if(new_key === ""){
+          this.add_talk_word("输入框不能为空!");
+          return;
+        }
+
+        let flag = this.tag_name.some((value)=>{
+          if(new_key === value){
+            this.add_talk_word("输入的标签已存在!");
+            return true;
+          }
+        });
+
+        if(!flag){
+          console.log("commit");
+        }
 
       },
 
@@ -89,7 +123,11 @@
         this.kcharge_timer = setTimeout(()=>{
           this.yes_no_show = false;
         },4000);
-      }
+      },
+
+      close_click(){
+        this.set_kcharge_flag(false);
+      },
     }
   }
 </script>
@@ -123,6 +161,18 @@
         color: $color-2-o
         font-size: 2.2rem
         margin-bottom: 1.5rem
+
+      .close
+        position: absolute
+        top: -4rem
+        right: -1.5rem
+        i
+          font-size: 2.5rem
+          color: $color-2-o
+          cursor: pointer
+          &:hover
+            color: $color-2
+            font-size: 2.6rem
 
       .keys
         display: flex
@@ -262,5 +312,20 @@
         transform: scaleX(0)
       .yes-no-icon-leave-active
         transition: transform 400ms
+
+
+  .kcharge-enter
+    transform: scaleY(0)
+    opacity: 0
+  .kcharge-enter-to
+    transform: scaleY(1)
+    opacity: 1
+  .kcharge-enter-active
+    transition: all 400ms
+  .kcharge-leave-to
+    transform: scaleY(0)
+    opacity: 0
+  .kcharge-leave-active
+    transition: all 400ms
 
 </style>

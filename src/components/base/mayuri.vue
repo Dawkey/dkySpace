@@ -11,7 +11,7 @@
       </div>
     </div>
     <transition name="talk">
-      <div class="talk" v-show="talk_show">
+      <div class="talk" v-show="talk_show" :class="{kstyle: kcharge_flag !== false}">
         <div class="talk-box">
           <span class="talk-word">
             <span ref="talk_span">
@@ -45,7 +45,9 @@
       ...mapGetters([
         "talk_word",
         "talk_times",
-        "talk_flag"
+        "talk_flag",
+
+        "kcharge_flag"
       ]),
     },
 
@@ -227,6 +229,17 @@
             line-height: 2.2rem
             &.star
               animation: cursor_star 1.2s steps(1) infinite
+      &.kstyle
+        color: $color-3
+        background: $color-2-o
+        &:before
+          box-shadow: 0.1rem 0.1rem 0.1rem -0.1rem $color-2-o
+        .talk-box
+          .talk-word
+            >i
+              &.star
+                animation: k_cursor_star 1.2s steps(1) infinite
+
     .talk-enter-active
       transition: opacity 500ms
     .talk-enter
@@ -236,6 +249,9 @@
   @keyframes cursor_star
     50%
       color: $color-3
+  @keyframes k_cursor_star
+    50%
+      color: transparent
   @keyframes talk
     0%
       background-image: url(/static/icon-img/a-p-2.png)
