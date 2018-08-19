@@ -48,3 +48,10 @@ export function remove_update(json){
   let promise = axios.post("/api/post/remove_update",json);
   return promise;
 }
+
+
+
+export function update_tag(json){
+  let promise = axios.post("/api/post/update_tag",json);
+  return promise;
+}

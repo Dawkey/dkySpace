@@ -32,7 +32,9 @@
           :father = "'write'"
           :top = "'auto'"
           :show_flag = "yes_no_show"
-          :loading_flag = "false"
+          :loading_flag = "loading_flag"
+          @yes = "delete_key"
+          @no = "delete_key_cancel"
         >
         </yes-no>
 
@@ -51,6 +53,7 @@
 <script type="text/ecmascript-6">
   import {mapGetters,mapMutations,mapActions} from "vuex";
   import YesNo from "../yes_no/yes_no.vue";
+  import {update_tag} from "api/post.js";
   export default {
     name: "KeywordCharge",
 
@@ -63,6 +66,7 @@
         new_key: "",
 
         yes_no_show: false,
+        loading_flag: false,
         icon_show: true,
         icon_timer: null,
         active_index: 0,
@@ -83,7 +87,9 @@
 
     methods: {
       ...mapMutations([
-        "set_kcharge_flag"
+        "set_kcharge_flag",
+        "add_tag_key",
+        "set_tag_name",
       ]),
 
       ...mapActions([
@@ -105,7 +111,25 @@
         });
 
         if(!flag){
-          console.log("commit");
+          this.add_talk_word("提交中...");
+          this.loading_flag = true;
+
+          let new_key_name = this.tag_name.slice();
+          new_key_name.push(new_key);
+
+          let timer_promise = new Promise((resolve)=>{
+            setTimeout(()=>{resolve(0);},1500);
+          });
+          Promise.all([update_tag({'tag': new_key_name}),timer_promise])
+            .then((res)=>{
+              let code = res[0].data.code;
+              if(code === 0){
+                this.add_tag_key(new_key);
+                this.set_tag_name(new_key_name);
+                this.add_talk_word(`提交成功!已新增一个标签,标签名为${new_key}`);
+                this.loading_flag = false;
+              }
+            });
         }
 
       },
@@ -123,6 +147,36 @@
         this.kcharge_timer = setTimeout(()=>{
           this.yes_no_show = false;
         },4000);
+      },
+
+      delete_key(){
+        let index = this.active_index;
+        let active_key = this.tag_name[index];
+
+        this.add_talk_word("删除中...");
+        this.yes_no_show = false;
+        this.loading_flag = true;
+
+        let new_key_name = this.tag_name.slice();
+        new_key_name.splice(index,1);
+
+        let timer_promise = new Promise((resolve)=>{
+          setTimeout(()=>{resolve(0);},1500);
+        });
+        Promise.all([update_tag({'tag': new_key_name}),timer_promise])
+          .then((res)=>{
+            let code = res[0].data.code;
+            if(code === 0){
+              this.set_tag_name(new_key_name);
+              this.add_talk_word(`删除成功!已删除标签名为${active_key}的标签`);
+              this.loading_flag = false;
+            }
+          });
+      },
+
+      delete_key_cancel(){
+        clearTimeout(this.kcharge_timer);
+        this.yes_no_show = false;
       },
 
       close_click(){

@@ -67,7 +67,11 @@ const mutations = {
 
   [types.set_kcharge_flag](state,kcharge_flag){
     state.kcharge_flag = kcharge_flag;
-  }
+  },
+
+  [types.add_tag_key](state,key){
+    state.tag[key] = [];
+  },
 }
 
 export default mutations;
