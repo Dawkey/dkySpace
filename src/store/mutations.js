@@ -72,6 +72,9 @@ const mutations = {
   [types.add_tag_key](state,key){
     state.tag[key] = [];
   },
+  [types.add_classify_key](state,key){
+    state.classify[key] = [];
+  },
 }
 
 export default mutations;

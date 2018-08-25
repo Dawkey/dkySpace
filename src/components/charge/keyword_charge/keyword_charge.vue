@@ -3,7 +3,7 @@
     <div class="kcharge" v-show="this.kcharge_flag !== false">
 
       <div class="kcharge_div">
-        <i class="icon-tag icon"></i>
+        <i class="icon" :class="`icon-${keyword}`"></i>
 
         <div class="close">
           <i class="icon-fork" @click="close_click"></i>
@@ -11,11 +11,11 @@
 
         <ul class="keys">
           <li class="key"
-              v-for="(item,index) in tag_name"
-              :class="{active_key: yes_no_show && active_index === index}">
+              v-for="(item,index) in key_name"
+              :class="{active_key: active_index === index}">
             {{item}}
-            <span>({{tag[item].length}})</span>
-            <div class="fork" @click="delete_click(index)">
+            <span>({{key[item].length}})</span>
+            <div class="fork" @click="delete_click(item,index)" :class="{frozen: loading_flag}">
               <i class="icon-fork"></i>
             </div>
           </li>
@@ -23,7 +23,7 @@
 
         <div class="key_input">
           <input v-model="new_key" type="text" name="new_key" spellcheck="false">
-          <div class="commit" @click="commit_click">
+          <div class="commit" @click="commit_click" :class="{frozen: loading_flag}">
             Commit
           </div>
         </div>
@@ -35,15 +35,20 @@
           :loading_flag = "loading_flag"
           @yes = "delete_key"
           @no = "delete_key_cancel"
+          @mouseenter.native = "yes_no_enter"
+          @mouseleave.native = "yes_no_leave"
         >
         </yes-no>
 
-        <transition name="yes-no-icon">
-          <div class="yes-no-icon" v-show = "yes_no_show && icon_show">
-            <i class="icon-delete"></i>
-            <span>?</span>
-          </div>
-        </transition>
+        <div class="yes-no-icon-div" v-show = "icon_div_show">
+          <transition name="yes-no-icon">
+            <div class="yes-no-icon" v-show = "yes_no_show && icon_show">
+              <i class="icon-delete"></i>
+              <span>?</span>
+            </div>
+          </transition>
+        </div>
+
       </div>
 
     </div>
@@ -53,7 +58,7 @@
 <script type="text/ecmascript-6">
   import {mapGetters,mapMutations,mapActions} from "vuex";
   import YesNo from "../yes_no/yes_no.vue";
-  import {update_tag} from "api/post.js";
+  import {update_tag,update_classify} from "api/post.js";
   export default {
     name: "KeywordCharge",
 
@@ -63,13 +68,22 @@
 
     data(){
       return{
+        keyword: "",
+        keyword_ch: "",
+        key_name: [],
+        key: {},
+        update_key: null,
+        add_keyword_key: null,
+        set_key_name: null,
+
         new_key: "",
 
         yes_no_show: false,
         loading_flag: false,
         icon_show: true,
+        icon_div_show: true,
         icon_timer: null,
-        active_index: 0,
+        active_index: false,
 
         kcharge_timer: null,
       }
@@ -80,7 +94,9 @@
       ...mapGetters([
         "tag_name",
         "tag",
-        "kcharge_flag"
+        "classify_name",
+        "classify",
+        "kcharge_flag",
       ]),
     },
 
@@ -90,6 +106,8 @@
         "set_kcharge_flag",
         "add_tag_key",
         "set_tag_name",
+        "add_classify_key",
+        "set_classify_name",
       ]),
 
       ...mapActions([
@@ -97,15 +115,18 @@
       ]),
 
       commit_click(){
+        if(this.loading_flag){
+          return;
+        }
         let new_key = this.new_key.trim();
         if(new_key === ""){
           this.add_talk_word("输入框不能为空!");
           return;
         }
 
-        let flag = this.tag_name.some((value)=>{
+        let flag = this.key_name.some((value)=>{
           if(new_key === value){
-            this.add_talk_word("输入的标签已存在!");
+            this.add_talk_word(`输入的${this.keyword_ch}已存在!`);
             return true;
           }
         });
@@ -114,19 +135,21 @@
           this.add_talk_word("提交中...");
           this.loading_flag = true;
 
-          let new_key_name = this.tag_name.slice();
+          let new_key_name = this.key_name.slice();
           new_key_name.push(new_key);
 
           let timer_promise = new Promise((resolve)=>{
             setTimeout(()=>{resolve(0);},1500);
           });
-          Promise.all([update_tag({'tag': new_key_name}),timer_promise])
+          Promise.all([this.update_key({[this.keyword]: new_key_name}),timer_promise])
             .then((res)=>{
               let code = res[0].data.code;
               if(code === 0){
-                this.add_tag_key(new_key);
-                this.set_tag_name(new_key_name);
-                this.add_talk_word(`提交成功!已新增一个标签,标签名为${new_key}`);
+                this.add_keyword_key(new_key);
+                this.set_key_name(new_key_name);
+                this.add_talk_word(`提交成功!已新增一个${this.keyword_ch},${this.keyword_ch}名为'${new_key}'`);
+                this.new_key = "";
+                this.key_name = new_key_name;
                 this.loading_flag = false;
               }
             });
@@ -134,7 +157,14 @@
 
       },
 
-      delete_click(index){
+      delete_click(item,index){
+        if(this.loading_flag){
+          return;
+        }
+        if(this.key[item].length !== 0){
+          this.add_talk_word(`${this.keyword_ch}'${item}'下还存在博客,无法将其删除!`);
+          return;
+        }
         clearTimeout(this.kcharge_timer);
         this.icon_show = true;
         if(this.yes_no_show){
@@ -146,30 +176,38 @@
         this.active_index = index;
         this.kcharge_timer = setTimeout(()=>{
           this.yes_no_show = false;
+          this.active_index = false;
         },4000);
       },
 
       delete_key(){
+        if(this.loading_flag){
+          return;
+        }
         let index = this.active_index;
-        let active_key = this.tag_name[index];
+        let active_key = this.key_name[index];
 
         this.add_talk_word("删除中...");
         this.yes_no_show = false;
         this.loading_flag = true;
+        this.icon_div_show = false;
 
-        let new_key_name = this.tag_name.slice();
+        let new_key_name = this.key_name.slice();
         new_key_name.splice(index,1);
 
         let timer_promise = new Promise((resolve)=>{
           setTimeout(()=>{resolve(0);},1500);
         });
-        Promise.all([update_tag({'tag': new_key_name}),timer_promise])
+        Promise.all([this.update_key({[this.keyword]: new_key_name}),timer_promise])
           .then((res)=>{
             let code = res[0].data.code;
             if(code === 0){
-              this.set_tag_name(new_key_name);
-              this.add_talk_word(`删除成功!已删除标签名为${active_key}的标签`);
+              this.set_key_name(new_key_name);
+              this.add_talk_word(`删除成功!已删除${this.keyword_ch}名为'${active_key}'的${this.keyword_ch}`);
+              this.active_index = false;
               this.loading_flag = false;
+              this.icon_div_show = true;
+              this.key_name = new_key_name;
             }
           });
       },
@@ -177,12 +215,64 @@
       delete_key_cancel(){
         clearTimeout(this.kcharge_timer);
         this.yes_no_show = false;
+        this.active_index = false;
       },
 
       close_click(){
         this.set_kcharge_flag(false);
       },
-    }
+
+      yes_no_enter(){
+        if(this.yes_no_show === false){
+          return;
+        }
+
+        clearTimeout(this.kcharge_timer);
+      },
+
+      yes_no_leave(){
+        if(this.yes_no_show === false){
+          return;
+        }
+
+        this.kcharge_timer = setTimeout(()=>{
+          this.yes_no_show = false;
+          this.active_index = false;
+        },4000);
+      },
+
+    },
+
+    watch: {
+      kcharge_flag(){
+        let flag = this.kcharge_flag;
+        if(flag === "tag"){
+          this.keyword = "tag";
+          this.keyword_ch = "标签";
+          this.key_name = this.tag_name;
+          this.key = this.tag;
+          this.update_key = update_tag;
+          this.add_keyword_key = this.add_tag_key;
+          this.set_key_name = this.set_tag_name;
+        }
+        else if(flag === "classify"){
+          this.keyword = "classify"
+          this.keyword_ch = "分类";
+          this.key_name = this.classify_name;
+          this.key = this.classify;
+          this.update_key = update_classify;
+          this.add_keyword_key = this.add_classify_key;
+          this.set_key_name = this.set_classify_name;
+        }
+      },
+
+      $route(){
+        if(this.$route.name != "charge" && this.kcharge_flag != false){
+          this.set_kcharge_flag(false);
+        }
+      },
+    },
+
   }
 </script>
 
@@ -231,9 +321,11 @@
       .keys
         display: flex
         flex-wrap: wrap
+        justify-content: center
         .key
           position: relative
           margin: 0 1.5rem
+          margin-top: 1.5rem
           font-size: 2rem
           font-family: Georgia
           color: $color-2-o
@@ -254,28 +346,16 @@
               &:hover
                 font-size: 1.3rem
                 color: $color-2
-          &:before
-            content: ""
-            position: absolute
-            top: 0
-            left: 0
-            height: 100%
-            width: 100%
-            padding-bottom: 0.2rem
-            border-bottom: 0.1rem solid $color-2-o
-            transform-origin: 100% 0
-            transform: scaleX(0)
-            transition: transform 0.4s
-          &:hover::before
-            transform: scaleX(1)
-            transform-origin: 0 0
+            &.frozen
+              color: rgba(220,220,220,0.8)
+              i
+                &:hover
+                  font-size: 1.2rem
+                  color: rgba(220,220,220,0.8)
           &:hover
             .fork
               transform: scaleX(1)
           &.active_key
-            &:before
-              transform: scaleX(1)
-              transform-origin: 0 0
             .fork
               transform: scaleX(1)
 
@@ -311,10 +391,14 @@
           cursor: pointer
           &:hover
             background: #fff
+          &.frozen
+            background: rgba(220,220,220,0.8)
+            &:hover
+              background: rgba(220,220,220,0.8)
 
       .yes-no
         position: absolute
-        bottom: -5.5rem
+        bottom: -4rem
         width: 13rem
         >>>.yes_no_div
           .yes_div,.no_div
@@ -341,31 +425,32 @@
           width: 4.5rem
           height: 4.5rem
           .loading-1,.loading-2,.loading-3,.loading-4
-            background: $color-2
-            filter: drop-shadow(0 0 1px $color-2-o)
+            background: #fff
+            filter: drop-shadow(0 0 1px #fff)
 
-      .yes-no-icon
+      .yes-no-icon-div
         position: absolute
-        bottom: -4.6rem
-        color: $color-2-o
-        display: flex
-        align-items: center
-        i
-          font-size: 1.8rem
-        span
-          font-size: 1.7rem
-          margin-left: 0.3rem
-          cursor: default
-      .yes-no-icon-enter
-        transform: scaleX(0)
-      .yes-no-icon-enter-to
-        transform: scaleX(1)
-      .yes-no-icon-enter-active
-        transition: transform 400ms
-      .yes-no-icon-leave-to
-        transform: scaleX(0)
-      .yes-no-icon-leave-active
-        transition: transform 400ms
+        bottom: -3.1rem
+        .yes-no-icon
+          color: $color-2-o
+          display: flex
+          align-items: center
+          i
+            font-size: 1.8rem
+          span
+            font-size: 1.7rem
+            margin-left: 0.3rem
+            cursor: default
+        .yes-no-icon-enter
+          transform: scaleX(0)
+        .yes-no-icon-enter-to
+          transform: scaleX(1)
+        .yes-no-icon-enter-active
+          transition: transform 400ms
+        .yes-no-icon-leave-to
+          transform: scaleX(0)
+        .yes-no-icon-leave-active
+          transition: transform 400ms
 
 
   .kcharge-enter

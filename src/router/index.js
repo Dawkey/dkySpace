@@ -163,8 +163,12 @@ router.beforeEach((to,from,next)=>{
   let name = (to.path).slice(1);
 
   if(to.name === "charge" || to.name === "draft" || to.name === "edit" || to.name === "update_edit"){
+    document.title = "dkySpace's charge";
     commit_login_flag(true);
   }else{
+    if(to.name != "article"){
+      document.title = "Dawkey's small space";
+    }
     commit_login_flag(false);
   }
 

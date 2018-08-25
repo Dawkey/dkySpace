@@ -165,6 +165,11 @@
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable.styl"
+
+  @media (max-width: $max-width-1)
+    .mayuri
+      display: none
+
   .mayuri
     position: fixed
     top: 7.5rem

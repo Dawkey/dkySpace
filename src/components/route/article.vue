@@ -76,6 +76,7 @@
           && this.router_show.slice(8) === this._id
         ){
           this.set_loading_show(false);
+          document.title = this.article.title;
           return true;
         }else{
           return false;

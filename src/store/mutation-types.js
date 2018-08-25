@@ -25,3 +25,4 @@ export const set_draft_flag = "set_draft_flag";
 export const set_kcharge_flag = "set_kcharge_flag";
 
 export const add_tag_key = "add_tag_key";
+export const add_classify_key = "add_classify_key";

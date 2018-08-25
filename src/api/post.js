@@ -55,3 +55,7 @@ export function update_tag(json){
   let promise = axios.post("/api/post/update_tag",json);
   return promise;
 }
+export function update_classify(json){
+  let promise = axios.post("/api/post/update_classify",json);
+  return promise;
+}

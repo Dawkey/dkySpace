@@ -56,7 +56,7 @@
   @media(max-width: $max-width-1)
     #app
       .body
-        margin-top: 7rem
+        margin-top: 10rem
         min-height: calc(100vh - 7rem - 10.5rem)
   @media(max-width: $max-width-2)
     #app

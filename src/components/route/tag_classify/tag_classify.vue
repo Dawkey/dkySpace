@@ -25,7 +25,14 @@
         <ul class="prop_articles" :style="{height: prop_articles_height}">
           <!-- 这里先检测data_ready,以判断数据是否处理好,如果过处理好才判断,数组长度 -->
           <li class="nothing_li" v-if = "data_ready && prop[name].length === 0">
-            Nothing~
+            <div class="title">
+              空空如也
+            </div>
+            <div class="line">
+            </div>
+            <div class="date">
+              (´･ᴗ･`)
+            </div>
           </li>
           <li v-for = "item in prop[name]" @click="to_article(item._id)">
             <div class="title">
@@ -50,7 +57,7 @@
 
     data(){
       return {
-        name: "html",
+        name: "",
       }
     },
 
@@ -64,8 +71,7 @@
     mixins: [common_data],
 
     created(){
-      let name = this.component_name;
-      this.name = name === "tag" ? "html" : "编程";
+      //
     },
 
     computed: {
@@ -85,6 +91,9 @@
       prop_articles_height(){
         if(this.prop_name.length === 0){
           return 0;
+        }
+        if(this.name === ""){
+          this.name = this.prop_name[0];
         }
         let length = this.prop[this.name].length;
         length = length === 0 ? 1 : length;
@@ -128,7 +137,7 @@
           display: flex
           position: relative
           padding: 0 0.5rem
-          margin: 0.5rem 2.5rem 0.5rem 0
+          margin: 0.5rem 2.5rem 2rem 0
           cursor: pointer
           &:before
             content: ""
@@ -156,13 +165,11 @@
             font-size: 1.7rem
       .prop_articles
         height: 0
-        margin-top: 3rem
+        margin-top: 1.5rem
         padding: 0 0.5rem
         color: $color-grey
         overflow: hidden
         transition: height 0.4s
-        .nothing_li
-          font-size: 1.7rem
         >li
           display: flex
           font-size: 1.5rem

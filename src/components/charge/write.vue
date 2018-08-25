@@ -233,6 +233,11 @@
 
         return `<pre><div class="language">${language}</div><code class="hljs ${language}">${highlighted}</code></pre>`;
       };
+
+      renderer.link = (href,title,text) => {
+        return `<a href="${href}" target="_blank">${text}</a>`;
+      }
+
       marked.setOptions({renderer});
     },
 

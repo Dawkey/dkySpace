@@ -126,7 +126,8 @@
             align-items: center
             box-sizing: border-box
             padding-bottom: 0.8rem
-            p
+            >>>p
+              font-family: Georgia
               max-height: 6rem
               font-size: 1.4rem
               line-height: 3rem
@@ -138,14 +139,19 @@
               -webkit-line-clamp: 2;
               overflow: hidden;
               text-overflow: ellipsis
+              strong
+                padding: 0 0.15rem
+              code
+                font-family: Monaco, Consolas, "Courier New", monospace
+                background: rgba(96,126,121,0.2)
+                padding: 0 0.4rem
+                border-radius: 0.2rem
       .home_li:nth-of-type(1)
         margin-top: 0
 
 
   @media (max-width: $max-width-2)
     .home
-      .update_diary
-        display: none
       .home_ul
         .home_li
           margin-top: 4rem

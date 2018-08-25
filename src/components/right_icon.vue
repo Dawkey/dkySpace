@@ -128,4 +128,10 @@
       display: flex
       justify-content: center
       background: transparent
+
+  @media (max-width: $max-width-1)
+    .right_icon
+      .right_top
+        display: none
+
 </style>

@@ -11,8 +11,8 @@
           <li class="classify">classify</li>
           <li class="archive">archive</li>
           <li class="about_me">about me</li>
+          <li class="about_me">update</li>
         </ul>
-        <i class="icon-login"></i>
         <i class="icon-menu"></i>
       </div>
     </div>
@@ -30,6 +30,7 @@
 
   .nav_2_body
     position: fixed
+    z-index: 13
     top: 0
     left: 0
     right: 0

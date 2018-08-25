@@ -260,7 +260,6 @@
 
         Promise.all([this.remove_comp(post_json),timer_promise])
           .then((res)=>{
-            console.log(res);
             let code = res[0].data.code;
             let data = res[0].data.data;
             if(code === 0){
