@@ -16,9 +16,13 @@
 
   a
     display: inline-block
+    max-width: 100%
     line-height: 1.3
     color: rgba(96,126,121,0.8)
     border-bottom: 1px solid
+    white-space: nowrap
+    text-overflow: ellipsis
+    overflow: hidden
     &:hover
       color: $color-3
 
@@ -102,3 +106,14 @@
       border-radius: 8px
       background-color: transparent
       box-shadow: 0 0 1px transparent inset
+
+
+@media (max-width: $max-width-2)
+  >>>.article_style
+    blockquote
+      padding-left: 0.7rem
+    pre
+      code
+        padding: 0 1rem 1rem
+      .language
+        padding: 0.5rem 0.7rem 0 0

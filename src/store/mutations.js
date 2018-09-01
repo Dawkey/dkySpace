@@ -17,6 +17,9 @@ const mutations = {
   [types.set_talk_flag](state,talk_flag){
     state.talk_flag = talk_flag;
   },
+  [types.set_talk_done](state,talk_done){
+    state.talk_done = talk_done;
+  },
 
   [types.set_data_ready](state,data_ready){
     state.data_ready = data_ready;

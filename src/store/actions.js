@@ -41,6 +41,7 @@ export function data_handle({commit},data){
     obj._id = value._id;
     obj.title = value.title;
     obj.date = value.date;
+    obj.date_mobile = value.date.slice(0,10);
 
     let archive_value = value.date.slice(0,4);
 

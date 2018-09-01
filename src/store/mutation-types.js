@@ -4,6 +4,7 @@ export const set_loading_show = "set_loading_show";
 export const set_talk_word = "set_talk_word";
 export const set_talk_times = "set_talk_times";
 export const set_talk_flag = "set_talk_flag";
+export const set_talk_done = "set_talk_done";
 
 export const set_data_ready = "set_data_ready";
 export const set_main = "set_main";

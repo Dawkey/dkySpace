@@ -10,6 +10,7 @@
         </div>
         <div class="middle_div">
           <div class="date">
+            <i class="icon-date"></i>
             {{article.date}}
           </div>
           <div class="tag_classify">
@@ -156,6 +157,7 @@
     box-shadow: $box-shadow
     background-color: $color-1
     font-family: Georgia
+    border-radius: 1rem
     .title
       font-size: 2.4rem
       font-weight: 800
@@ -164,6 +166,9 @@
       text-align: center
       padding-bottom: 0.8rem
       box-shadow: $box-shadow-bottom
+      white-space: nowrap
+      text-overflow: ellipsis
+      overflow: hidden
     .middle_div
       position: relative
       margin-top: 0.1rem
@@ -174,6 +179,8 @@
         line-height: 2.5rem
         text-align: center
         font-size: 1.4rem
+        i
+          display: none
       .tag_classify
         position: absolute
         top: 0
@@ -219,6 +226,34 @@
           color: $color-3
       .after_article
         margin-right: -0.5rem
+
+  @media (max-width: $max-width-2)
+    .article
+      width: calc(100% + 4rem)
+      margin-left: -2rem
+      .article_div
+        padding-left: 1.5rem
+        padding-right: 1.5rem
+        .title
+          font-size: 2.1rem
+          line-height: 2.5rem
+          height: 2.5rem
+        .middle_div
+          .date
+            padding-right: 0.5rem
+            text-align: right
+            font-size: 1.2rem
+            i
+              display: inline
+          .tag_classify
+            right: auto
+            left: 0.5rem
+        .before_after_article
+          .before_article,.after_article
+            max-width: 45%
+            white-space: nowrap
+            text-overflow: ellipsis
+            overflow: hidden
 
 
 </style>

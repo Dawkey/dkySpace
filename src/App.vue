@@ -42,10 +42,10 @@
     .body
       position: relative
       z-index: 10
-      max-width: 88rem
-      margin: auto
+      width: calc(100% - 57rem)
+      padding: 0.1rem 0
+      margin-left: 31rem
       margin-top: 15rem
-      padding: 0.1rem 1rem
       min-height: calc(100vh - 14rem - 10.5rem)
       &.write
         max-width: 100vw
@@ -56,10 +56,15 @@
   @media(max-width: $max-width-1)
     #app
       .body
+        width: auto
+        max-width: calc(88rem - 4.6rem)
+        padding: 0.1rem 3.3rem
+        margin: auto
         margin-top: 10rem
         min-height: calc(100vh - 7rem - 10.5rem)
   @media(max-width: $max-width-2)
     #app
       .body
+        margin-top: 8.5rem
         min-height: calc(100vh - 7rem - 6rem)
 </style>

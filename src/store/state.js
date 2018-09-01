@@ -4,8 +4,8 @@ const state = {
 
   talk_word: "",      //需要输出的文字
   talk_times: 0,      //输出文字的次数
-  talk_flag: "first", //是否继续输出文字的flag,用于处理在输出过程中
-                      //talk_word发生变化时的情况
+  talk_flag: "first", //是否继续输出文字的flag,用于处理在输出过程中talk_word发生变化时的情况
+  talk_done: true,    //输出对话完成与否
 
   data_ready: false,  //数据是否获取及处理完毕的flag
   use: null,          //对应于服务器上的use数据库,存储较为重要的信息

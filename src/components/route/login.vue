@@ -103,5 +103,13 @@
         font-size: 1.2rem
         width: 8.5rem
 
+  @media (max-width: $max-width-2)
+    .login_div
+      form
+        label
+          flex-shrink: 0
+        input
+          margin: 0.5rem 0  
+
 
 </style>

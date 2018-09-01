@@ -158,7 +158,8 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable.styl"
   .charge_div
-    margin: 0
+    // margin: 0
+    margin-right: 6rem
     padding: 0
     box-shadow: none
     font-size: 1.4rem

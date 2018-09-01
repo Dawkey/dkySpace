@@ -151,4 +151,20 @@
         .update_li:nth-of-type(1)
           margin-top: 0
 
+  @media (max-width: $max-width-2)
+    .update
+      width: calc(100% + 1.3rem)
+      .update_div
+        padding-left: 2.5rem
+        padding-right: 0
+        .update_ul
+          .update_li
+            margin-top: 3rem
+            &:before
+              left: -2.5rem
+              width: 2.5rem
+            .content
+              >>>li
+                margin-top: 0.7rem  
+
 </style>

@@ -41,7 +41,8 @@
             <div class="line">
             </div>
             <div class="date">
-              {{item.date}}
+              <span class="date_pc">{{item.date}}</span>
+              <span class="date_mobile">{{item.date_mobile}}</span>
             </div>
           </li>
         </ul>
@@ -130,6 +131,7 @@
         display: flex
         flex-wrap: wrap
         font-size: 3rem
+        font-family: Georgia,serif
         color: $color-grey
         &.small_size
           font-size: 2.8rem
@@ -184,6 +186,10 @@
               box-shadow: 0 0.5rem 0.5rem -0.5rem $color-black
           .title
             flex-shrink: 0
+            max-width: 28rem
+            white-space: nowrap
+            text-overflow: ellipsis
+            overflow: hidden
           .line
             width: 100%
             margin: 0 1.5rem
@@ -192,12 +198,35 @@
             box-shadow: $box-shadow-bottom
           .date
             flex-shrink: 0
+            .date_pc
+              display: inline
+            .date_mobile
+              display: none
 
-  @media (max-width: $max-width-1)
+
+  @media (max-width: $max-width-2)
     .prop
-      padding-bottom: 1.5rem
-      transform: translateY(2rem)
-      .icon
-        display: none
+      width: calc(100% + 1.3rem)
+      .prop_div
+        padding-left: 1.5rem
+        padding-right: 0
+        .prop_names
+          font-size: 2.6rem
+          &.small_size
+            font-size: 2.3rem
+          >li
+            margin-right: 1.5rem
+            margin-bottom: 1.5rem
+        .prop_articles
+          >li
+            .title
+              max-width: 50%
+            .line
+              margin: 0 0
+            .date
+              .date_pc
+                display: none
+              .date_mobile
+                display: inline
 
 </style>

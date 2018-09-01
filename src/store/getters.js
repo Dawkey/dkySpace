@@ -4,6 +4,7 @@ export const loading_show = (state) => state.loading_show;
 export const talk_word = (state) => state.talk_word;
 export const talk_times = (state) => state.talk_times;
 export const talk_flag = (state) => state.talk_flag;
+export const talk_done = (state) => state.talk_done;
 
 export const data_ready = (state) => state.data_ready;
 export const main = (state) => state.main;

@@ -33,7 +33,7 @@
 
     data(){
       return{
-        talk_done: true,//文字是否输出完成的flag
+        // talk_done: true,//文字是否输出完成的flag
         talk_show: false,
         talk_show_timer: null,
 
@@ -46,6 +46,7 @@
         "talk_word",
         "talk_times",
         "talk_flag",
+        "talk_done",
 
         "kcharge_flag"
       ]),
@@ -58,7 +59,8 @@
     methods: {
 
       ...mapMutations([
-        "set_talk_flag"
+        "set_talk_flag",
+        "set_talk_done",
       ]),
 
       mayuri_click(){
@@ -88,7 +90,7 @@
         }
 
         this.talk_show = true;
-        this.talk_done = false;
+        this.set_talk_done(false);
 
         let el = this.$refs.talk_span;
         let word = this.talk_word;
@@ -105,7 +107,7 @@
         //  创建的新promise链能顺利执行.
         promise
           .then(()=>{
-            this.talk_done = true;
+            this.set_talk_done(true);
             this.talk_show_timer = setTimeout(()=>{
               this.talk_show = false;
             },5000);
@@ -166,15 +168,11 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable.styl"
 
-  @media (max-width: $max-width-1)
-    .mayuri
-      display: none
-
   .mayuri
     position: fixed
     top: 7.5rem
-    left: calc(((100% - 88rem)/2 - 15rem)/2)
-    z-index: 12
+    left: 8rem
+    z-index: 14
     .mayuri-img
       width: 15rem
       height: 15rem
@@ -272,5 +270,31 @@
       background-image: url(/static/icon-img/a-p-3.png)
     100%
       background-image: url(/static/icon-img/a-p-2.png)
+
+
+  @media (max-width: $max-width-1)
+    .mayuri
+      .mayuri-img
+        display: none
+      .talk
+        top: 6.5rem
+        left: calc((100% - 88rem)/2 + 16.3rem)
+        &:before
+          display: none
+        &:after
+          content: ""
+          position: absolute
+          top: -1.8rem
+          left: 2rem
+          bottom: -3.5rem
+          z-index: 9
+          width: 1rem
+          height: 1.8rem
+          border-left: 0.1rem solid $color-3
+
+  @media (max-width: 900px)
+    .mayuri
+      .talk
+        left: 17.3rem
 
 </style>

@@ -19,7 +19,8 @@
               <div class="date">
                 <div class="date_circle">
                 </div>
-                {{li_item.date}}
+                <span class="date_pc">{{li_item.date}}</span>
+                <span class="date_mobile">{{li_item.date_mobile}}</span>
               </div>
               <div class="line">
               </div>
@@ -112,18 +113,19 @@
             cursor: auto
           .archive_li_hover
             display: flex
+            width: 100%
             cursor: pointer
             color: $color-grey
             &:hover
               color: $color-black
               .line
                 margin: 0 0.5rem
-                width: 36rem
                 box-shadow: 0 0.5rem 0.5rem -0.5rem $color-black
               .date
                 .date_circle
                   background: $color-3-o
             .date
+              flex-shrink: 0
               display: flex
               font-size: 1.4rem
               line-height: 1.8rem
@@ -135,17 +137,52 @@
                 margin-top: 0.05rem
                 background: $color-1
                 box-shadow: $box-shadow
+              .date_pc
+                display: inline
+              .date_mobile
+                display: none
             .line
               margin: 0 1.5rem
-              width: 34rem
+              width: 100%
               transform: translateY(-51%)
               transition: width 300ms , margin 300ms
               box-shadow: $box-shadow-bottom
             .title
-              max-width: 26.5rem
+              flex-shrink: 0
+              width: 26.5rem
               font-size: 1.5rem
               line-height: 1.8rem
+              white-space: nowrap
+              text-overflow: ellipsis
+              overflow: hidden
       .archive_ul:nth-of-type(1)
         margin-top: 0
+
+  @media (max-width: $max-width-2)
+    .archive
+      width: calc(100% + 1.3rem)
+      .archive_div
+        padding-left: 2rem
+        padding-right: 0
+        .archive_ul
+          &:before
+            left: -2rem
+            width: 2rem
+          .year
+            .year_circle
+              margin-right: 0.5rem
+          .archive_li
+            .archive_li_hover
+              .date
+                .date_circle
+                  margin-right: 0.8rem
+                .date_pc
+                  display: none
+                .date_mobile
+                  display: inline    
+              .line
+                margin: 0
+              .title
+                width: 50%
 
 </style>
