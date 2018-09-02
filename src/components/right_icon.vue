@@ -60,7 +60,7 @@
       position: fixed
       z-index: 13
       // right: calc(((100% - 88rem)/2 - 6rem)/2)
-      right: 10rem
+      right: calc(var(--left) + 1rem)
       width: 6rem
     .right_top
       top: 24.5rem

@@ -171,7 +171,7 @@
   .mayuri
     position: fixed
     top: 7.5rem
-    left: 8rem
+    left: var(--left)
     z-index: 14
     .mayuri-img
       width: 15rem
@@ -201,7 +201,7 @@
       flex-direction: column
       padding: 0.1rem 0.5rem
       top: 8rem
-      left: 26rem
+      left: calc(17.5rem + var(--left))
       color: $color-2
       background: $color-3
       border-radius: 0.3rem

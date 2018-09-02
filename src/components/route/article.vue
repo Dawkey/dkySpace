@@ -154,6 +154,7 @@
   .article_div
     margin-top: 0
     padding-top: 2.5rem
+    padding-right: 3rem
     box-shadow: $box-shadow
     background-color: $color-1
     font-family: Georgia

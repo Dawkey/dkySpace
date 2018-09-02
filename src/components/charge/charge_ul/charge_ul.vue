@@ -37,6 +37,7 @@
           <i class="icon-add" @click="add_click('tag')"></i>
         </div>
         <div class="date">日期</div>
+        <div class="icon_div"></div>
       </li>
 
       <li class="empty_li" v-show = "comp_main.length === 0">
@@ -349,13 +350,17 @@
     ul
       position: relative
       .title
-        width: 40%
+        width: calc(40% - 1rem)
+        margin-right: 1rem
       .classify
-        width: 10%
+        width: calc(11% - 1rem)
+        margin-right: 1rem
       .tag
-        width: 15%
+        width: calc(14% - 1rem)
+        margin-right: 1rem
       .date
         width: 21%
+        min-width: 14.5rem
       .version
         width: 65%
 
@@ -410,6 +415,10 @@
         display: flex
         line-height: 3.2rem
         padding: 0 0.8rem
+        >div
+          white-space: nowrap
+          text-overflow: ellipsis
+          overflow: hidden
         &:nth-of-type(2n-1)
           background: rgba(96,126,121,0.28)
         &:nth-of-type(2n)
@@ -442,22 +451,27 @@
           color: $color-3
         .icon_div
           display: flex
+          width: 14%
           height: 3.2rem
           align-items: center
+          justify-content: space-between
           i
             font-size: 1.7rem
             color: rgba(96,126,121,0.9)
-            margin-left: 3.2rem
             cursor: pointer
             &:hover
-              font-size: 1.8rem
-              margin-left: 3.1rem
+              transform: scale(1.1)
               color: $color-black
             &.disable
               color: #888
             &.active
+              transform: scale(1.1)
               font-size: 1.8rem
-              margin-left: 3.1rem
               color: $color-black
+          .icon-write
+            margin: 0 10% 0 25%
+          .icon-delete
+            margin: 0 25% 0 10%
+
 
 </style>

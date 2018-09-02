@@ -9,7 +9,7 @@
         <div class="out" :class="{talk: !talk_done}"></div>
       </div>
       <div class="nav_right">
-        <ul class="nav" :class="{show: nav_flag}">
+        <ul class="nav" :class="{show: nav_flag}" v-show="!login_flag">
           <li v-for = "item in nav">
             <router-link tag="div"
               :to="`/${item}`"
@@ -19,9 +19,24 @@
             </router-link>
           </li>
         </ul>
-        <i class="icon-menu" @click="nav_show"></i>
-        <router-link tag="i" to="/login" class="icon-login">
-        </router-link>
+        <i class="icon-menu" @click="nav_show" v-show="!login_flag"></i>
+
+        <transition name="login">
+          <router-link tag="i" class="icon-login"
+            :to="login_to"
+            :class="{out_login: login_flag}"
+            v-show = "$route.name != 'draft' && $route.name != 'edit' && $route.name != 'update_edit'"
+          >
+          </router-link>
+        </transition>
+
+        <transition name="charge">
+          <router-link tag="i" to="/charge" class="icon-charge"
+            v-show = "$route.name === 'draft' || $route.name === 'edit' || $route.name === 'update_edit'"
+          >
+          </router-link>
+        </transition>
+
       </div>
     </div>
   </div>
@@ -32,6 +47,7 @@
   export default {
     name: "Nav2",
 
+
     data(){
       return{
         nav: ["home","tag","classify","archive","about_me","update"],
@@ -39,11 +55,22 @@
       }
     },
 
+
     computed: {
       ...mapGetters([
-        "talk_done"
+        "talk_done",
+        "login_flag",
       ]),
+
+      login_to(){
+        if(this.login_flag === false){
+          return "/login";
+        }else{
+          return "/home";
+        }
+      },
     },
+
 
     methods: {
       ...mapActions([
@@ -89,6 +116,7 @@
         color: $color-3
         flex-shrink: 0
       .nav_right
+        position: relative
         display: flex
         align-items: center
         justify-content: flex-end
@@ -96,20 +124,61 @@
         margin-right: -0.6rem
         font-size: 1.9rem
         color: $color-grey
+
         .icon-login
           margin-left: 2.5rem
           margin-right: 1rem
           font-size: 2.6rem
           color: $color-3
           cursor: pointer
+          transition: transform 500ms
           &:hover
-            transform: scale(1.1)
+            font-size: 2.7rem
+            margin-right: 0.9rem
             color: rgba(96,126,121,0.9)
           &.router-link-active
-            transform: scale(1.1)
+            font-size: 2.7rem
+            margin-right: 0.9rem
             color: rgba(96,126,121,0.9)
+          &.out_login
+            transform: rotateZ(-180deg)
+          &.login-leave-active
+            transition: transform 500ms,opacity 500ms
+          &.login-leave-to
+            transform: translateX(-7.5rem) rotateZ(-180deg)
+            opacity: 0
+          &.login-enter-active
+            transition: transform 500ms,opacity 500ms
+          &.login-enter
+            transform: translateX(-7.5rem) rotateZ(-180deg)
+            opacity: 0
+          &.login-enter-to
+            transform: translateX(0) rotateZ(-180deg)
+
+        .icon-charge
+          position: absolute
+          right: 1rem
+          font-size: 2.6rem
+          color: $color-3
+          cursor: pointer
+          &:hover
+            font-size: 2.7rem
+        .charge-leave-active
+          transition: transform 500ms,opacity 500ms
+        .charge-leave-to
+          transform: translateX(10rem)
+          opacity: 0
+        .charge-enter-active
+          transition: transform 500ms,opacity 500ms
+        .charge-enter
+          transform: translateX(10rem)
+          opacity: 0
+        .charge-enter-to
+          transform: translateX(0)
+
         .icon-menu
           display: none
+
         .nav
           display: flex
           font-size: 1.6rem

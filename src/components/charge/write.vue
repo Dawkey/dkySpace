@@ -4,7 +4,7 @@
     <transition name="icon_box">
 
       <div class="icon_box"
-           v-show="show_flag && icon_show"
+           v-show="show_flag && icon_show && md_html_show"
            :class="[{combine: icon_show === 'combine'},
                  {discombine: icon_show === 'discombine'}]"
       >
@@ -44,93 +44,100 @@
                  {html_flex: html_flag}]"
       >
 
-        <div class="markdown"
-             :class="[{combine: combine_flag},
-                   {opacity: markdown_opacity}]"
-        >
-
-          <div class="_id">
-            _id:{{$route.name === "draft" ? router_id : edit_router_id}}
-          </div>
-          <div class="write_icon">
-            <i class="icon-exchange" @click="markdown_change"></i>
-          </div>
-          <form class="input_head">
-            <input v-model="title" class="title" placeholder="标题" type="text" name="title" spellcheck="false">
-            <div class="tag_classify">
-              <div class="tag_box_contain">
-                <transition name="tag_box">
-                  <ul class="tag_box" v-show="tag_box_show">
-                    <li v-for="item in tag_name">
-                      {{item}}
-                    </li>
-                  </ul>
-                </transition>
-              </div>
-              <input
-                v-model="tag"
-                @focus="box_focus('tag_box_show')"
-                @blur="box_blur('tag_box_show')"
-                class="tag" placeholder="标签" type="text" name="tag" spellcheck="false">
-              </input>
-              <input
-                v-model="classify"
-                @focus="box_focus('classify_box_show')"
-                @blur="box_blur('classify_box_show')"
-                class="classify" placeholder="分类" type="text" name="classify" spellcheck="false">
-              </input>
-              <div class="classify_box_contain">
-                <transition name="classify_box">
-                  <ul class="classify_box" v-show="classify_box_show">
-                    <li v-for="item in classify_name">
-                      {{item}}
-                    </li>
-                  </ul>
-                </transition>
-              </div>
-            </div>
-          </form>
-          <textarea class="content" placeholder="内容" name="content" spellcheck="false"
-            v-model="content"
+        <transition name="markdown">
+          <div class="markdown"
+               v-show="md_html_show"
+               :class="[{combine: combine_flag},
+                     {opacity: markdown_opacity}]"
           >
-          </textarea>
 
-        </div>
-
-
-        <div class="html"
-          :class="[{combine: combine_flag},
-                   {opacity: html_opacity}]"
-        >
-
-          <div class="write_icon">
-            <i class="icon-exchange" @click="html_change"></i>
-          </div>
-          <div class="title">
-            {{title}}
-          </div>
-          <div class="middle_div">
-            <div class="date">
-              {{date}}
+            <div class="_id">
+              _id:{{$route.name === "draft" ? router_id : edit_router_id}}
             </div>
-            <div class="tag_classify">
-              <div class="tag">
-                <i class="icon-tag"></i>
-                {{tag}}
+            <div class="write_icon">
+              <i class="icon-exchange" @click="markdown_change"></i>
+            </div>
+            <form class="input_head">
+              <input v-model="title" class="title" placeholder="标题" type="text" name="title" spellcheck="false">
+              <div class="tag_classify">
+                <div class="tag_box_contain">
+                  <transition name="tag_box">
+                    <ul class="tag_box" v-show="tag_box_show">
+                      <li v-for="item in tag_name">
+                        {{item}}
+                      </li>
+                    </ul>
+                  </transition>
+                </div>
+                <input
+                  v-model="tag"
+                  @focus="box_focus('tag_box_show')"
+                  @blur="box_blur('tag_box_show')"
+                  class="tag" placeholder="标签" type="text" name="tag" spellcheck="false">
+                </input>
+                <input
+                  v-model="classify"
+                  @focus="box_focus('classify_box_show')"
+                  @blur="box_blur('classify_box_show')"
+                  class="classify" placeholder="分类" type="text" name="classify" spellcheck="false">
+                </input>
+                <div class="classify_box_contain">
+                  <transition name="classify_box">
+                    <ul class="classify_box" v-show="classify_box_show">
+                      <li v-for="item in classify_name">
+                        {{item}}
+                      </li>
+                    </ul>
+                  </transition>
+                </div>
               </div>
-              <div class="classify">
-                <i class="icon-classify"></i>
-                {{classify}}
+            </form>
+            <textarea class="content" placeholder="内容" name="content" spellcheck="false"
+              v-model="content"
+            >
+            </textarea>
+
+          </div>
+        </transition>
+
+        <transition name="html">
+          <div class="html"
+            v-show="md_html_show"
+            :class="[{combine: combine_flag},
+                     {opacity: html_opacity}]"
+          >
+
+            <div class="write_icon">
+              <i class="icon-exchange" @click="html_change"></i>
+            </div>
+            <div class="title">
+              {{title}}
+            </div>
+            <div class="middle_div">
+              <div class="date">
+                <i class="icon-date"></i>
+                {{date}}
+              </div>
+              <div class="tag_classify">
+                <div class="tag">
+                  <i class="icon-tag"></i>
+                  {{tag}}
+                </div>
+                <div class="classify">
+                  <i class="icon-classify"></i>
+                  {{classify}}
+                </div>
               </div>
             </div>
-          </div>
-          <div class="content article_style" v-html="html" ref="html">
-          </div>
-          <div class="edit_date" v-show="combine_flag === true && html_flag === true">
-            最后编辑于<span>{{edit_date}}</span>
-          </div>
+            <div class="content article_style" v-html="html" ref="html">
+            </div>
+            <div class="edit_date" v-show="combine_flag === true && html_flag === true">
+              最后编辑于<span>{{edit_date}}</span>
+            </div>
 
-        </div>
+          </div>
+        </transition>
+
 
       </div>
 
@@ -188,10 +195,12 @@
 
         old_data: {},
 
+        md_html_show: true,//控制markdown和html暂时的显示和隐藏,动画用~
         combine_flag: true,//控制输入框是合并还是分开
         markdown_flag: true,//控制markdown框的显示和隐藏
         html_flag: false,//控制html框的显示和隐藏
         icon_show: "combine",//控制markdown框旁边icon的显示和隐藏
+        width_flag: true,//根据不同的浏览器宽度,事件会有不同的行为的flag
 
         update_flag: false,//判断draft是否是更新状态(在草稿箱中原有博客上修改)
         create_flag: false,//判断draft是否是创建状态(添加一篇新的博客到草稿)
@@ -239,6 +248,14 @@
       }
 
       marked.setOptions({renderer});
+    },
+
+
+    mounted(){
+      this.width_if_over();
+      window.onresize = ()=>{
+        this.width_if_over();
+      }
     },
 
 
@@ -431,15 +448,37 @@
       ]),
 
       markdown_change(){
-        this.combine_flag = ! this.combine_flag;
-        this.markdown_flag = true;
-        this.html_flag = false;
+        this.md_html_show = false;
+        setTimeout(()=>{
+          this.md_html_show = true;
+          if(this.width_flag){
+            this.combine_flag = ! this.combine_flag;
+            this.markdown_flag = true;
+            this.html_flag = false;
+          }else{
+            this.combine_flag = true;
+            this.markdown_flag = false;
+            this.html_flag = true;
+            this.icon_show = false;
+          }
+        },300);
       },
 
       html_change(){
-        this.combine_flag = ! this.combine_flag;
-        this.markdown_flag = false;
-        this.html_flag = true;
+        this.md_html_show = false;
+        setTimeout(()=>{
+          this.md_html_show = true;
+          if(this.width_flag){
+            this.combine_flag = ! this.combine_flag;
+            this.markdown_flag = false;
+            this.html_flag = true;
+          }else{
+            this.combine_flag = true;
+            this.markdown_flag = true;
+            this.html_flag = false;
+            this.icon_show = "combine";
+          }
+        },300);
       },
 
       autosave(){
@@ -779,6 +818,15 @@
         this[flag] = false;
       },
 
+      width_if_over(){
+        let width = document.body.clientWidth;
+        if(width < 1140){
+          this.width_flag = false;
+          this.combine_flag = true;
+        }else{
+          this.width_flag = true;
+        }
+      },
 
     },
 
@@ -855,8 +903,6 @@
   @keyframes icon_show
     0%
       transform: scaleY(0)
-    50%
-      transform: scaleY(0)
     100%
       transform: scaleY(1)
 
@@ -875,7 +921,8 @@
       &.discombine
         left: calc((100% - 4rem)/2 - 4.5rem + 1.8rem)
       &.combine
-        left: calc((100% - 88rem)/2 + 88rem - 4.5rem + 1.8rem)
+        left: auto
+        right: calc(8rem + 2 * var(--left) - 1.8rem)
       .write_icon
         position: relative
         z-index: 10
@@ -907,15 +954,15 @@
         width: 12rem
 
     .icon_box-enter-active
-      animation: icon_show 400ms
+      animation: icon_show 300ms
 
     .write_div
       display: flex
       width: 100%
       margin: auto
-      transition: width 500ms,transform 300ms,opacity 300ms
       &.combine
-        width: 88rem
+        width: calc(100% - 23rem - 4 * var(--left) + 6rem)
+        margin-left: calc(15rem + 2 * var(--left) - 3rem)
       &.markdown_flex
         justify-content: flex-start
       &.html_flex
@@ -931,9 +978,9 @@
         padding: 3rem 3rem
         padding-top: 2.5rem
         box-sizing: border-box
-        transition: width 500ms,opacity 500ms
+        border-radius: 1rem
         &.combine
-          width: 88rem
+          width: 100%
         &.opacity
           opacity: 0
         .write_icon
@@ -949,6 +996,7 @@
             height: 3rem
             top: 1.8rem
             background: $color-1
+
       .markdown
         position: relative
         display: flex
@@ -964,6 +1012,7 @@
           color: $color-3-o
           font-family: cursive
           border: 0.1rem solid
+          border-radius: 0.3rem
           opacity: 0.5
         .input_head
           flex-shrink: 0
@@ -1052,7 +1101,6 @@
               margin-top: -0.3rem
               >li
                 margin-right: 0.5rem
-
         .content
           display: block
           background: transparent
@@ -1069,6 +1117,21 @@
           font-family: inherit
           letter-spacing: 0.1rem
           box-shadow: $box-shadow-left
+      .markdown-enter
+        transform: translateX(-3rem)
+        opacity: 0
+      .markdown-enter-to
+        transform: translateX(0)
+        opacity: 1
+      .markdown-enter-active
+        transition: transform 300ms,opacity 300ms
+      .markdown-leave-to
+        transform: translateX(-3rem)
+        opacity: 0
+      .markdown-leave-active
+        transition: transform 300ms,opacity 300ms
+
+
       .html
         font-family: Georgia
         padding-bottom: 60rem
@@ -1090,6 +1153,8 @@
             line-height: 2.5rem
             text-align: center
             font-size: 1.4rem
+            i
+              display: none
           .tag_classify
             position: absolute
             top: 0
@@ -1109,15 +1174,28 @@
               font-size: 1.2rem
               padding-left: 1rem
               box-shadow: $box-shadow-left
-      .edit_date
-        display: flex
-        justify-content: flex-end
-        font-size: 1.4rem
-        color: #9a9a9a
-        >span
-          color: rgba(96,126,121,0.8)
-          margin-top: 0.1rem
-          margin-left: 0.5rem
+        .edit_date
+          display: flex
+          justify-content: flex-end
+          font-size: 1.4rem
+          color: #9a9a9a
+          >span
+            color: rgba(96,126,121,0.8)
+            margin-top: 0.1rem
+            margin-left: 0.5rem
+      .html-enter
+        transform: translateX(3rem)
+        opacity: 0
+      .html-enter-to
+        transform: translateX(0)
+        opacity: 1
+      .html-enter-active
+        transition: transform 300ms,opacity 300ms
+      .html-leave-to
+        transform: translateX(3rem)
+        opacity: 0
+      .html-leave-active
+        transition: transform 300ms,opacity 300ms
 
     .shadow_box
       position: fixed
@@ -1150,15 +1228,67 @@
     .shadow-enter-active
       transition: opacity 300ms
 
-  @media(max-width: 940px)
+
+  @media(max-width: $max-width-1)
     .write
-      .write_div
-        &.combine
-          width: 100%
-        .markdown,.html
-          &.combine
-            width: 100%
       .icon_box
         &.combine
-          left: calc(100% - 3rem - 4.5rem + 1.8rem)
+          right: calc((100% - 88rem + 4.6rem)/2 - 1.8rem)
+      .write_div
+        &.combine
+          width: calc(88rem - 4.6rem)
+          margin: auto
+
+
+  @media(max-width: 974px)
+    .write
+      .icon_box
+        &.combine
+          right: calc(7rem - 1.8rem)
+      .write_div
+        &.combine
+          width: auto
+          margin-left: 4rem
+          margin-right: 4rem
+
+  @media(max-width: $max-width-2)
+    .write
+      .icon_box
+        &.combine
+          right: 0.2rem
+        .yes_no
+          margin-top: 1rem
+          left: -4.5rem
+          width: 9rem
+      .write_div
+        &.combine
+          width: auto
+          margin-left: -1rem
+          margin-right: -1rem
+        .markdown
+          padding: 2.5rem 3rem 3rem 1.5rem
+          .input_head
+            .title
+              font-size: 2rem
+            .tag_classify
+              width: 5.5rem
+              .tag_box_contain,.classify_box_contain
+                display: none
+        .html
+          padding: 3rem 1.5rem 3rem
+          .title
+            font-size: 2.1rem
+            line-height: 2.5rem
+            height: 2.5rem
+          .middle_div
+            .date
+              padding-right: 0.5rem
+              text-align: right
+              font-size: 1.2rem
+              i
+                display: inline
+            .tag_classify
+              right: auto
+              left: 0.5rem
+
 </style>

@@ -56,7 +56,7 @@
   .left_icon
     position: fixed
     top: 24.5rem
-    left: 8rem
+    left: var(--left)
     // left: calc(((100% - 88rem)/2 - 15rem)/2)
     z-index: 12
     width: 15rem

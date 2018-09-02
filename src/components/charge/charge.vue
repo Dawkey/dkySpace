@@ -159,11 +159,10 @@
   @import "~common/stylus/variable.styl"
   .charge_div
     // margin: 0
-    margin-right: 6rem
+    // margin-right: 6rem
     padding: 0
     box-shadow: none
     font-size: 1.4rem
-    // font-family: monospace
     .article_charge
       margin-top: 6rem
     .update_charge
