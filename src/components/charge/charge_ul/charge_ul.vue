@@ -13,7 +13,7 @@
         ></i>
       </div>
 
-      <yes-no
+      <yes-no class="yes_no"
         :father = "'charge'"
         :top = "comp_top"
         :show_flag = "(active_comp.index !== false && active_comp.id !== false)"
@@ -466,12 +466,29 @@
               color: #888
             &.active
               transform: scale(1.1)
-              font-size: 1.8rem
               color: $color-black
           .icon-write
             margin: 0 10% 0 25%
           .icon-delete
             margin: 0 25% 0 10%
 
+  @media(max-width: $max-width-2)
+    .charge_ul
+      ul
+        .yes_no
+          transform: translateY(3.6rem)
+          right: -2.5rem
+        li
+          justify-content: space-between
+          .title
+            width: 100%
+            margin-right: 2rem
+          .classify,.tag,.date
+            display: none !important
+          .icon_div
+            flex-shrink: 0
+            width: 4.5rem
+            .icon-write,.icon-delete
+              margin: 0
 
 </style>

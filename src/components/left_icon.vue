@@ -71,6 +71,18 @@
           background: $color-3-o
           color: $color-black
           font-size: 2.1rem
+      .icon-leave-active
+        transition: transform 500ms,opacity 500ms
+      .icon-leave-to
+        transform: translateX(10rem)
+        opacity: 0
+      .icon-enter-active
+        transition: transform 500ms,opacity 500ms
+      .icon-enter
+        transform: translateX(10rem)
+        opacity: 0
+      .icon-enter-to
+        transform: translateX(0)
 
   @media (max-width: $max-width-1)
     .left_icon

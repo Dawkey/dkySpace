@@ -1254,6 +1254,7 @@
   @media(max-width: $max-width-2)
     .write
       .icon_box
+        top: 12.5rem
         &.combine
           right: 0.2rem
         .yes_no

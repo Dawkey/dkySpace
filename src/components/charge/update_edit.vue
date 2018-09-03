@@ -242,6 +242,10 @@
       },
 
       commit_update_click(){
+        if(this.markdown.trim() === "" || this.markdown.trim() === "*"){
+          this.add_talk_word("输入不能为空!");
+          return;
+        }
         if(this.format_flag === false){
           this.add_talk_word("输入格式有误,请以 '*+空格' 的markdown格式输入!");
           return;
@@ -386,10 +390,14 @@
 
   .update_edit
     .update_edit_div
+      position: relative
       box-shadow: $box-shadow
       box-sizing: border-box
       padding: 30px 30px 35px
       background: $color-1
+      border-radius: 1rem
+      width: calc(100% - 23rem - 4 * var(--left))
+      margin-left: calc(15rem + 2 * var(--left))
 
       ._id
         position: absolute
@@ -400,6 +408,7 @@
         color: $color-3-o
         font-family: cursive
         border: 0.1rem solid
+        border-radius: 0.3rem
         opacity: 0.5
 
       .edit
@@ -523,7 +532,8 @@
       position: fixed
       z-index: 11
       top: 24.1rem
-      left: calc((100% - 88rem)/2 + 88rem - 4.5rem + 1.8rem)
+      left: auto
+      right: calc(8rem + 2 * var(--left) - 1.8rem)
       .yes-no
         position: absolute
         left: calc(50% - 6rem)
@@ -555,5 +565,36 @@
       100%
         transform: scaleY(1)
 
+  @media(max-width: $max-width-1)
+    .update_edit
+      .update_edit_div
+        width: calc(88rem - 4.6rem)
+        margin: auto
+      .commit
+        right: calc((100% - 88rem + 4.6rem)/2 - 1.8rem)
+
+  @media(max-width: 974px)
+    .update_edit
+      .update_edit_div
+        width: auto
+        margin-left: 7rem
+        margin-right: 7rem
+      .commit
+        right: calc(7rem - 1.8rem)
+
+  @media(max-width: $max-width-2)
+    .update_edit
+      .commit
+        top: 12.5rem
+        right: 0.2rem
+        .yes_no
+          margin-top: 1rem
+          left: -4.5rem
+          width: 9rem
+      .update_edit_div
+        width: auto
+        margin-left: 2rem
+        margin-right: 2rem
+        padding: 2.5rem 3rem 3rem 1.5rem
 
 </style>

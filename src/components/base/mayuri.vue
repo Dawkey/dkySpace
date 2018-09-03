@@ -1,5 +1,5 @@
 <template>
-  <div class="mayuri">
+  <div class="mayuri" :class="{z_index: talk_show}">
     <div class="mayuri-img" @click="mayuri_click">
       <div class="expression"
         :class="[
@@ -172,7 +172,9 @@
     position: fixed
     top: 7.5rem
     left: var(--left)
-    z-index: 14
+    z-index: 12
+    &.z_index
+      z-index: 14
     .mayuri-img
       width: 15rem
       height: 15rem

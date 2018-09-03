@@ -158,8 +158,6 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable.styl"
   .charge_div
-    // margin: 0
-    // margin-right: 6rem
     padding: 0
     box-shadow: none
     font-size: 1.4rem
@@ -167,4 +165,13 @@
       margin-top: 6rem
     .update_charge
       margin-top: 6rem
+  @media(max-width: 1024px)
+    .charge
+      width: calc(100vw - 19rem)
+      margin: auto
+  @media(max-width: $max-width-2)
+    .charge
+      width: calc(100% + 4rem)
+      margin-left: -2rem
+
 </style>
