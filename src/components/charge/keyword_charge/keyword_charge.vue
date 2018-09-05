@@ -118,6 +118,11 @@
         if(this.loading_flag){
           return;
         }
+        if(! localStorage.getItem("token")){
+          this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
+          return;
+        }
+
         let new_key = this.new_key.trim();
         if(new_key === ""){
           this.add_talk_word("输入框不能为空!");
@@ -184,6 +189,16 @@
         if(this.loading_flag){
           return;
         }
+
+        clearTimeout(this.kcharge_timer);
+
+        if(! localStorage.getItem("token")){
+          this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
+          this.yes_no_show = false;
+          this.active_index = false;
+          return;
+        }
+
         let index = this.active_index;
         let active_key = this.key_name[index];
 
@@ -247,6 +262,7 @@
       kcharge_flag(){
         let flag = this.kcharge_flag;
         if(flag === "tag"){
+          this.new_key = "";
           this.keyword = "tag";
           this.keyword_ch = "标签";
           this.key_name = this.tag_name;
@@ -256,6 +272,7 @@
           this.set_key_name = this.set_tag_name;
         }
         else if(flag === "classify"){
+          this.new_key = "";
           this.keyword = "classify"
           this.keyword_ch = "分类";
           this.key_name = this.classify_name;

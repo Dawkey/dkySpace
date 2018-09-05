@@ -261,6 +261,12 @@
 
       commit_update(){
         clearTimeout(this.update_timer);
+        if(! localStorage.getItem("token")){
+          this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
+          this.yes_no_show = false;
+          this.active_button = false;
+          return;
+        }
         this.yes_no_show = false;
         this.loading_flag = true;
 

@@ -24,6 +24,6 @@ function type_timer(el,str,$store){
     setTimeout(()=>{
       el.innerHTML = str;
       resolve();
-    },100);
+    },115);
   });
 }

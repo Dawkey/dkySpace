@@ -10,19 +10,27 @@
         <form>
           <div class="account">
             <label for="account">账号:</label>
-            <input type="text" name="account">
+            <input type="text" name="account" v-model="username" spellcheck="false">
           </div>
           <div class="password">
             <label for="password">密码:</label>
-            <input type="password" name="password">
+            <input type="password" name="password" v-model="password" spellcheck="false">
           </div>
         </form>
         <div class="button">
-          <div class="login" @click="to_charge">
+          <div class="login" @click="login_click">
             login
           </div>
-          <div class="visit_login">
-            visitor's login
+          <div class="visit" @click="visit_click">
+            visit
+          </div>
+          <div class="loading" v-show="loading_flag">
+            <div class="loading-1">
+            </div>
+            <div class="loading-2">
+            </div>
+            <div class="loading-3">
+            </div>
           </div>
         </div>
       </div>
@@ -31,9 +39,22 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters,mapMutations} from "vuex";
+  import {mapGetters,mapMutations,mapActions} from "vuex";
+  import {login} from "api/post.js";
+  import {get_date} from "common/js/get_date.js";
   export default {
     name: "Login",
+
+
+    data(){
+      return {
+        username: "",
+        password: "",
+        loading_flag: false,
+      }
+    },
+
+
     computed: {
       ...mapGetters([
         "router_show",
@@ -47,21 +68,71 @@
         }
       },
     },
+
+
     methods: {
       ...mapMutations([
         "set_loading_show",
       ]),
-      to_charge(){
+
+      ...mapActions([
+        "add_talk_word",
+      ]),
+
+      login_click(){
+        if(this.loading_flag){
+          return;
+        }
+        if(this.username === "" || this.password === ""){
+          this.add_talk_word("账号|密码不能为空!");
+          return;
+        }
+
+        this.add_talk_word("提交中...");
+        this.loading_flag = true;
+
+        let timer_promise = new Promise((resolve)=>{
+          setTimeout(()=>{resolve(0);},1500);
+        });
+        let json = {username: this.username,password: this.password};
+        Promise.all([login(json),timer_promise])
+          .then((res)=>{
+            let respond = res[0].data;
+            if(respond.code !== 1){
+              if(respond.code === 0){
+                let duration = 15*24*3600*1000;
+                let date = get_date(duration);
+                let token = respond.data.token;
+                localStorage.setItem("token",token);
+                this.add_talk_word(`token已添加,有效期至${date}~`);
+                this.loading_flag = false;
+                this.$router.push("/charge");
+              }
+              else if(respond.code === 2){
+                this.add_talk_word("账号|密码有误!");
+                this.loading_flag = false;
+              }
+            }
+            else{
+              this.add_talk_word("服务器端出现错误,登录失败!");
+              this.loading_flag = false;
+            }
+          });
+      },
+
+      visit_click(){
         this.$router.push("/charge");
       },
+
     },
+
   }
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable.styl"
   .login_div
-    width: 20.2rem
+    width: 22rem
     form
       font-size: 1.3rem
       .account,.password
@@ -72,22 +143,27 @@
         display: block
         font-size: 1.3rem
         color: $color-3
+        flex-shrink: 0
       input
         color: $color-3
         background: transparent
         border: none
         outline: 0
         padding: 0 0.5rem
+        width: 100%
+        box-sizing: border-box
         box-shadow: $box-shadow-bottom
         letter-spacing: 0.1rem
         &:focus
           box-shadow: 0 0.5rem 0.5rem -0.5rem $color-3
     .button
+      position: relative
       display: flex
       margin-top: 3rem
       font-size: 1.5rem
       justify-content: center
-      .login,.visit_login
+      margin-bottom: 1.5rem
+      .login,.visit
         width: 7rem
         line-height: 2.5rem
         text-align: center
@@ -98,10 +174,39 @@
         cursor: pointer
         &:hover
           background: $color-3
-      .visit_login
-        display: none
-        font-size: 1.2rem
-        width: 8.5rem
+      .visit
+        position: absolute
+        width: 4rem
+        right: 0.7rem
+      .loading
+        position: absolute
+        // left: 1.2rem
+        top: 3rem
+        width: 4.5rem
+        height: 4.5rem
+        display: flex
+        align-items: center
+        justify-content: center
+        .loading-1,.loading-2,.loading-3,.loading-4
+          position: absolute
+          z-index: 10
+          width: 0
+          height: 0
+          background: $color-3
+          filter: drop-shadow(0 0 1px $color-3-o)
+          border-radius: 50%
+          animation: load 1.8s cubic-bezier(0, 0.2, 0.8, 1) infinite
+        .loading-2
+          animation-delay: -0.6s
+        .loading-3
+          animation-delay: -1.2s
+
+  @keyframes load
+    100%
+      height: 100%
+      width: 100%
+      opacity: 0
+
 
   @media (max-width: $max-width-2)
     .login_div
@@ -109,7 +214,7 @@
         label
           flex-shrink: 0
         input
-          margin: 0.5rem 0  
+          margin: 0.5rem 0
 
 
 </style>

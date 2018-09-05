@@ -482,6 +482,9 @@
       },
 
       autosave(){
+        if(! localStorage.getItem("token")){
+          return;
+        }
         this.autosave_timer = setTimeout(()=>{
           let {title,tag,classify,markdown} = this.old_data;
           this.autosave_flag = true;
@@ -568,6 +571,10 @@
 
       //保存草稿内容(可能是创建一篇新的草稿,或者在原有草稿上修改)
       save_draft(){
+        if(! localStorage.getItem("token")){
+          this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
+          return;
+        }
         if(this.$route.name !== "draft"){
           return;
         }
@@ -692,6 +699,14 @@
       //真正发表博客内容的函数(创建一篇新的博客),由yes_no组件中的yes按钮触发
       commit_draft(){
         clearTimeout(this.article_timer);
+
+        if(! localStorage.getItem("token")){
+          this.active_button = false;
+          this.yes_no_show = false;
+          this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
+          return;
+        }
+
         this.yes_no_show = false;
         this.loading_flag = true;
 
@@ -723,7 +738,7 @@
 
                 this.add_talk_word(`提交成功!已新增一篇博客,_id号为${_id}`);
                 this.saved_flag = true;
-                this.$router.push(`/charge`);
+                this.$router.push("/charge");
               }
               else if(code === 1){
                 this.loading_flag = false;

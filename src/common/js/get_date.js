@@ -5,8 +5,14 @@ function time_str(time){
   return time;
 }
 
-export function get_date(){
+export function get_date(add_time){
   let date = new Date();
+
+  if(add_time){
+    let new_time = date.getTime() + add_time;
+    date = new Date(new_time);
+  }
+
   let year = time_str(date.getFullYear());
   let month = time_str(date.getMonth()+1);
   let day = time_str(date.getDate());

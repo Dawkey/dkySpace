@@ -59,3 +59,10 @@ export function update_classify(json){
   let promise = axios.post("/api/post/update_classify",json);
   return promise;
 }
+
+
+
+export function login(json){
+  let promise = axios.post("/api/post/login",json);
+  return promise;
+}

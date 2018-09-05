@@ -226,6 +226,14 @@
 
       //真正的删除事件
       delete_comp(){
+        if(! localStorage.getItem("token")){
+          this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
+          clearTimeout(this.comp_timer);
+          this.active_comp.index = false;
+          this.active_comp.id = false;
+          return;
+        }
+
         if(this.loading_flag !== false){
           return;
         }
@@ -234,6 +242,7 @@
           return;
         }
         clearTimeout(this.comp_timer);
+
         this.active_comp.id = false;
         this.emit_loading_flag(true);
 
