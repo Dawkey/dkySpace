@@ -439,7 +439,8 @@
         "set_loading_show",
         "set_login_flag",
         "set_talk_word",
-        "set_data_ready"
+        "set_data_ready",
+        "set_combine_flag"
       ]),
 
       ...mapActions([
@@ -849,6 +850,7 @@
     watch: {
 
       combine_flag(){
+        this.set_combine_flag(this.combine_flag);
         this.icon_show = false;
         setTimeout(()=>{
           if(this.combine_flag === true){

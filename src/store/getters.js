@@ -24,3 +24,6 @@ export const draft_main = (state) => state.draft_main;
 export const draft_flag = (state) => state.draft_flag;
 
 export const kcharge_flag = (state) => state.kcharge_flag;
+export const combine_flag = (state) => state.combine_flag;
+
+export const token_status = (state) => state.token_status;

@@ -3,13 +3,16 @@
     <ul class="right_top">
 
       <transition name="login">
-        <router-link tag="li" class="button_icon login"
-          :to="login_to"
-          :class="{out_login: login_flag}"
+        <li class="button_icon login"
+          @click="login_click"
+          :class="[{active_login: $route.name === 'login'},
+                   {out_login: login_flag},
+                   {token_right: token_status === 'token_right'}
+                  ]"
           v-show = "$route.name != 'draft' && $route.name != 'edit' && $route.name != 'update_edit'"
         >
           <i class="icon-login"></i>
-        </router-link>
+        </li>
       </transition>
 
       <transition name="charge">
@@ -36,16 +39,82 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters} from "vuex";
+  import axios from "axios";
+  import {mapGetters,mapMutations,mapActions} from "vuex";
+  import {check_token} from "api/post.js";
   export default {
     name: "RightIcon",
+
+
+    created(){
+      axios.interceptors.request.use(function(config){
+        let token = localStorage.getItem("token");
+        if(token){
+          config.headers.common["Authorization"] = "Bearer " + token;
+        }
+        return config;
+      },function(error){
+        return Promise.reject(error);
+      });
+
+      let token = localStorage.getItem("token");
+      if(!token){
+        this.set_token_status("token_no");
+      }else{
+        check_token().then((res)=>{
+          let code = res.data.code;
+          if(code === 0){
+            this.set_token_status("token_right");
+          }else if(code === 3){
+            let error = res.data.error;
+            if(error === "jwt expired"){
+              this.set_token_status("token_expire");
+            }else{
+              this.set_token_status("token_wrong");
+            }
+          }
+        });
+      }
+    },
+
+
     computed: {
-      ...mapGetters(["login_flag"]),
-      login_to(){
-        if(this.login_flag === false){
-          return "/login";
+      ...mapGetters([
+        "login_flag",
+        "token_status",
+      ]),
+    },
+
+
+    methods: {
+      ...mapMutations([
+        "set_token_status",
+      ]),
+
+      ...mapActions([
+        "add_talk_word",
+      ]),
+
+      login_click(){
+        if(this.$route.name === "login"){
+          return;
+        }
+        if(this.login_flag){
+          this.$router.push("/home");
+          return;
+        }
+
+        if(this.token_status === "token_right"){
+          this.$router.push("/charge");
         }else{
-          return "/home";
+          if(this.token_status === "token_expire"){
+            this.add_talk_word("当前token已过期,请重新登录以更新token,Dawkey~");
+          }else if(this.token_status === "token_wrong"){
+            localStorage.removeItem("token");
+            this.set_token_status("token_no");
+            this.add_talk_word("当前token无效!已被移除.");
+          }
+          this.$router.push("/login");
         }
       },
     },
@@ -58,8 +127,7 @@
   .right_icon
     .right_top,.right_bottom
       position: fixed
-      z-index: 13
-      // right: calc(((100% - 88rem)/2 - 6rem)/2)
+      z-index: 11
       right: calc(var(--left) + 1rem)
       width: 6rem
     .right_top
@@ -79,8 +147,14 @@
           font-size: 2.3rem
       .login
         transition: transform 500ms
+        &.active_login
+          background: $color-3-o
+          color: $color-black
+          font-size: 2.3rem
         &.out_login
           transform: rotateZ(-180deg)
+        &.token_right
+          color: $color-3
         &.login-leave-active
           transition: transform 500ms,opacity 500ms
         &.login-leave-to

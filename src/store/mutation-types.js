@@ -27,3 +27,7 @@ export const set_kcharge_flag = "set_kcharge_flag";
 
 export const add_tag_key = "add_tag_key";
 export const add_classify_key = "add_classify_key";
+
+export const set_combine_flag = "set_combine_flag";
+
+export const set_token_status = "set_token_status";

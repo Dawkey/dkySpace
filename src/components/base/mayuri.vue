@@ -1,5 +1,5 @@
 <template>
-  <div class="mayuri" :class="{z_index: talk_show}">
+  <div class="mayuri" :class="[{zindex_up: talk_show},{zindex_down: !combine_flag && $route.name !== 'charge'}]">
     <div class="mayuri-img" @click="mayuri_click">
       <div class="expression"
         :class="[
@@ -48,7 +48,8 @@
         "talk_flag",
         "talk_done",
 
-        "kcharge_flag"
+        "kcharge_flag",
+        "combine_flag"
       ]),
     },
 
@@ -172,8 +173,10 @@
     position: fixed
     top: 7.5rem
     left: var(--left)
-    z-index: 12
-    &.z_index
+    z-index: 14
+    &.zindex_down
+      z-index: 9
+    &.zindex_up
       z-index: 14
     .mayuri-img
       width: 15rem

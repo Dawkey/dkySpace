@@ -25,6 +25,9 @@ const state = {
   draft_flag: false,  //判断是否已获取草稿数据的flag
 
   kcharge_flag: false, //判断是否处于keyword_charge组件的flag,主要作用于mayuri对话的颜色显示
+  combine_flag: true,  //判断write组件是否处于combine状态的flag,作用于mayuri的z-index
+
+  token_status: false,
 }
 
 export default state;

@@ -100,11 +100,11 @@
             let respond = res[0].data;
             if(respond.code !== 1){
               if(respond.code === 0){
-                let duration = 15*24*3600*1000;
-                let date = get_date(duration);
+                // let duration = 15*24*3600*1000;
+                // let date = get_date(duration);
                 let token = respond.data.token;
                 localStorage.setItem("token",token);
-                this.add_talk_word(`token已添加,有效期至${date}~`);
+                // this.add_talk_word(`token已添加,有效期至${date}~`);
                 this.loading_flag = false;
                 this.$router.push("/charge");
               }
@@ -162,8 +162,9 @@
       margin-top: 3rem
       font-size: 1.5rem
       justify-content: center
-      margin-bottom: 1.5rem
-      .login,.visit
+      align-items: center
+      // margin-bottom: 1.5rem
+      .login
         width: 7rem
         line-height: 2.5rem
         text-align: center
@@ -176,12 +177,21 @@
           background: $color-3
       .visit
         position: absolute
-        width: 4rem
-        right: 0.7rem
+        right: 0.5rem
+        width: 4.4rem
+        line-height: 1.6rem
+        text-align: center
+        background: transparent
+        color: $color-grey
+        box-shadow: 0 0.5rem 0.5rem -0.5rem
+        cursor: pointer
+        &:hover
+          color: $color-3
+          transform: scale(1.05)
       .loading
         position: absolute
-        // left: 1.2rem
-        top: 3rem
+        left: 1.2rem
+        // top: 3rem
         width: 4.5rem
         height: 4.5rem
         display: flex

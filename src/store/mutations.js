@@ -78,6 +78,14 @@ const mutations = {
   [types.add_classify_key](state,key){
     state.classify[key] = [];
   },
+
+  [types.set_combine_flag](state,combine_flag){
+    state.combine_flag = combine_flag;
+  },
+
+  [types.set_token_status](state,token_status){
+    state.token_status = token_status;
+  }
 }
 
 export default mutations;

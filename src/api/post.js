@@ -66,3 +66,8 @@ export function login(json){
   let promise = axios.post("/api/post/login",json);
   return promise;
 }
+
+export function check_token(){
+  let promise = axios.post("/api/post/check_token");
+  return promise;
+}

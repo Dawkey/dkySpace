@@ -353,7 +353,7 @@
   @import "~common/stylus/variable.styl"
   .charge_ul
     padding: 2rem 2rem
-    border-radius: 0.3rem
+    border-radius: 1rem
     box-shadow: $box-shadow
     background-color: $color-1
     ul
