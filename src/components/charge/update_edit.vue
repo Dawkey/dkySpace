@@ -69,7 +69,7 @@
 <script type="text/ecmascript-6">
   import YesNo from "./yes_no/yes_no.vue";
   import {mapGetters,mapMutations,mapActions} from "vuex";
-  import {common_data} from "common/js/mixin.js";
+  import {common_data,common_token} from "common/js/mixin.js";
   import {get_date} from "common/js/get_date.js";
 
   import {get_update} from "api/get.js"
@@ -79,7 +79,7 @@
 
     components: {YesNo},
 
-    mixins: [common_data],
+    mixins: [common_data,common_token],
 
     data(){
       return {
@@ -261,8 +261,8 @@
 
       commit_update(){
         clearTimeout(this.update_timer);
-        if(! localStorage.getItem("token")){
-          this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
+        if(this.token_status !== "token_right"){
+          this.token_test_1();
           this.yes_no_show = false;
           this.active_button = false;
           return;
@@ -290,20 +290,20 @@
               let code = res[0].data.code;
               let data = res[0].data.data;
               if(code === 0){
-                this.loading_flag = false;
-                this.active_button = false;
-
                 this.set_update(data);
 
                 this.add_talk_word(`编辑成功!版本号为${this.version}的更新日志已发生变更`);
                 this.$router.push(`/update`);
               }
               else if(code === 1){
-                this.loading_flag = false;
-                this.active_button = false;
-
-                this.add_talk_word("服务器端出现错误,保存失败!");
+                this.add_talk_word("服务器端出现错误,编辑失败!");
               }
+              else if(code === 3){
+                let error = data.error;
+                this.token_test_2(error);
+              }
+              this.loading_flag = false;
+              this.active_button = false;
             })
             .catch((err)=>{
               this.loading_flag = false;
@@ -319,9 +319,6 @@
               let code = res[0].data.code;
               let data = res[0].data.data;
               if(code === 0){
-                this.loading_flag = false;
-                this.active_button = false;
-
                 this.set_update(data.update);
                 this.set_use(data.use)
 
@@ -329,11 +326,14 @@
                 this.$router.push(`/charge`);
               }
               else if(code === 1){
-                this.loading_flag = false;
-                this.active_button = false;
-
-                this.add_talk_word("服务器端出现错误,保存失败!");
+                this.add_talk_word("服务器端出现错误,提交失败!");
               }
+              else if(code === 3){
+                let error = data.error;
+                this.token_test_2(error);
+              }
+              this.loading_flag = false;
+              this.active_button = false;
             })
             .catch((err)=>{
               this.loading_flag = false;

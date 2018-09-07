@@ -51,6 +51,7 @@
         username: "",
         password: "",
         loading_flag: false,
+        talk_time: 0,
       }
     },
 
@@ -58,6 +59,7 @@
     computed: {
       ...mapGetters([
         "router_show",
+        "token_status"
       ]),
       show_flag(){
         if(this.router_show === 'login'){
@@ -73,6 +75,7 @@
     methods: {
       ...mapMutations([
         "set_loading_show",
+        "set_token_status",
       ]),
 
       ...mapActions([
@@ -100,11 +103,9 @@
             let respond = res[0].data;
             if(respond.code !== 1){
               if(respond.code === 0){
-                // let duration = 15*24*3600*1000;
-                // let date = get_date(duration);
                 let token = respond.data.token;
                 localStorage.setItem("token",token);
-                // this.add_talk_word(`token已添加,有效期至${date}~`);
+                this.set_token_status("token_right");
                 this.loading_flag = false;
                 this.$router.push("/charge");
               }
@@ -124,6 +125,18 @@
         this.$router.push("/charge");
       },
 
+    },
+
+    watch: {
+      show_flag(){
+        if(this.talk_time !== 0){
+          return;
+        }
+        if(this.show_flag === true && this.token_status === "token_no"){
+          this.talk_time = this.talk_time + 1;
+          this.add_talk_word("你可以通过'visit'按钮直接访问后台界面哦~(不过没有管理员权限就是了)");
+        }
+      },
     },
 
   }

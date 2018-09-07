@@ -31,7 +31,7 @@
 
     </ul>
     <div class="right_bottom">
-      <div class="button_icon top">
+      <div class="button_icon top" @click="top_click">
         <i class="icon-top"></i>
       </div>
     </div>
@@ -66,7 +66,7 @@
           if(code === 0){
             this.set_token_status("token_right");
           }else if(code === 3){
-            let error = res.data.error;
+            let error = res.data.data.error;
             if(error === "jwt expired"){
               this.set_token_status("token_expire");
             }else{
@@ -116,6 +116,10 @@
           }
           this.$router.push("/login");
         }
+      },
+
+      top_click(){
+        scrollTo(0,0);
       },
     },
   }
@@ -207,6 +211,11 @@
   @media (max-width: $max-width-1)
     .right_icon
       .right_top
+        display: none
+
+  @media (max-height: 600px)
+    .right_icon
+      .right_bottom
         display: none
 
 </style>

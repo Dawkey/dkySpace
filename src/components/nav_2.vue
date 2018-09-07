@@ -94,7 +94,7 @@
 
   .nav_2_body
     position: fixed
-    z-index: 13
+    z-index: 15
     top: 0
     left: 0
     right: 0

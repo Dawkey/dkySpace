@@ -168,7 +168,7 @@
   import marked,{Renderer} from "marked";
   import hljs from "highlight.js";
 
-  import {common_data,common_draft} from "common/js/mixin.js";
+  import {common_data,common_draft,common_token} from "common/js/mixin.js";
   import {get_date} from "common/js/get_date.js";
 
   import {get_draft,get_article} from "api/get.js";
@@ -182,7 +182,7 @@
     components: {YesNo},
 
 
-    mixins: [common_data,common_draft],
+    mixins: [common_data,common_draft,common_token],
 
 
     data(){
@@ -483,7 +483,7 @@
       },
 
       autosave(){
-        if(! localStorage.getItem("token")){
+        if(this.token_status !== "token_right"){
           return;
         }
         this.autosave_timer = setTimeout(()=>{
@@ -495,7 +495,7 @@
       },
 
       //检测输入框的内容是否合法
-      input_test(){
+      input_test(type){
         let title = this.title.trim();
         let tag = this.tag.trim();
         let classify = this.classify.trim();
@@ -519,12 +519,21 @@
           return warning;
         }
 
-        let title_flag = this.main.some((value)=>{
-          if(this.$route.name === "edit"){
-            return (value.title === title && value._id !== this.edit_router_id);
-          }
-          return value.title === title;
-        });
+        let title_flag;
+        if(type === "commit"){
+          title_flag = this.main.some((value)=>{
+            if(this.$route.name === "edit"){
+              return (value.title === title && value._id !== this.edit_router_id);
+            }
+            return value.title === title;
+          });
+        }
+        else if(type === "save"){
+          title_flag = this.draft_main.some((value)=>{
+            return (value.title === title && value._id !== this.router_id);
+          });
+        }
+
         if(title_flag){
           warning = `标题 '${title}' 已经存在了! 请换一个新的标题`;
           return warning;
@@ -572,8 +581,8 @@
 
       //保存草稿内容(可能是创建一篇新的草稿,或者在原有草稿上修改)
       save_draft(){
-        if(! localStorage.getItem("token")){
-          this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
+        if(this.token_status !== "token_right"){
+          this.token_test_1();
           return;
         }
         if(this.$route.name !== "draft"){
@@ -581,7 +590,7 @@
         }
         clearTimeout(this.autosave_timer);
         this.autosave();
-        let json = this.input_test();
+        let json = this.input_test("save");
 
         if(typeof json === "string"){
           let warning = json;
@@ -618,9 +627,6 @@
         if(this.create_flag === true){
           Promise.all([create_draft(draft_json),timer_promise])
             .then((res)=>{
-              this.loading_flag = false;
-              this.active_button = false;
-
               let code = res[0].data.code;
               let data = res[0].data.data;
               if(code === 0){
@@ -640,18 +646,23 @@
               else if(code === 1){
                 this.add_talk_word("服务器端出现错误,保存失败!");
               }
+              else if(code === 3){
+                let error = data.error;
+                this.token_test_2(error);
+              }
+              this.loading_flag = false;
+              this.active_button = false;
             })
             .catch((err)=>{
               this.add_talk_word("axios请求出现错误,保存失败!");
+              this.loading_flag = false;
+              this.active_button = false;
               console.log(err);
             });
         }
         else if(this.create_flag === false){
           Promise.all([update_draft(draft_json),timer_promise])
             .then((res)=>{
-              this.loading_flag = false;
-              this.active_button = false;
-
               let code = res[0].data.code;
               let data = res[0].data.data;
               if(code === 0){
@@ -666,9 +677,17 @@
               else if(code === 1){
                 this.add_talk_word("服务器端出现错误,保存失败!");
               }
+              else if(code === 3){
+                let error = data.error;
+                this.token_test_2(error);
+              }
+              this.loading_flag = false;
+              this.active_button = false;
             })
             .catch((err)=>{
               this.add_talk_word("axios请求出现错误,保存失败!");
+              this.loading_flag = false;
+              this.active_button = false;
               console.log(err);
             });
         }
@@ -677,7 +696,7 @@
 
       //发表博客内容的点击事件,弹出yes_no组件
       commit_draft_click(){
-        let json = this.input_test();
+        let json = this.input_test("commit");
 
         // clearTimeout(this.autosave_timer);
         // this.autosave();
@@ -701,10 +720,10 @@
       commit_draft(){
         clearTimeout(this.article_timer);
 
-        if(! localStorage.getItem("token")){
+        if(this.token_status !== "token_right"){
+          this.token_test_1();
           this.active_button = false;
           this.yes_no_show = false;
-          this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
           return;
         }
 
@@ -731,9 +750,6 @@
               let code = res[0].data.code;
               let data = res[0].data.data;
               if(code === 0){
-                this.loading_flag = false;
-                this.active_button = false;
-
                 this.set_data_ready(false);
                 this.data_handle(data);
 
@@ -742,14 +758,19 @@
                 this.$router.push("/charge");
               }
               else if(code === 1){
-                this.loading_flag = false;
-                this.active_button = false;
-
-                this.add_talk_word("服务器端出现错误,保存失败!");
+                this.add_talk_word("服务器端出现错误,新增失败!");
               }
+              else if(code === 3){
+                let error = data.error;
+                this.token_test_2(error);
+              }
+              this.loading_flag = false;
+              this.active_button = false;
             })
             .catch((err)=>{
-              this.add_talk_word("axios请求出现错误,保存失败!");
+              this.add_talk_word("axios请求出现错误,新增失败!");
+              this.loading_flag = false;
+              this.active_button = false;
               console.log(err);
             });
         }
@@ -760,9 +781,6 @@
               let code = res[0].data.code;
               let data = res[0].data.data;
               if(code === 0){
-                this.loading_flag = false;
-                this.active_button = false;
-
                 this.set_data_ready(false);
                 this.data_handle(data);
 
@@ -770,14 +788,19 @@
                 this.$router.push(`/charge`);
               }
               else if(code === 1){
-                this.loading_flag = false;
-                this.active_button = false;
-
-                this.add_talk_word("服务器端出现错误,保存失败!");
+                this.add_talk_word("服务器端出现错误,编辑失败!");
               }
+              else if(code === 3){
+                let error = data.error;
+                this.token_test_2(error);
+              }
+              this.loading_flag = false;
+              this.active_button = false;
             })
             .catch((err)=>{
-              this.add_talk_word("axios请求出现错误,保存失败!");
+              this.add_talk_word("axios请求出现错误,编辑失败!");
+              this.loading_flag = false;
+              this.active_button = false;
               console.log(err);
             });
         }
@@ -1308,5 +1331,11 @@
             .tag_classify
               right: auto
               left: 0.5rem
+
+  @media(max-height: 520px)
+    .write
+      .icon_box
+        display: none
+
 
 </style>

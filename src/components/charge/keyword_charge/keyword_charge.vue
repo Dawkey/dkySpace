@@ -59,11 +59,15 @@
   import {mapGetters,mapMutations,mapActions} from "vuex";
   import YesNo from "../yes_no/yes_no.vue";
   import {update_tag,update_classify} from "api/post.js";
+  import {common_token} from "common/js/mixin.js";
   export default {
     name: "KeywordCharge",
 
 
     components: {YesNo},
+
+
+    mixins: [common_token],
 
 
     data(){
@@ -118,8 +122,8 @@
         if(this.loading_flag){
           return;
         }
-        if(! localStorage.getItem("token")){
-          this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
+        if(this.token_status !== "token_right"){
+          this.token_test_1();
           return;
         }
 
@@ -149,14 +153,22 @@
           Promise.all([this.update_key({[this.keyword]: new_key_name}),timer_promise])
             .then((res)=>{
               let code = res[0].data.code;
+              let data = res[0].data.data;
               if(code === 0){
                 this.add_keyword_key(new_key);
                 this.set_key_name(new_key_name);
                 this.add_talk_word(`提交成功!已新增一个${this.keyword_ch},${this.keyword_ch}名为'${new_key}'`);
                 this.new_key = "";
                 this.key_name = new_key_name;
-                this.loading_flag = false;
               }
+              else if(code === 1){
+                this.add_talk_word("服务器端出现错误,新增失败!");
+              }
+              else if(code === 3){
+                let error = data.error;
+                this.token_test_2(error);
+              }
+              this.loading_flag = false;
             });
         }
 
@@ -192,8 +204,8 @@
 
         clearTimeout(this.kcharge_timer);
 
-        if(! localStorage.getItem("token")){
-          this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
+        if(this.token_status !== "token_right"){
+          this.token_test_1();
           this.yes_no_show = false;
           this.active_index = false;
           return;
@@ -216,14 +228,22 @@
         Promise.all([this.update_key({[this.keyword]: new_key_name}),timer_promise])
           .then((res)=>{
             let code = res[0].data.code;
+            let data = res[0].data.data;
             if(code === 0){
               this.set_key_name(new_key_name);
               this.add_talk_word(`删除成功!已删除${this.keyword_ch}名为'${active_key}'的${this.keyword_ch}`);
-              this.active_index = false;
-              this.loading_flag = false;
-              this.icon_div_show = true;
               this.key_name = new_key_name;
             }
+            else if(code === 1){
+              this.add_talk_word("服务器端出现错误,删除失败!");
+            }
+            else if(code === 3){
+              let error = data.error;
+              this.token_test_2(error);
+            }
+            this.active_index = false;
+            this.loading_flag = false;
+            this.icon_div_show = true;
           });
       },
 

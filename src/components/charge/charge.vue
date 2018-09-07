@@ -76,6 +76,7 @@
       return {
         loading_flag: false,
         current_comp: "draft",
+        talk_time: 0,
       }
     },
 
@@ -84,6 +85,7 @@
 
       ...mapGetters([
         "update",
+        "token_status"
       ]),
 
       show_flag(){
@@ -115,6 +117,10 @@
         "set_main",
         "set_login_flag",
         "set_loading_show",
+      ]),
+
+      ...mapActions([
+        "add_talk_word",
       ]),
 
       get_update_data(){
@@ -151,7 +157,28 @@
         return remove_update(json);
       },
 
-    }
+    },
+
+
+    watch: {
+      show_flag(){
+        if(this.talk_time !== 0){
+          return;
+        }
+        if(this.show_flag === true){
+          this.talk_time = this.talk_time + 1;
+          if(this.token_status === "token_no"){
+            this.add_talk_word("早上好,visitor,欢迎访问dkySpace's charge,你拥有'查看'博客数据的权限,没有'修改','添加','发布'的权限哦~");
+          }
+          else if(this.token_status === "token_expire"){
+            this.add_talk_word("当前token已过期,请重新登录以更新token,Dawkey~");
+          }
+          else if(this.token_status === "token_right"){
+            this.add_talk_word("早上好,Dawkey,(￣▽￣)／");
+          }
+        }
+      },
+    },
   }
 </script>
 

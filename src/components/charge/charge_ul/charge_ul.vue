@@ -72,6 +72,7 @@
 
 <script type="text/ecmascript-6">
   import {mapMutations,mapActions} from "vuex";
+  import {common_token} from "common/js/mixin.js";
   import YesNo from "../yes_no/yes_no.vue";
   export default {
     //这是一个charge.vue组件中,draft,article,update部分所公用的ul组件
@@ -79,6 +80,9 @@
 
 
     components: {YesNo},
+
+
+    mixins: [common_token],
 
 
     data(){
@@ -143,7 +147,6 @@
 
 
     computed: {
-
       icon_class(){
         if(this.comp === "article"){
           return "icon-archive";
@@ -226,8 +229,9 @@
 
       //真正的删除事件
       delete_comp(){
-        if(! localStorage.getItem("token")){
-          this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
+        if(this.token_status !== "token_right"){
+
+          this.token_test_1();
           clearTimeout(this.comp_timer);
           this.active_comp.index = false;
           this.active_comp.id = false;
@@ -284,8 +288,8 @@
                 this.set_comp_main(data[comp_main]);
               }
 
-              this.active_comp.index = false;
-              this.emit_loading_flag(false);
+              // this.active_comp.index = false;
+              // this.emit_loading_flag(false);
 
               if(this.comp === "draft"){
                 this.add_talk_word(`删除成功,_id号为${_id}的草稿数据已被移除`);
@@ -299,6 +303,12 @@
             else if(code === 1){
               this.add_talk_word("服务器端出现错误,删除失败!");
             }
+            else if(code === 3){
+              let error = data.error;
+              this.token_test_2(error);
+            }
+            this.active_comp.index = false;
+            this.emit_loading_flag(false);
           })
           .catch((err)=>{
             this.add_talk_word("axios请求出现错误,删除失败!");

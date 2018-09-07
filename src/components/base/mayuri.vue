@@ -213,12 +213,15 @@
       &:before
         content: ""
         position: absolute
-        width: 5rem
-        height: 4.5rem
-        top: 2.3rem
-        left: -2.7rem
-        border-radius: 0 0 1000% 0 / 0 0 1000% 0
-        box-shadow: 0.1rem 0.1rem 0.1rem -0.1rem $color-3
+        box-sizing: border-box
+        top: 0rem
+        height: 1.3rem
+        left: -3.75rem
+        width: 3.7rem
+        transform-origin: 100% 100%
+        transform: rotate(-30deg)
+        border-bottom: 0.1rem solid rgba(96,126,121,0.6)
+
       .talk-box
         display: flex
         max-width: 30rem
@@ -241,7 +244,7 @@
         color: $color-3
         background: $color-2-o
         &:before
-          box-shadow: 0.1rem 0.1rem 0.1rem -0.1rem $color-2-o
+          border-bottom: 0.1rem solid $color-2-o
         .talk-box
           .talk-word
             >i

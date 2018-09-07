@@ -43,6 +43,7 @@ export const common_data = {
 
 }
 
+
 export const common_draft = {
 
   computed: {
@@ -93,5 +94,46 @@ export const common_draft = {
     },
 
   }
+
+}
+
+
+export const common_token = {
+  computed: {
+    ...mapGetters([
+      "token_status",
+    ]),
+  },
+
+  methods: {
+    ...mapMutations([
+      "set_token_status",
+    ]),
+
+    token_test_1(){
+      if(this.token_status === "token_no"){
+        this.add_talk_word("你没有权限做这个哦~ (´･ω･)ﾉ(._.`)");
+      }
+      else if(this.token_status === "token_wrong"){
+        localStorage.removeItem("token");
+        this.set_token_status("token_no");
+        this.add_talk_word("当前token无效!已被移除.");
+      }
+      else if(this.token_status === "token_expire"){
+        this.add_talk_word("当前token已过期,请重新登录以更新token,Dawkey~");
+      }
+    },
+
+    token_test_2(error){
+      if(error === "jwt expired"){
+        this.set_token_status("token_expire");
+        this.add_talk_word("当前token已过期,请重新登录以更新token,Dawkey~");
+      }else{
+        localStorage.removeItem("token");
+        this.set_token_status("token_no");
+        this.add_talk_word("当前token无效!已被移除.");
+      }
+    },
+  },
 
 }

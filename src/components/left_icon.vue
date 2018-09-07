@@ -43,6 +43,7 @@
       }
     },
 
+
     computed: {
       ...mapGetters([
         "login_flag",
@@ -51,27 +52,33 @@
       ]),
     },
 
+
     methods: {
 
       ...mapActions([
         "add_talk_word",
       ]),
 
+      set_token_height(){
+        let token = localStorage.getItem("token");
+        let encode_str = token.split(".")[1];
+        let json_str = window.atob(encode_str);
+        let json_obj = JSON.parse(json_str);
+        let expire = json_obj.exp;
+        let duration = expire - Math.floor(Date.now()/1000);
+
+        let token_height = 100 - Math.floor((duration / (3600 * 24 * 15)) * 100);
+        this.token_height = token_height + "%";
+        return duration;
+      },
+
       get_expire_time(){
         if(this.token_status === "token_expire"){
           this.token_height = "100%";
-          this.add_talk_word("token已过期,请重新登录以更新token,Dawkey~");
+          this.add_talk_word("当前token已过期,请重新登录以更新token,Dawkey~");
         }
         else if(this.token_status === "token_right"){
-          let token = localStorage.getItem("token");
-          let encode_str = token.split(".")[1];
-          let json_str = window.atob(encode_str);
-          let json_obj = JSON.parse(json_str);
-          let expire = json_obj.exp;
-          let duration = expire - Math.floor(Date.now()/1000);
-
-          let token_height = 100 - Math.floor((duration / (3600 * 24 * 15)) * 100);
-          this.token_height = token_height + "%";
+          let duration = this.set_token_height();
 
           let day = Math.floor(duration / (24 * 3600));
           let hour_dur = duration % (24 * 3600);
@@ -83,6 +90,18 @@
         }
       },
 
+    },
+
+
+    watch: {
+      token_status(){
+        if(this.token_status === "token_expire"){
+          this.token_height = "100%";
+        }
+        else if(this.token_status === "token_right"){
+          this.set_token_height();
+        }
+      }
     }
 
   }
