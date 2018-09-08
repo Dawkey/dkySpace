@@ -14,9 +14,9 @@
       <div class="talk" v-show="talk_show" :class="{kstyle: kcharge_flag !== false}">
         <div class="talk-box">
           <span class="talk-word">
-            <span ref="talk_span">
+            <span ref="talk_span" class="word">
             </span>
-            <i :class="{star: talk_done}">|</i>
+            <span class="cursor" :class="{star: talk_done}">|</span>
           </span>
         </div>
       </div>
@@ -227,14 +227,14 @@
         max-width: 30rem
         .talk-word
           overflow: hidden
-          >span
+          .word
             font-family: monospace
             letter-spacing: 0.1rem
             font-size: 1.4rem
             line-height: 2.2rem
             word-wrap: break-word
             word-break: break-all
-          >i
+          .cursor
             display: inline-block
             font-size: 1.4rem
             line-height: 2.2rem
@@ -304,5 +304,14 @@
     .mayuri
       .talk
         left: 17.3rem
+
+  @media (max-width: $max-width-2)
+    .mayuri
+      .talk
+        left: 15rem
+        &:after
+          left: 4.3rem
+        .talk-box
+          max-width: 18rem
 
 </style>

@@ -162,13 +162,18 @@
         background: transparent
         border: none
         outline: 0
-        padding: 0 0.5rem
+        padding: 0 0.7rem
         width: 100%
         box-sizing: border-box
         box-shadow: $box-shadow-bottom
         letter-spacing: 0.1rem
+        font-family: Georgia,serif
+        font-size: 1.3rem
         &:focus
           box-shadow: 0 0.5rem 0.5rem -0.5rem $color-3
+      .password
+        input
+          letter-spacing: 0.2rem
     .button
       position: relative
       display: flex

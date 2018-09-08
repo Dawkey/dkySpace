@@ -37,13 +37,19 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters} from "vuex";
+  import {mapGetters,mapActions} from "vuex";
   import {common_data} from "common/js/mixin.js";
   export default {
 
     name: "Home",
 
     mixins: [common_data],
+
+    data(){
+      return {
+        talk_time: 0,
+      };
+    },
 
     computed: {
       ...mapGetters([
@@ -58,6 +64,24 @@
         }
       }
     },
+
+    methods: {
+      ...mapActions([
+        "add_talk_word",
+      ]),
+    },
+
+    watch: {
+      show_flag(){
+        if(this.talk_time !== 0){
+          return;
+        }
+        if(this.show_flag === true){
+          this.add_talk_word("嘟嘟噜♪~");
+          this.talk_time = this.talk_time + 1;
+        }
+      },
+    }
 
   }
 </script>

@@ -166,15 +166,29 @@
           return;
         }
         if(this.show_flag === true){
+          let hour = new Date().getHours();
+          let time = "";
+          if(6 <= hour && hour < 11){
+            time = "早上好";
+          }else if(11 <= hour && hour < 13){
+            time = "中午好";
+          }else if(13 <= hour && hour < 18){
+            time = "下午好";
+          }else if(18 <= hour && hour < 24){
+            time = "晚上好";
+          }else if(0 <= hour && hour < 6){
+            time = "午夜了,早点休息"
+          }
           this.talk_time = this.talk_time + 1;
           if(this.token_status === "token_no"){
-            this.add_talk_word("早上好,visitor,欢迎访问dkySpace's charge,你拥有'查看'博客数据的权限,没有'修改','添加','发布'的权限哦~");
+            this.add_talk_word(`${time},visitor~欢迎访问dkySpace's charge,你拥有`+
+              `查看博客数据的权限,没有修改,添加,发布的权限哦~`);
           }
           else if(this.token_status === "token_expire"){
             this.add_talk_word("当前token已过期,请重新登录以更新token,Dawkey~");
           }
           else if(this.token_status === "token_right"){
-            this.add_talk_word("早上好,Dawkey,(￣▽￣)／");
+            this.add_talk_word(`${time},Dawkey~`);
           }
         }
       },

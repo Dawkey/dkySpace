@@ -3,7 +3,7 @@
     <ul class="right_top">
 
       <transition name="login">
-        <li class="button_icon login"
+        <li class="button_icon login" title="login"
           @click="login_click"
           :class="[{active_login: $route.name === 'login'},
                    {out_login: login_flag},
@@ -16,7 +16,7 @@
       </transition>
 
       <transition name="charge">
-        <router-link tag="li" to="/charge" class="button_icon charge"
+        <router-link tag="li" to="/charge" class="button_icon charge" title="charge"
           v-show = "$route.name === 'draft' || $route.name === 'edit' || $route.name === 'update_edit'"
         >
           <i class="icon-charge"></i>
@@ -24,7 +24,7 @@
       </transition>
 
       <transition name="update">
-        <router-link tag="li" to="/update" class="button_icon update" v-show="!login_flag">
+        <router-link tag="li" to="/update" class="button_icon update" title="update" v-show="!login_flag">
           <i class="icon-update"></i>
         </router-link>
       </transition>
@@ -49,7 +49,7 @@
     created(){
       axios.interceptors.request.use(function(config){
         let token = localStorage.getItem("token");
-        if(token){
+        if(token && config.method === "post"){
           config.headers.common["Authorization"] = "Bearer " + token;
         }
         return config;
@@ -217,5 +217,11 @@
     .right_icon
       .right_bottom
         display: none
+
+  @media (max-width: 1100px)
+    .right_icon
+      .right_bottom
+        display: none
+
 
 </style>

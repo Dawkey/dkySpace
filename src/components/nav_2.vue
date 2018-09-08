@@ -9,25 +9,28 @@
         <div class="out" :class="{talk: !talk_done}"></div>
       </div>
       <div class="nav_right">
-        <ul class="nav" :class="{show: nav_flag}" v-show="!login_flag">
-          <li v-for = "item in nav">
-            <router-link tag="div"
-              :to="`/${item}`"
-              @click.native = "nav_hide"
-            >
-              {{item}}
-            </router-link>
-          </li>
-        </ul>
-        <i class="icon-menu" @click="nav_show" v-show="!login_flag"></i>
+        <transition name="nav_ul">
+          <ul class="nav" v-show="!login_flag && nav_flag">
+            <li v-for = "item in nav">
+              <router-link tag="div"
+                :to="`/${item}`"
+              >
+                {{item}}
+              </router-link>
+            </li>
+          </ul>
+        </transition>
+        <button class="menu"  @click="nav_show" @blur="nav_hide" v-show="!login_flag">
+          <i class="icon-menu"></i>
+        </button>
 
         <transition name="login">
-          <router-link tag="i" class="icon-login"
-            :to="login_to"
+          <i class="icon-login"
+            @click="login_click"
             :class="{out_login: login_flag}"
             v-show = "$route.name != 'draft' && $route.name != 'edit' && $route.name != 'update_edit'"
           >
-          </router-link>
+          </i>
         </transition>
 
         <transition name="charge">
@@ -43,7 +46,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters,mapActions} from "vuex";
+  import {mapGetters,mapMutations,mapActions} from "vuex";
   export default {
     name: "Nav2",
 
@@ -56,23 +59,28 @@
     },
 
 
+    mounted(){
+      this.nav_flag_set();
+      window.onresize = ()=>{
+        this.nav_flag_set();
+      }
+    },
+
+
     computed: {
       ...mapGetters([
         "talk_done",
         "login_flag",
+        "token_status"
       ]),
-
-      login_to(){
-        if(this.login_flag === false){
-          return "/login";
-        }else{
-          return "/home";
-        }
-      },
     },
 
 
     methods: {
+      ...mapMutations([
+        "set_token_status",
+      ]),
+
       ...mapActions([
         "add_talk_word",
       ]),
@@ -83,6 +91,38 @@
 
       nav_hide(){
         this.nav_flag = false;
+      },
+
+      nav_flag_set(){
+        let width = document.body.clientWidth;
+        if(width < 750){
+          this.nav_flag = false;
+        }else{
+          this.nav_flag = true;
+        }
+      },
+
+      login_click(){
+        if(this.$route.name === "login"){
+          return;
+        }
+        if(this.login_flag){
+          this.$router.push("/home");
+          return;
+        }
+
+        if(this.token_status === "token_right"){
+          this.$router.push("/charge");
+        }else{
+          if(this.token_status === "token_expire"){
+            this.add_talk_word("当前token已过期,请重新登录以更新token,Dawkey~");
+          }else if(this.token_status === "token_wrong"){
+            localStorage.removeItem("token");
+            this.set_token_status("token_no");
+            this.add_talk_word("当前token无效!已被移除.");
+          }
+          this.$router.push("/login");
+        }
       },
     },
 
@@ -129,7 +169,7 @@
           margin-left: 2.5rem
           margin-right: 1rem
           font-size: 2.6rem
-          color: $color-3
+          color: $color-grey
           cursor: pointer
           transition: transform 500ms
           &:hover
@@ -176,7 +216,7 @@
         .charge-enter-to
           transform: translateX(0)
 
-        .icon-menu
+        .menu
           display: none
 
         .nav
@@ -290,27 +330,45 @@
       .nav_2
         .nav_right
           .nav
-            display: none
+            display: flex
             position: absolute
-            width: 100%
+            width: 11rem
             background: rgba(248,248,248,0.95)
-            border-bottom: 0.1rem solid rgb(235,235,235)
+            border: 0.1rem solid rgb(235,235,235)
+            border-radius: 0.5rem
             flex-direction: column
-            top: 5.4rem
-            padding-bottom: 1rem
-            &.show
-              display: flex
+            top: 4.3rem
+            right: 0rem
+            padding-top: 0.3rem
+            padding-bottom: 0.3rem
             >li
-              text-align: center
+              padding: 0.7rem 1rem
               >div
+                font-size: 1.6rem
                 display: inline-flex
-                margin: 0.3rem 0
-          .icon-menu
-            display: block
-            font-size: 2.1rem
-            padding-bottom: 0.5rem
+                margin: 0 0
+          .nav_ul-enter-active
+            transition: transform 400ms,opacity 400ms
+          .nav_ul-enter
+            transform: translateX(4rem)
+            opacity: 0
+          .nav_ul-enter-to
+            transform: translateX(0)
+          .icon-login
+            display: none
             color: $color-3
-
+          .menu
+            display: block
+            margin: 0
+            padding: 0
+            border: none
+            outline: none
+            margin-right: 1rem
+            background: transparent
+            .icon-menu
+              display: block
+              font-size: 2.1rem
+              color: $color-3
 
 
 </style>
