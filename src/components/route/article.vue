@@ -151,82 +151,83 @@
   @import "~common/stylus/variable.styl"
   @import "~common/stylus/article.styl"
 
-  .article_div
-    margin-top: 0
-    padding-top: 2.5rem
-    padding-right: 3rem
-    box-shadow: $box-shadow
-    background-color: $color-1
-    font-family: Georgia
-    border-radius: 1rem
-    .title
-      font-size: 2.4rem
-      font-weight: 800
-      height: 3.5rem
-      line-height: 3.5rem
-      text-align: center
-      padding-bottom: 0.8rem
-      box-shadow: $box-shadow-bottom
-      white-space: nowrap
-      text-overflow: ellipsis
-      overflow: hidden
-    .middle_div
-      position: relative
-      margin-top: 0.1rem
-      margin-bottom: 2rem
-      color: $color-grey
-      .date
-        height: 2.5rem
-        line-height: 2.5rem
+  .article
+    .article_div
+      margin-top: 0
+      padding-top: 2.5rem
+      padding-right: 3rem
+      box-shadow: $box-shadow
+      background-color: $color-1
+      font-family: Georgia
+      border-radius: 1rem
+      .title
+        font-size: 2.4rem
+        font-weight: 800
+        height: 3.5rem
+        line-height: 3.5rem
         text-align: center
-        font-size: 1.4rem
-        i
-          display: none
-      .tag_classify
-        position: absolute
-        top: 0
-        right: 1.2rem
-        height: 100%
-        display: flex
-        i
-          margin-right: 0.5rem
-        .tag,.classify
+        padding-bottom: 0.8rem
+        box-shadow: $box-shadow-bottom
+        white-space: nowrap
+        text-overflow: ellipsis
+        overflow: hidden
+      .middle_div
+        position: relative
+        margin-top: 0.1rem
+        margin-bottom: 2rem
+        color: $color-grey
+        .date
+          height: 2.5rem
+          line-height: 2.5rem
+          text-align: center
+          font-size: 1.4rem
+          i
+            display: none
+        .tag_classify
+          position: absolute
+          top: 0
+          right: 1.2rem
           height: 100%
           display: flex
-          align-items: center
-        .tag
-          font-size: 1.3rem
-          padding-right: 1rem
-        .classify
-          font-size: 1.2rem
-          padding-left: 1rem
-          box-shadow: $box-shadow-left
-    .edit_date
-      display: flex
-      justify-content: flex-end
-      font-size: 1.4rem
-      color: #9a9a9a
-      >span
-        color: rgba(96,126,121,0.8)
-        margin-top: 0.1rem
-        margin-left: 0.5rem
-    .before_after_article
-      display: flex
-      justify-content: space-between
-      margin-top: 3.5rem
-      margin-bottom: 1rem
-      .before_article,.after_article
+          i
+            margin-right: 0.5rem
+          .tag,.classify
+            height: 100%
+            display: flex
+            align-items: center
+          .tag
+            font-size: 1.3rem
+            padding-right: 1rem
+          .classify
+            font-size: 1.2rem
+            padding-left: 1rem
+            box-shadow: $box-shadow-left
+      .edit_date
+        display: flex
+        justify-content: flex-end
         font-size: 1.4rem
-        line-height: 2rem
-        color: rgba(96,126,121,0.8)
-        box-shadow: 0 0.5rem 0.5rem -0.5rem
-        cursor: pointer
-        padding: 0 0.5rem
-        margin-left: -0.5rem
-        &:hover
-          color: $color-3
-      .after_article
-        margin-right: -0.5rem
+        color: #9a9a9a
+        >span
+          color: rgba(96,126,121,0.8)
+          margin-top: 0.1rem
+          margin-left: 0.5rem
+      .before_after_article
+        display: flex
+        justify-content: space-between
+        margin-top: 3.5rem
+        margin-bottom: 1rem
+        .before_article,.after_article
+          font-size: 1.4rem
+          line-height: 2rem
+          color: rgba(96,126,121,0.8)
+          box-shadow: 0 0.5rem 0.5rem -0.5rem
+          cursor: pointer
+          padding: 0 0.5rem
+          margin-left: -0.5rem
+          &:hover
+            color: $color-3
+        .after_article
+          margin-right: -0.5rem
 
   @media (max-width: $max-width-2)
     .article

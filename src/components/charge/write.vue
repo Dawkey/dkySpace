@@ -1102,24 +1102,12 @@
               font-size: 1.4rem
               color: $color-3
               padding-left: 0.5rem
-              background: $color-1
-              box-shadow: $box-shadow
               border-radius: 0.3rem
               >li
                 position: relative
                 padding: 0.3rem 0.5rem
                 box-shadow: $box-shadow-left
                 z-index: 10
-            .tag_box
-              &:before
-                content: ""
-                position: absolute
-                background: $color-1
-                width: calc(100% + 3.6rem)
-                height: 4.85rem
-                bottom: -0.6rem
-                left: -0.6rem
-                z-index: 9
 
             .tag_box-enter,.tag_box-leave-to,.classify_box-enter,.classify_box-leave-to
               transform: scaleY(0)

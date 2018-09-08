@@ -57,10 +57,10 @@
              :class="{disable: loading_flag !== false}"
           ></i>
           <i class="icon-delete"
-             v-if = "!(comp === 'update' && index !== 0)"
              @click="delete_comp_click(item._id,index)"
              :class="[{active: active_comp.index === index},
-                     {disable: loading_flag !== false}
+                     {disable: loading_flag !== false},
+                     {hidden: comp === 'update' && index !== 0}
                     ]"
           ></i>
         </div>
@@ -473,7 +473,7 @@
           width: 14%
           height: 3.2rem
           align-items: center
-          justify-content: space-between
+          justify-content: flex-end
           i
             font-size: 1.7rem
             color: rgba(96,126,121,0.9)
@@ -489,7 +489,9 @@
           .icon-write
             margin: 0 10% 0 25%
           .icon-delete
-            margin: 0 25% 0 10%
+            margin: 0 0.5rem 0 6%
+            &.hidden
+              visibility: hidden
 
   @media(max-width: $max-width-2)
     .charge_ul
@@ -507,6 +509,7 @@
           .icon_div
             flex-shrink: 0
             width: 4.5rem
+            justify-content: space-between
             .icon-write,.icon-delete
               margin: 0
 

@@ -9,17 +9,15 @@
         <div class="out" :class="{talk: !talk_done}"></div>
       </div>
       <div class="nav_right">
-        <transition name="nav_ul">
-          <ul class="nav" v-show="!login_flag && nav_flag">
-            <li v-for = "item in nav">
-              <router-link tag="div"
-                :to="`/${item}`"
-              >
-                {{item}}
-              </router-link>
-            </li>
-          </ul>
-        </transition>
+        <ul class="nav" v-show="!login_flag" :class="{nav_show: nav_flag}">
+          <li v-for = "item in nav">
+            <router-link tag="div"
+              :to="`/${item}`"
+            >
+              {{item}}
+            </router-link>
+          </li>
+        </ul>
         <button class="menu"  @click="nav_show" @blur="nav_hide" v-show="!login_flag">
           <i class="icon-menu"></i>
         </button>
@@ -59,14 +57,6 @@
     },
 
 
-    mounted(){
-      this.nav_flag_set();
-      window.onresize = ()=>{
-        this.nav_flag_set();
-      }
-    },
-
-
     computed: {
       ...mapGetters([
         "talk_done",
@@ -93,14 +83,6 @@
         this.nav_flag = false;
       },
 
-      nav_flag_set(){
-        let width = document.body.clientWidth;
-        if(width < 750){
-          this.nav_flag = false;
-        }else{
-          this.nav_flag = true;
-        }
-      },
 
       login_click(){
         if(this.$route.name === "login"){
@@ -330,7 +312,7 @@
       .nav_2
         .nav_right
           .nav
-            display: flex
+            display: none
             position: absolute
             width: 11rem
             background: rgba(248,248,248,0.95)
@@ -341,19 +323,14 @@
             right: 0rem
             padding-top: 0.3rem
             padding-bottom: 0.3rem
+            &.nav_show
+              display: flex
             >li
               padding: 0.7rem 1rem
               >div
                 font-size: 1.6rem
                 display: inline-flex
                 margin: 0 0
-          .nav_ul-enter-active
-            transition: transform 400ms,opacity 400ms
-          .nav_ul-enter
-            transform: translateX(4rem)
-            opacity: 0
-          .nav_ul-enter-to
-            transform: translateX(0)
           .icon-login
             display: none
             color: $color-3
