@@ -182,7 +182,8 @@
       width: 15rem
       height: 15rem
       border-radius: 50%
-      background-image: url(/static/icon-img/a.jpg);
+      background-image: url(/static/icon-img/mayuri.png)
+      background-position: 0 0
       background-size: cover
       background-repeat: no-repeat
       box-shadow: 0 0 1rem 0 #000
@@ -191,11 +192,13 @@
       .expression
         width: 15rem
         height: 15rem
-        background-image: url(/static/icon-img/a-p-1.png);
+        border-radius: 50%
+        background-image: url(/static/icon-img/mayuri.png)
+        background-position: 0 -15rem
         background-size: cover
         background-repeat: no-repeat
         &.mouse_open
-          background-image: url(/static/icon-img/a-p-3.png);
+          background-position: 0 -45rem
         &.end_talk
           animation: talk 150ms steps(1) 1;
         &.start_talk
@@ -265,19 +268,19 @@
       color: transparent
   @keyframes talk
     0%
-      background-image: url(/static/icon-img/a-p-2.png)
+      background-position: 0 -30rem
     20%
-      background-image: url(/static/icon-img/a-p-3.png)
+      background-position: 0 -45rem
     40%
-      background-image: url(/static/icon-img/a-p-2.png)
+      background-position: 0 -30rem
     50%
-      background-image: url(/static/icon-img/a-p-1.png)
+      background-position: 0 -15rem
     60%
-      background-image: url(/static/icon-img/a-p-2.png)
+      background-position: 0 -30rem
     80%
-      background-image: url(/static/icon-img/a-p-3.png)
+      background-position: 0 -45rem
     100%
-      background-image: url(/static/icon-img/a-p-2.png)
+      background-position: 0 -30rem
 
 
   @media (max-width: $max-width-1)
