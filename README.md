@@ -1,12 +1,12 @@
 # Vue.js + koa2 + mongodb 搭建的个人博客系统(前端部分)
 
-> 在接触`vue`之后,就一直想用vue把原来老旧的博客(基于`jquery`和`php`)重新搭一遍,摸了几个月后,总算摸出来了:joy:.
+> 在接触`vue`之后,就一直想用vue把原来老旧的博客(基于`jquery`和`php`)重新搭一遍,摸了几个月后,总算摸出来了:joy:.前端部分只涉及到`vue`,关于`koa2`和`mongodb`请移步到[后端部分](https://github.com/Dawkey/dkySpace-server).
 
 **博客地址:**  
 [https://dawkey.top](https://dawkey.top)
 
 **后端部分:**  
-[https://github.com/wwk321/dkySpace-server](https://github.com/wwk321/dkySpace-server)
+[https://github.com/Dawkey/dkySpace-server](https://github.com/Dawkey/dkySpace-server)
 
 ## 1. 技术栈:
 
