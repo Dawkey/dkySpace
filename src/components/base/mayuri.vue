@@ -182,7 +182,7 @@
       width: 15rem
       height: 15rem
       border-radius: 50%
-      background-image: url(/static/icon-img/mayuri.png)
+      background-image: url(https://static.dawkey.top/img/mayuri.png)
       background-position: 0 0
       background-size: cover
       background-repeat: no-repeat
@@ -193,7 +193,7 @@
         width: 15rem
         height: 15rem
         border-radius: 50%
-        background-image: url(/static/icon-img/mayuri.png)
+        background-image: url(https://static.dawkey.top/img/mayuri.png)
         background-position: 0 -15rem
         background-size: cover
         background-repeat: no-repeat

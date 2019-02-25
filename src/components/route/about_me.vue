@@ -9,7 +9,7 @@
       <div class="about_me_div router_div" v-show="show_flag">
         <div class="github">
           <i class="icon-github"></i>
-          <a class= "follow" href="https://github.com/wwk321" target="_blank">
+          <a class= "follow" href="https://github.com/Dawkey" target="_blank">
             Follow
           </a>
         </div>
@@ -18,7 +18,7 @@
             <div class="like">
               喜欢
             </div>
-             写代码&nbsp|&nbsp打游戏&nbsp|&nbsp<span class="hightlight">纸片人</span>
+             写代码&nbsp|&nbsp打游戏&nbsp|&nbsp看番
           </div>
           <div>
             <div class="dislike">

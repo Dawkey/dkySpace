@@ -19,6 +19,8 @@
   </div>
 </template>
 
+  
+
 <script type="text/ecmascript-6">
   import Loading from "components/base/loading.vue";
   import Mayuri from "./components/base/mayuri.vue";

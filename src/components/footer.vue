@@ -1,7 +1,7 @@
 <template>
   <footer class="footer">
     <div class="copyright">
-      Copyright © 2018 Dawkey
+      Copyright © 2019 Dawkey
     </div>
     <div class="powered">
       <div>
